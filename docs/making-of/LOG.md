@@ -38,6 +38,8 @@
 | 18:39 | ⚙️ backend ส่งงาน (9 นาที): Vite + three.js scaffold · API leaderboard 4 ตัว · base path /koratrocketcar · typecheck/build ผ่าน → **ติด: Tle ต้องกดยอมรับเงื่อนไข Neon บน Vercel** (pane หยุดเองตามบรีฟ ไม่กดแทน) | backend |
 | 18:41 | 🎮 gameplay เสร็จ (10 นาที): ปุ่มซ้าย/ขวา + ตัวช่วยเลี้ยว · กล้อง 5.5 ม. FOV ตามค่า g · 2 แตะเริ่มเล่น · แต้ม = เวลา + โบนัสสไตล์ ≤ 20% · แบ่งงานกับ physics → ตรวจผ่าน · ปิด tab | gameplay |
 | 18:42 | ✍️ content ร่างแรกเสร็จ (~1,600 คำ) → conductor จับได้ว่าแต่งข้อมูลส่วนตัว Tle ('เขยโคราช') ที่ไม่มีในแหล่งใด → สั่งตัด · ตรวจผ่าน · ปิด tab (เปิดใหม่ตอนอัปเดต) | content |
+| 18:43 | 🔎 audio เสร็จ (22 นาที): เสียง CC0 72 ไฟล์ (Kenney/OpenGameArt/Freesound) · BGM 'Neon sign Circuit' · เสียงมอเตอร์ไฟฟ้า + พิณ สร้างด้วยโค้ด (Web Audio) · โหลดแรก ~1.2 MB · ยอมรับว่า 'ฟังเสียงไม่ได้' ต้องให้คนฟัง → ตรวจผ่าน · ปิด tab | audio |
+| 18:44 | Tle ตัดสิน gameplay: 2 รอบ · กดเร่งเอง · แต้มเวลา+สไตล์ · ghost อันดับ 1 ออนไลน์ตั้งแต่ M1 → ส่งงาน ghost ให้ backend | Tle |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -48,7 +50,7 @@
 | 2 | 🔎 landmarks | แลนด์มาร์ก + ภาพ CC | 18:17 | 18:29 | 12 นาที | `research/landmarks/` |
 | 3 | 🔎 streetview | เดินสำรวจ Street View | 18:17 | 18:32 | 14 นาที | `research/streetview/` |
 | 4 | 🔎 car | Tesla Roadster ข่าว/สเปก/รูปทรง | 18:17 | 18:25 | 8 นาที | `research/car/` |
-| 5 | 🔎 audio | BGM + SFX | 18:21 | | | |
+| 5 | 🔎 audio | BGM + SFX | 18:21 | 18:43 | 22 นาที | `research/audio/` |
 | 6 | 🧪 qa | test plan + release gate | 18:23 | 18:27 | 7 นาที | `docs/qa/` |
 | 7 | ⚙️ backend | scaffold + Vercel + Neon + leaderboard API | 18:31 | | | |
 | 8 | 🎮 gameplay | ออกแบบการควบคุม กล้อง ฟิสิกส์ สูตรแต้ม | 18:31 | 18:41 | 10 นาที | `docs/dev/GAMEPLAY.md` |
