@@ -1,6 +1,6 @@
 # Making-of LOG — บันทึกเบื้องหลังการทำเกม (conductor จดเอง)
 
-> ใช้ทำ content เล่าเรื่องลง madebytle.com: ใช้เทคโนโลยีอะไร · subagent pane กี่ตัว · ใครทำอะไร · ใช้เวลาเท่าไร
+> ใช้ทำ content **long form** ลง madebytle.com: ใช้เทคโนโลยีอะไร · subagent pane กี่ตัว · ใครทำอะไร · ใช้เวลาเท่าไร
 > เวลาเป็นเวลาไทย (ICT) · conductor = Claude Opus 5.5 ใน herdr tab `🏁 main` (workspace `145 KORAT Cyberpunk`)
 
 ## เครื่องมือ
