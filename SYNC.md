@@ -13,6 +13,7 @@
 - [x] Car: Tesla Roadster รุ่นใหม่ — ข่าว สเปก ฟีเจอร์กระโดด/ออกตัว รูปทรงด้านท้าย → `research/car/`
 - [ ] Backend: scaffold + Vercel + Neon + leaderboard API → `docs/dev/REPORT-leaderboard.md`
 - [ ] Physics: โมเดล + 4 จุดโชว์ (ข้ามคูเมือง, ออกตัว 4.6g, ดริฟต์ 148°, ฝน+สายไฟ) → `docs/dev/PHYSICS.md`
+- [ ] Content: ร่างโพสต์ Facebook long form → `docs/content/facebook-post.md`
 - [ ] Gameplay: การควบคุม กล้อง ฟิสิกส์ สูตรแต้ม → `docs/dev/GAMEPLAY.md`
 - [ ] Audio: BGM + SFX license ใช้ได้ + แนวทางใช้บนมือถือ → `research/audio/`
 - [x] Street View รอบ 1 (8 ถนนรอบลาน)
