@@ -24,7 +24,9 @@
 - [x] เสียงพากย์: Charlie (Mint/ElevenLabs ไม่เชิงพาณิชย์) · สำรอง Kenney CC0
 
 - [x] **M1 เสร็จ** v0.2.0-build002 · preview https://korat-cyberpunk-8nliiddxu-dosx.vercel.app/koratrocketcar/ · QA กำลังตรวจ
-- [ ] M2: landmarks-3d + streetscape
+- [x] M2 landmarks-3d
+- [ ] M2 streetscape
+- [ ] M3 backlog: รูปหล่อย่าโมยังผอมคล้ายหุ่น — เพิ่มรายละเอียดชุดไทย/ทรงผม (ห้ามล้อเลียน) · Terminal 21 ทรงกลาง ๆ (ไม่มีภาพนอก)
 
 **แผนถัดไป (milestone)**
 1. M0 รวมผลสำรวจ → Tle เลือกสนาม (A/B/C)
