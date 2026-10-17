@@ -224,7 +224,7 @@ function buildChumphonGate(s: Site, ring: Vec2[], signRow: (i: number) => { u0: 
   const pier = (core - open) / 2;
   for (const sgn of [-1, 1]) {
     fbox(g, f, sgn * (open / 2 + pier / 2), 0, 0, pier, D, 5.5, C.plaster, C.whiteShade);
-    fbox(s.stone, f, sgn * (open / 2 + 0.05), 0, 0, 0.1, D - 0.2, passH, C.wood); // passage side lining
+    fbox(s.stone, f, sgn * (open / 2 - 0.05), 0, 0, 0.1, D - 0.2, passH, C.wood); // passage side lining (proud of the pier face: no z-fight)
   }
   fbox(g, f, 0, 0, passH, open, D, 5.5 - passH, C.plaster, C.whiteShade);
   fbox(s.stone, f, 0, 0, passH - 0.1, open, D - 0.2, 0.1, C.wood);

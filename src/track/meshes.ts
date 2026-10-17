@@ -10,6 +10,25 @@ import type { Vec2 } from '../types.js';
 
 export const CHUNKS = 12;
 
+function inRing(x: number, z: number, ring: Vec2[]) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const a = ring[i], b = ring[j];
+    if ((a.z > z) !== (b.z > z) && x < ((b.x - a.x) * (z - a.z)) / (b.z - a.z) + a.x) inside = !inside;
+  }
+  return inside;
+}
+// Centroid of the footprint's largest triangle — always inside the polygon.
+function insidePoint(ring: Vec2[]): Vec2 {
+  let best = { x: ring[0].x, z: ring[0].z }, area = -1;
+  for (const [i, j, k] of THREE.ShapeUtils.triangulateShape(ring.map((p) => new THREE.Vector2(p.x, p.z)), [])) {
+    const a = ring[i], b = ring[j], c = ring[k];
+    const ar = Math.abs((b.x - a.x) * (c.z - a.z) - (c.x - a.x) * (b.z - a.z));
+    if (ar > area) { area = ar; best = { x: (a.x + b.x + c.x) / 3, z: (a.z + b.z + c.z) / 3 }; }
+  }
+  return best;
+}
+
 // Facade anchors sit just outside their building: test 1.5 m back into the facade (and the
 // anchor itself) against the footprints landmarks-3d claims.
 export function anchorClaimed(a: { x: number; z: number; ang: number }, claimed: (x: number, z: number) => boolean) {
@@ -197,6 +216,9 @@ export function buildTrackMeshes(d: TrackData, mats: TrackMaterials, claimed: (x
   blds.forEach((b, bi) => {
     const cx = b.ring.reduce((a, p) => a + p.x, 0) / b.ring.length, cz = b.ring.reduce((a, p) => a + p.z, 0) / b.ring.length;
     if (claimed(cx, cz)) return; // modelled by landmarks-3d
+    // L-shaped footprints: the vertex mean can fall in the notch, outside the building (Phon Saen east block was
+    // drawn twice, coplanar with its landmark model) — test a point that is inside the footprint too.
+    if (!inRing(cx, cz, b.ring)) { const q = insidePoint(b.ring); if (claimed(q.x, q.z)) return; }
     const ch = chunkAt(cx, cz);
     buildBuilding(b, bi, { fac: fac[ch], detail: detail[ch] });
   });

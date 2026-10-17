@@ -260,13 +260,13 @@ export function buildWayfinding(track: Track): THREE.Group {
       const y0 = track.heightAt(m.x, m.z);
       const c = new THREE.Vector3(m.x, y0 + SIGN.chevronY0 * sc + hh, m.z);
       struct.box(c.clone().addScaledVector(N, -0.04), R, N, bw / 2 + 0.04, hh + 0.04, 0.03, BACK);
-      led.quad(c.clone().addScaledVector(N, -0.005), R, Y, bw / 2, hh, [1.15, 1.15, 1.15], CELLS.frame[Math.min(3, k) - 1]);
+      led.quad(c.clone().addScaledVector(N, 0.01), R, Y, bw / 2, hh, [1.15, 1.15, 1.15], CELLS.frame[Math.min(3, k) - 1]); // 2 cm off the board
       for (let q = 0; q < k; q++) {
         const u = -bw / 2 + 0.1 * sc + cw * (q + 0.5);
         // chase runs in the turn direction across the whole row: phase grows board by board, chevron by chevron
         const order = t.dir === 'right' ? j * k + q : (nb - 1 - j) * k + (k - 1 - q);
         const phase = (order / (nb * k)) * 0.65;
-        const cc = c.clone().addScaledVector(R, u).addScaledVector(N, 0.004);
+        const cc = c.clone().addScaledVector(R, u).addScaledVector(N, 0.03); // 2 cm off the frame (mm gaps z-fought at range)
         led.quad(cc, R, Y, (cw / 2) * 0.92, hh * 0.86, [1.7, 1.7, 1.7], t.dir === 'right' ? CELLS.chevron : mirror(CELLS.chevron), [phase, 1]);
       }
       addPost(m.x, m.z, y0, SIGN.chevronY0 * sc + 0.05, m.mount, R, N);

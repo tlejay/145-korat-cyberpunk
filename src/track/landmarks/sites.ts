@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { toRing, type RawTrack } from '../data.js';
 import type { Surface, Vec2 } from '../../types.js';
 import {
-  P, col, extrudeUY, fbox, frameAt, palm, pcaFrame, prism, prismRing, rectRing, semaWall, shadeTree, thaiRoof,
+  P, col, extrudeUY, fbox, frameAt, offsetRing, palm, pcaFrame, prism, prismRing, rectRing, semaWall, shadeTree, thaiRoof,
   type Frame,
 } from './kit.js';
 import { Site } from './site.js';
@@ -145,7 +145,7 @@ function colonial(s: Site, ring: Vec2[], faces: number[], floors: number, seed: 
       // parapet: rounded decorative crest per bay (trackA-12b)
       extrudeUY(s.stone, f, [[u - bw / 2, H], [u + bw / 2, H], [u + bw / 2, H + 0.6], [u + bw * 0.25, H + 0.95], [u, H + 1.05], [u - bw * 0.25, H + 0.95], [u - bw / 2, H + 0.6]], out(-0.1) - 0.1, out(-0.1) + 0.1, W.white);
     }
-    fbox(s.stone, f, 0, out(0.1), H - 0.25, len, 0.4, 0.25, W.white); // cornice
+    fbox(s.stone, f, 0, out(0.1), H - 0.25, len, 0.4, 0.27, W.white); // cornice (top 2 cm above the roof: no z-fight)
   }
 }
 
@@ -283,7 +283,8 @@ function buildT21(raw: RawTrack) {
   fbox(sk.stone, frameAt(hotel[0], hotel[2], Math.atan2(f.uz, f.ux)), 0, 0, 0, 58, 22, 64, dark, dark2);
   // light bands
   const g = sk.glow;
-  for (let y = 6; y < 34; y += 7) prismRing(g, ring.map((p) => p), y, y + 0.8, col(0x2bd6ff), null);
+  const bandRing = offsetRing(ring, 0.3); // proud of the mall walls (coplanar bands z-fought at skyline distance)
+  for (let y = 6; y < 34; y += 7) prismRing(g, bandRing, y, y + 0.8, col(0x2bd6ff), null);
   fbox(g, tf, 0, 0, h - 5.5, 26.6, 26.6, 1.4, col(0x22e6ff));
   for (let y = 12; y < h - 16; y += 9) fbox(g, tf, 0, 0, y, 24.4, 20.4, 0.6, col(0xffb46b));
   fbox(g, tf, 0, 0, h + 11.5, 1.2, 1.2, 1.2, GL.red);

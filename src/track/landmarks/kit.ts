@@ -252,6 +252,17 @@ export function pcaFrame(ring: Vec2[]) {
   return { f, len: l1 - l0, wid: w1 - w0 };
 }
 
+// Footprint grown outward by d metres (mitred corners) — for trims that must sit proud of a prismRing wall.
+export function offsetRing(ring: Vec2[], d: number): Vec2[] {
+  const s = ringArea(ring) >= 0 ? 1 : -1, n = ring.length;
+  const nrm = (p: Vec2, q: Vec2) => { const l = Math.hypot(q.x - p.x, q.z - p.z) || 1; return { x: (s * (q.z - p.z)) / l, z: (-s * (q.x - p.x)) / l }; };
+  return ring.map((p, i) => {
+    const a = nrm(ring[(i + n - 1) % n], p), b = nrm(p, ring[(i + 1) % n]);
+    const mx = a.x + b.x, mz = a.z + b.z, k = 1 + a.x * b.x + a.z * b.z;
+    return k < 0.2 ? { x: p.x + b.x * d, z: p.z + b.z * d } : { x: p.x + (mx * d) / k, z: p.z + (mz * d) / k };
+  });
+}
+
 // Rectangle footprint in a frame.
 export const rectRing = (f: Frame, lu: number, lv: number): Vec2[] =>
   [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => { const p = P(f, (a * lu) / 2, (b * lv) / 2, 0); return { x: p[0], z: p[2] }; });
