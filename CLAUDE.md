@@ -68,7 +68,7 @@ pnpm dev · pnpm typecheck · pnpm build · pnpm preview
 ## 6. Deploy
 
 - **ใช้ Vercel CLI — push ไม่ใช่ deploy** · `vercel deploy --prod --yes` แล้ว `curl -s -o /dev/null -w '%{http_code}' <url>` ต้องได้ 200
-- **URL จริง: `https://madebytle.com/koratrocketcar`** (Tle สั่ง 2026-10-17) — madebytle.com (`00 Madebytle Profile/madebytle`, Next.js) proxy `/koratrocketcar/*` → โปรเจค Vercel ของเกม · เกมใช้ Vite `base: '/koratrocketcar/'` + rewrite `/koratrocketcar/(.*)` → `/$1` ฝั่งเกม · แก้ฝั่ง madebytle ต้องอ่าน CLAUDE.md ของโปรเจคนั้นก่อน
+- **URL จริง: `https://madebytle.com/koratrocketcar`** ✅ ใช้งานได้ตั้งแต่ 2026-10-18 00:33 (madebytle commit 5dce291 + fe717cb: rewrite + ปิด trailing-slash redirect เฉพาะ path นี้ · madebytle push ไม่ deploy เอง ต้อง `vercel deploy --prod`) (Tle สั่ง 2026-10-17) — madebytle.com (`00 Madebytle Profile/madebytle`, Next.js) proxy `/koratrocketcar/*` → โปรเจค Vercel ของเกม · เกมใช้ Vite `base: '/koratrocketcar/'` + rewrite `/koratrocketcar/(.*)` → `/$1` ฝั่งเกม · แก้ฝั่ง madebytle ต้องอ่าน CLAUDE.md ของโปรเจคนั้นก่อน
 - ก่อน deploy production: ต้องผ่าน QA gate (หัวข้อ 10) · เปิดในมือถือจริง (หรือ Chrome device mode แนวนอน) เช็คว่ากดเล่นได้ + fps ไม่ตก
 
 ## 7. Security & Credentials
