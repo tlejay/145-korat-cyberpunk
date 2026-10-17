@@ -1,4 +1,4 @@
-# CLAUDE.md — 145 KORAT Cyberpunk
+# CLAUDE.md — 145 KORAT Cyberpunk (ชื่อเกม: **โคราชโรสเตอร์** / Korat Roadster)
 
 > บันทึกงานร่วม (สถานะล่าสุด / งานค้าง / ต้องตัดสินใจ): `SYNC.md` — อ่านก่อนเริ่มทุก session
 > repo: `tlejay/145-korat-cyberpunk` · branch `main` · เปิดใช้ 2026-10-17
