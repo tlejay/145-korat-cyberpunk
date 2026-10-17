@@ -14,7 +14,7 @@
 - [ ] Audio: BGM + SFX license ใช้ได้ + แนวทางใช้บนมือถือ → `research/audio/`
 - [ ] Street View: เดินสำรวจถนนทีละช่วง → `research/streetview/`
 
-- [ ] QA: TEST-PLAN + TEST-HOOKS + RELEASE-GATE → `docs/qa/` (QA เป็นด่านก่อน production ทุกครั้ง)
+- [x] QA: TEST-PLAN + TEST-HOOKS + RELEASE-GATE → `docs/qa/` (QA เป็นด่านก่อน production ทุกครั้ง)
 
 **แผนถัดไป (milestone)**
 1. M0 รวมผลสำรวจ → Tle เลือกสนาม (A/B/C)

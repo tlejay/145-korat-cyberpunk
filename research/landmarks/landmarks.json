@@ -1,0 +1,215 @@
+{
+  "meta": {
+    "generated": "2026-10-17",
+    "origin": { "name": "Thao Suranari Monument (OSM way/549315244 centroid)", "lat": 14.97473, "lng": 102.09812 },
+    "local_frame": "x = metres east, y = metres north of origin (equirectangular approx, good to <1 m within 2 km)",
+    "size_m_convention": "w = east-west extent, d = north-south extent, h = height above ground. Footprint numbers come from OSM polygons (see footprints.geojson); heights are marked with their source in notes. 'est' = estimated from CC photos, verify with Street View.",
+    "orientation_deg": "bearing of the building's long axis / facing direction, 0 = north, 90 = east",
+    "attribution": "Geometry © OpenStreetMap contributors (ODbL)"
+  },
+  "landmarks": [
+    {
+      "id": "thao-suranari-monument",
+      "name_th": "อนุสาวรีย์ท้าวสุรนารี (ย่าโม)",
+      "name_en": "Thao Suranari Monument",
+      "lat": 14.97473, "lng": 102.09812,
+      "local_xy": [0, 0],
+      "size_m": { "w": 26, "d": 26, "h": 5.5 },
+      "facing_deg": 270,
+      "priority": 1,
+      "notes": "Bronze statue 1.85 m tall, 325 kg (NRRU Khorat Geopark). Standing pose: right hand holds a sword with the tip resting on the ground, left hand on hip, full court dress with shoulder sash (confirmed in monument-01.jpg). Faces WEST toward Bangkok (NRRU) — players driving east along Ratchadamnoen / Chumphon approach see her face. 26x26 m = OSM raised terrace (ฐานไพที) with steps on all sides; white pedestal ~3-3.5 m [est from plaza-01.jpg], total top-of-head ~5.5 m above plaza [est]. Pedestal is surrounded by offerings, flower garlands, marigold chains, and the plaza is always busy with worshippers. Statue by Silpa Bhirasri, designed by Phra Thewaphinimmit, unveiled 15 Jan 1934 (B.E. 2477). Registered by Fine Arts Dept 3 Jan 1937. SACRED — no collision damage, no destruction, no comedic use; make it a non-destructible, softly lit focal point.",
+      "refs": [
+        "osm:way/549315244",
+        "https://th.wikipedia.org/wiki/ท้าวสุรนารี",
+        "https://en.wikipedia.org/wiki/Thao_Suranari",
+        "https://khoratgeoparkguide-human.nrru.ac.th/lessons/en/unit-en0201.php",
+        "img/monument-01.jpg", "img/monument-02.jpg", "img/monument-03.jpg", "img/plaza-01.jpg"
+      ]
+    },
+    {
+      "id": "chumphon-gate",
+      "name_th": "ประตูชุมพล",
+      "name_en": "Chumphon Gate",
+      "lat": 14.97475, "lng": 102.09834,
+      "local_xy": [23, 3],
+      "size_m": { "w": 11, "d": 43, "h": 13 },
+      "facing_deg": 270,
+      "priority": 1,
+      "notes": "Directly behind (east of) the monument. The only one of the original 4 city gates still standing (King Narai era, 1656-1688). OSM footprint 43 m N-S x 11 m E-W including the flanking wall stubs. Opening ~3 m wide (Thai Wikipedia: 'ประตูเมืองกว้าง 3 เมตร'). Body: thick white-plastered masonry (laterite/brick) wall ~6 m high (Wikipedia: wall height 6 m) with Thai-style rounded merlons (ใบเสมา) on top; above the arch sits a 2-tier wooden watch-tower with dark-red / maroon wooden walls and a layered Thai gable roof in red-brown clay tiles with white chofa/bai raka trim (gate-02.jpg). Total height ~12-14 m [est from gate-02.jpg]. Lit warm gold at night (gate-01.jpg). Locals call it 'บ้านย่าโม' — do not let the car drive on top of it.",
+      "refs": [
+        "osm:way/549315243",
+        "https://th.wikipedia.org/wiki/ประตูเมืองนครราชสีมา",
+        "img/gate-01.jpg", "img/gate-02.jpg", "img/gate-04.jpg", "img/gate-06.jpg", "img/gate-07.jpg", "img/gate-historic-01.jpg"
+      ]
+    },
+    {
+      "id": "city-wall-moat-west",
+      "name_th": "กำแพงเมืองและคูเมือง (ช่วงประตูชุมพล / ฝั่งตะวันตก)",
+      "name_en": "Korat City Wall & Moat (west side)",
+      "lat": 14.97385, "lng": 102.09835,
+      "local_xy": [20, -100],
+      "size_m": { "w": 30, "d": 260, "h": 6 },
+      "priority": 1,
+      "notes": "Old city is a rectangle ~1,000 x 1,700 m. Original moat 20 m wide x 6 m deep, wall 6 m high, 5,220 m around, 4,302 merlons, 15 forts (Thai Wikipedia). Today only short wall segments remain next to Chumphon Gate; elsewhere the moat survives as a concrete/stone-edged canal 23-40 m wide (OSM water=moat polygons) lined with rain trees and footpaths, roads on both sides (clocktower-01.jpg, skyline-01.jpg). West moat runs N-S on both sides of the gate (OSM ways 544097478, 544097480, 544097467); part of the west moat was filled in to build the monument plaza. North moat runs E-W ~540 m north of the monument; south moat ~500 m south. Full moat polygons in footprints.geojson.",
+      "refs": [
+        "osm:way/544097478", "osm:way/544097480", "osm:way/544097467", "osm:way/544097465", "osm:way/544097481",
+        "https://th.wikipedia.org/wiki/ประตูเมืองนครราชสีมา",
+        "img/clocktower-01.jpg", "img/skyline-01.jpg", "img/moat-historic-01.jpg", "img/map-oldcity.png", "img/map-1950.png"
+      ]
+    },
+    {
+      "id": "yamo-plaza",
+      "name_th": "ลานอนุสาวรีย์ท้าวสุรนารี (ลานย่าโม)",
+      "name_en": "Ya Mo Plaza",
+      "lat": 14.97515, "lng": 102.09812,
+      "local_xy": [0, 46],
+      "size_m": { "w": 51, "d": 126, "h": 0 },
+      "priority": 1,
+      "notes": "OSM landuse=recreation_ground polygon, long axis N-S, wraps the monument terrace and extends north toward the light-and-sound pavilion and Lan Lang Pratu Mueang. Light-grey stone paving, wide stairs up to the terrace, ornate lamp posts with globe lights (gate-01.jpg). Annual Ya Mo festival 23 Mar - 3 Apr with stalls; light-and-sound show here. Pedestrian space — race route should pass around it on the road, not across it.",
+      "refs": ["osm:way/31257513", "img/plaza-01.jpg", "img/plaza-show-01.jpg", "img/gate-01.jpg"]
+    },
+    {
+      "id": "light-sound-pavilion",
+      "name_th": "อาคารแสดง แสง สี เสียง วีรกรรมท้าวสุรนารี",
+      "name_en": "Thao Suranari Light & Sound Pavilion",
+      "lat": 14.97677, "lng": 102.09820,
+      "local_xy": [9, 225],
+      "size_m": { "w": 10, "d": 38, "h": 8 },
+      "priority": 3,
+      "notes": "Small Thai-style building north of the plaza along the west moat line. Height [ยังไม่ยืนยัน] — placeholder 8 m. Next to it: อนุสรณ์วีรชน (heroes memorial, OSM way/549397540, 6x13 m).",
+      "refs": ["osm:way/549397541", "osm:way/549397540", "img/plaza-show-01.jpg"]
+    },
+    {
+      "id": "clock-tower",
+      "name_th": "หอนาฬิกา (หน้าศาลากลาง)",
+      "name_en": "Clock Tower",
+      "lat": 14.97222, "lng": 102.09857,
+      "local_xy": [48, -277],
+      "size_m": { "w": 5, "d": 4, "h": 15 },
+      "priority": 2,
+      "notes": "Slim white square tower with a clock face on each side and a small pointed spire, at the moat edge in front of the Provincial Hall (clocktower-01.jpg, seen across the west moat). Footprint from OSM; height ~15 m [est from photo].",
+      "refs": ["osm:way/551000418", "img/clocktower-01.jpg"]
+    },
+    {
+      "id": "provincial-hall",
+      "name_th": "ศาลากลางจังหวัดนครราชสีมา",
+      "name_en": "Nakhon Ratchasima Provincial Hall",
+      "lat": 14.97239, "lng": 102.10009,
+      "local_xy": [209, -256],
+      "size_m": { "w": 37, "d": 100, "h": 16 },
+      "priority": 2,
+      "notes": "3-storey government building, cream/white walls with white pilasters, steep layered Thai gable roofs in orange-red tiles with white bargeboards and chofa finials, central entrance porch under a tall gable with royal portrait and Garuda emblem (provincial-hall-01.jpg, Jan 2026). Long axis N-S. Height: 3 floors + tall roof ≈ 16 m [est]. The open field in front hosts the Ya Mo festival fair. Government building — keep signage respectful; do not deface with ads.",
+      "refs": ["osm:way/545162412", "img/provincial-hall-01.jpg"]
+    },
+    {
+      "id": "maha-wirawong-museum",
+      "name_th": "พิพิธภัณฑสถานแห่งชาติ มหาวีรวงศ์",
+      "name_en": "Maha Wirawong National Museum",
+      "lat": 14.97205, "lng": 102.09762,
+      "local_xy": [-52, -295],
+      "size_m": { "w": 14, "d": 26, "h": 7 },
+      "priority": 3,
+      "notes": "Small single-storey Thai-style exhibition hall built 1954 by the Fine Arts Department, inside Wat Sutthachinda grounds. Height [ยังไม่ยืนยัน].",
+      "refs": ["osm:way/460482130", "https://th.wikipedia.org/wiki/พิพิธภัณฑสถานแห่งชาติ_มหาวีรวงศ์"]
+    },
+    {
+      "id": "klang-plaza-atsadang",
+      "name_th": "คลังพลาซ่า สาขาอัษฎางค์",
+      "name_en": "Klang Plaza Atsadang",
+      "lat": 14.97583, "lng": 102.10142,
+      "local_xy": [352, 118],
+      "size_m": { "w": 42, "d": 86, "h": 28 },
+      "priority": 2,
+      "notes": "Old-town department store. Boxy white concrete block ~6-7 storeys with a 'คลังพลาซ่า' sign on top and the facade covered in large colourful billboards (klangplaza-01.jpg, 2010) — already cyberpunk-friendly: replace billboards with neon/holo panels. Height ~28 m [est, 7 floors x 4 m]. Photo is taken across water — exact viewpoint [ยังไม่ยืนยัน].",
+      "refs": ["osm:way/544608502", "img/klangplaza-01.jpg"]
+    },
+    {
+      "id": "korat-hotel",
+      "name_th": "โคราชโฮเต็ล",
+      "name_en": "Korat Hotel",
+      "lat": 14.9767, "lng": 102.1017,
+      "local_xy": [383, 217],
+      "size_m": { "w": 46, "d": 81, "h": 20 },
+      "priority": 3,
+      "notes": "Large old hotel block on Atsadang Rd next to Klang Plaza. Floors/height [ยังไม่ยืนยัน] — check Street View.",
+      "refs": ["osm:way/561162765"]
+    },
+    {
+      "id": "it-plaza",
+      "name_th": "ไอที พลาซ่า",
+      "name_en": "IT Plaza",
+      "lat": 14.98039, "lng": 102.09701,
+      "local_xy": [-127, 625],
+      "size_m": { "w": 81, "d": 61, "h": 20 },
+      "priority": 3,
+      "notes": "Shopping building just outside the north-west corner of the moat. Height [ยังไม่ยืนยัน].",
+      "refs": ["osm:way/544608500"]
+    },
+    {
+      "id": "terminal21-korat",
+      "name_th": "เทอร์มินอล 21 โคราช",
+      "name_en": "Terminal 21 Korat",
+      "lat": 14.98247, "lng": 102.09011,
+      "local_xy": [-845, 813],
+      "size_m": { "w": 111, "d": 333, "h": 110 },
+      "priority": 1,
+      "notes": "Tallest skyline element seen from the plaza (NW, ~1.2 km). Mall 7 floors + 1 basement, 'Skydeck' tower 110 m, 9-storey car park, Centre Point hotel 18 floors (Thai Wikipedia). Airport-terminal theme: interior has a full-size airliner model and a red torii gate (terminal21-01/03.jpg are INTERIOR shots — exterior refs still needed from Street View). Use as a distant silhouette / skyline beacon; 110 m height applies to the tower only. Opened 19 Dec 2016. Avoid any reference to the Feb 2020 shooting incident in game content.",
+      "refs": ["osm:way/363719867", "wikidata:Q3278033", "https://th.wikipedia.org/wiki/เทอร์มินอล_21_โคราช", "img/terminal21-01.jpg", "img/terminal21-03.jpg"]
+    },
+    {
+      "id": "mae-kim-heng-market",
+      "name_th": "ตลาดใหม่แม่กิมเฮง",
+      "name_en": "Mae Kim Heng Market",
+      "lat": 14.97578, "lng": 102.09572,
+      "local_xy": [-269, 132],
+      "size_m": { "w": 159, "d": 136, "h": 8 },
+      "priority": 2,
+      "notes": "Big covered fresh market west of the plaza, low roofs (~2 floors) — good for a dense neon street-food zone. Height [ยังไม่ยืนยัน].",
+      "refs": ["osm:way/551793193"]
+    },
+    {
+      "id": "wat-phayap",
+      "name_th": "วัดพายัพ",
+      "name_en": "Wat Phayap",
+      "lat": 14.97854, "lng": 102.09918,
+      "local_xy": [105, 410],
+      "size_m": { "w": 196, "d": 134, "h": 20 },
+      "priority": 3,
+      "notes": "Royal temple (third class) inside the NW corner of the old city. Size = temple grounds from OSM; main hall height ~20 m [est]. Temples: keep as calm, dimly lit, no ads or hologram overlays on religious buildings.",
+      "refs": ["osm:way/1228816468", "https://th.wikipedia.org/wiki/วัดพายัพ_(จังหวัดนครราชสีมา)", "img/watphayap-01.jpg"]
+    },
+    {
+      "id": "wat-bueng",
+      "name_th": "วัดบึง",
+      "name_en": "Wat Bueng",
+      "lat": 14.97397, "lng": 102.10009,
+      "local_xy": [179, -82],
+      "size_m": { "w": 109, "d": 129, "h": 15 },
+      "priority": 3,
+      "notes": "Royal temple (third class) just east of the gate inside the old city. Size = grounds from OSM; buildings [ยังไม่ยืนยัน].",
+      "refs": ["osm:way/1229659770", "https://th.wikipedia.org/wiki/วัดบึง_(จังหวัดนครราชสีมา)"]
+    },
+    {
+      "id": "wat-phra-narai",
+      "name_th": "วัดพระนารายณ์มหาราช (วัดกลางนคร)",
+      "name_en": "Wat Phra Narai Maharat",
+      "lat": 14.97576, "lng": 102.10731,
+      "local_xy": [1002, 103],
+      "size_m": { "w": 307, "d": 137, "h": 20 },
+      "priority": 3,
+      "notes": "Central temple of the old city, ~1 km east. Ya Mo's ashes were once kept here (1899). Grounds size from OSM. City Pillar Shrine (ศาลหลักเมือง, OSM way/549397530, 9x8 m) sits at its corner on Chomphon Rd.",
+      "refs": ["osm:way/733605940", "osm:way/549397530", "wikidata:Q13020765", "https://th.wikipedia.org/wiki/ศาลหลักเมืองนครราชสีมา", "img/watphranarai-01.jpg", "img/citypillar-01.jpg"]
+    },
+    {
+      "id": "other-city-gates",
+      "name_th": "ประตูพลแสน / ประตูไชยณรงค์ / ประตูพลล้าน",
+      "name_en": "Phon Saen / Chai Narong / Phon Lan Gates",
+      "lat": 14.97956, "lng": 102.10553,
+      "local_xy": [792, 534],
+      "size_m": { "w": 7, "d": 49, "h": 10 },
+      "priority": 3,
+      "notes": "Rebuilt replicas of the other three gates. Phon Saen (north, OSM way/549315242, 7x49 m, at 14.97956,102.10553), Chai Narong a.k.a. ประตูผี (south, OSM way/549315240, 46x7 m, at 14.97037,102.10629). Phon Lan (east) is ~1.6 km east, outside the 700 m study area. Same style as Chumphon but newer; heights [ยังไม่ยืนยัน].",
+      "refs": ["osm:way/549315242", "osm:way/549315240", "img/gate-phonlan-01.jpg", "img/gate-phi-01.jpg"]
+    }
+  ]
+}

@@ -26,6 +26,7 @@
 | 18:24 | 🔎 osm เสร็จ (7 นาที): ถนน 1,741 เส้น ตึก 1,087 หลัง · เสนอสนาม A/B/C → conductor ตรวจผ่าน · commit · ปิด tab | osm |
 | 18:25 | 🔎 car เสร็จ (8 นาที): Roadster เปิดตัว 15 ต.ค. 2026 ที่ฐาน SpaceX · 3 รุ่น (Performance/Thrust/Rocket) · cold-gas thruster กระโดด ~7 ม. · blueprint สัดส่วน → ตรวจผ่าน · ปิด tab | car |
 | 18:27 | Tle เลือก: รถฐานรุ่น Rocket · ไม่ใช้โลโก้ Tesla ตั้งชื่อเอง | Tle |
+| 18:27 | 🧪 qa เสร็จ (7 นาที): test case 122 ข้อ 10 หมวด (🔴 77) · TEST-HOOKS (`window.__game`) · RELEASE-GATE · ชี้ความเสี่ยง 15 ข้อ เช่น ยังไม่มีคนดู game feel → ตรวจผ่าน · ปิด tab | qa |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -37,4 +38,4 @@
 | 3 | 🔎 streetview | เดินสำรวจ Street View | 18:17 | | | |
 | 4 | 🔎 car | Tesla Roadster ข่าว/สเปก/รูปทรง | 18:17 | 18:25 | 8 นาที | `research/car/` |
 | 5 | 🔎 audio | BGM + SFX | 18:21 | | | |
-| 6 | 🧪 qa | test plan + release gate | 18:23 | | | |
+| 6 | 🧪 qa | test plan + release gate | 18:23 | 18:27 | 7 นาที | `docs/qa/` |
