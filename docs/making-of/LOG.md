@@ -24,6 +24,7 @@
 | 18:20 | Tle เพิ่มงานเสียง → เปิด 🔎 audio (pane ที่ 5) · อนุญาตให้ใช้ GPT วาดภาพประกอบ | Tle + conductor |
 | 18:22 | Tle สั่ง QA → เปิด 🧪 qa (pane ที่ 6) เป็นด่านก่อน production | Tle + conductor |
 | 18:24 | 🔎 osm เสร็จ (7 นาที): ถนน 1,741 เส้น ตึก 1,087 หลัง · เสนอสนาม A/B/C → conductor ตรวจผ่าน · commit · ปิด tab | osm |
+| 18:25 | 🔎 car เสร็จ (8 นาที): Roadster เปิดตัว 15 ต.ค. 2026 ที่ฐาน SpaceX · 3 รุ่น (Performance/Thrust/Rocket) · cold-gas thruster กระโดด ~7 ม. · blueprint สัดส่วน → ตรวจผ่าน · ปิด tab | car |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -33,6 +34,6 @@
 | 1 | 🔎 osm | ถนน/ตึก/คูเมืองจาก OSM + สนาม 3 แบบ | 18:17 | 18:24 | 7 นาที | `research/osm/` |
 | 2 | 🔎 landmarks | แลนด์มาร์ก + ภาพ CC | 18:17 | | | |
 | 3 | 🔎 streetview | เดินสำรวจ Street View | 18:17 | | | |
-| 4 | 🔎 car | Tesla Roadster ข่าว/สเปก/รูปทรง | 18:17 | | | |
+| 4 | 🔎 car | Tesla Roadster ข่าว/สเปก/รูปทรง | 18:17 | 18:25 | 8 นาที | `research/car/` |
 | 5 | 🔎 audio | BGM + SFX | 18:21 | | | |
 | 6 | 🧪 qa | test plan + release gate | 18:23 | | | |
