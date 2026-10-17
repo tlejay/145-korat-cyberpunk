@@ -15,3 +15,6 @@ refs/
 research/audio/candidates/
 tests/qa/.results/
 tests/qa/.metrics/
+
+# demo-mode recordings (scripts/record-demo.mjs) — big mp4s, never commit
+promo-footage/

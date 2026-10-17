@@ -22,6 +22,7 @@ if (view === 'audio') {
 } else if (view === 'top') {
   // Track vs OSM top view (world REPORT §4).
   void import('./scene/top-view.js').then((m) => m.startTopView(canvas, ui));
+} else if (params.get('demo') === '1') { void import('./capture/index.js').then((m) => m.startDemo(ui, canvas)); // promo capture mode (src/capture, promo/SHOTLIST.md)
 } else if (!hasWebGL2()) {
   showError(ui, 'webgl');
   void hooks?.then((m) => m.installQaHooks(ui));
