@@ -21,6 +21,8 @@
 
 - [x] QA: TEST-PLAN + TEST-HOOKS + RELEASE-GATE → `docs/qa/` (QA เป็นด่านก่อน production ทุกครั้ง)
 
+- [ ] เสียงพากย์อังกฤษ: Mint พากย์ (tlejay/mint#475) · สำรอง CC0 โดย 🎙️ announcer
+
 **แผนถัดไป (milestone)**
 1. M0 รวมผลสำรวจ → Tle เลือกสนาม (A/B/C)
 2. M1 Vertical slice: ถนนจาก OSM + รถขับได้ + ปุ่มมือถือ + deploy Vercel ครั้งแรก
