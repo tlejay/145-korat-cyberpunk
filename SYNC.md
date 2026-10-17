@@ -34,7 +34,9 @@
 2. 🧪 QA รอบ M3 บน preview → แก้จน 🔴 ที่ทดสอบอัตโนมัติได้ผ่านหมด
 3. `vercel deploy --prod` เกม → เช็ค `korat-cyberpunk.vercel.app/koratrocketcar/` 200
 4. pane madebytle: rewrite `/koratrocketcar/*` → เกม → deploy → เช็ค `madebytle.com/koratrocketcar/` 200 + หน้าเดิมของ madebytle ไม่พัง
-5. ✍️ content อัปเดตโพสต์ Facebook ฉบับเต็ม · สรุปให้ Tle ตอนเช้า
+5. ✍️ content อัปเดตโพสต์ Facebook ฉบับเต็ม
+6. 📘 README (`/kiki-gh-readme`, Tle สั่ง 21:05) หลัง deploy: ภาพจากเกมฉบับจบ + GIF + ลิงก์ madebytle.com/koratrocketcar → **เปิด repo เป็น public** (Tle อนุญาตแล้ว · ตรวจประวัติ git 21:06 สะอาด: ไม่มี secret/อีเมล/IP/ภาพ Google/ภาพข่าว) · ไม่ใส่ open-source license (สงวนสิทธิ์โค้ด · asset ตาม CREDITS) จนกว่า Tle เลือก
+7. สรุปให้ Tle ตอนเช้า
 
 **แผนถัดไป (milestone)**
 1. M0 รวมผลสำรวจ → Tle เลือกสนาม (A/B/C)

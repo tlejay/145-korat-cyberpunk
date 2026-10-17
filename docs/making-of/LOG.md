@@ -79,6 +79,7 @@
 | 20:55 | Tle: ย้ายจุดสตาร์ทให้ผ่านลานย่าโมก่อน แล้วเจอด่านตรวจไว้ลองกระโดด → ส่ง 🚧 checkpoint ย้าย start/finish ไปใต้ลาน (คำนวณระยะ launch ให้จบก่อนเขตห้าม boost) + ด่านแรกหลังพ้นเขตลาน | Tle + conductor |
 | 21:00 | 🖼️ art ส่งภาพ 20 ภาพจาก ChatGPT (ไม่มีตัวอักษร/โลโก้/อนุสาวรีย์) รวม 1.7 MB · ต้องแก้ภาพเองหลังวาด 3 กลุ่ม (หน้าต่างต่อรอย, เส้นขอบฟ้าต่ำ, ป้าย 6:1/8:1 ครอปจากแถบกลาง) → conductor ตีกลับ billboard MADEBYTLE (มีก้อนเบลอกลางภาพ) + สั่งทำเวอร์ชันย่อเพราะ GPU 45 MB เกินงบ 32 MB | art + conductor |
 | 21:02 | Tle ไปนอน: "ทดสอบให้ด้วย เอาให้เสร็จ deploy ขึ้น madebytle.com ได้เลย" → conductor รับคุมทีมข้ามคืน: จบ M3 → QA → prod → madebytle proxy → content | Tle |
+| 21:05 | Tle สั่ง /kiki-gh-readme + เปิด repo public → conductor ตรวจประวัติ git ทั้งหมดก่อน: ไม่มี secret/token/อีเมล/IP/ภาพ Google/ภาพข่าว → ผ่าน · คิว README ไว้หลัง deploy ให้ภาพเป็นเกมฉบับจบ | Tle + conductor |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
