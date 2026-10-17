@@ -47,6 +47,8 @@
 | 18:52 | 🎙️ announcer เสร็จ (5 นาที): ชุดสำรอง Kenney CC0 · แผนซิงก์เสียงพากย์กับนับถอยหลัง + ลดเพลงตอนพากย์ | announcer |
 | 18:57 | 🔎 streetview-A เสร็จ (22 นาที): +37 จุดทั้งวงสนาม · ไขข้อขัดแย้ง: ถนนเลียบคูเหนือคือ 'ราชสีมา-โชคชัย' (OSM ผิด) · ประตูชุมพลรถลอดไม่ได้ (OSM ถูก) · **พบว่าโค้งกลับ 148° ไม่มีจริง** (OSM routing ผิด) ของจริงเป็นสี่แยกเลี้ยวขวา ~95° · เจอจุดข้ามคูจริงที่ถนนมนัส น้ำกว้าง ~30 ม. | streetview-A |
 | 18:59 | Tle เลือกตามของจริง: ดริฟต์ 95° ผ่านสี่แยก แทนโค้งกลับ 148° ที่ไม่มีจริง → แจ้ง physics | Tle |
+| 19:02 | Tle สั่งเริ่ม M1 → conductor เขียนสัญญากลาง `docs/dev/M1-CONTRACTS.md` (เจ้าของไฟล์ + interface TypeScript) แล้วเปิด 4 pane พร้อมกัน: 🛣️ world · 🚗 car-model · 🎮 game-ui (integrator) · 🔊 audio-dev · ส่วน 🧮 physics จะต่อยอดเป็น car-physics | Tle + conductor |
+| 19:03 | Tle อยากลองเล่นก่อน → สั่ง game-ui หยุดพักเมื่อขับครบวงได้ เพื่อ deploy preview ให้ลอง | Tle |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -65,3 +67,7 @@
 | 10 | 🧮 physics | โมเดลฟิสิกส์ + 4 จุดโชว์ + sim | 18:38 | | | |
 | 11 | ✍️ content | โพสต์ Facebook long form (ร่างแรก) | 18:41 | 18:42 | ~2 นาที + แก้ 1 รอบ | `docs/content/` |
 | 12 | 🎙️ announcer | เสียงพากย์อังกฤษ CC0 | 18:47 | 18:52 | 5 นาที | `research/audio/REPORT.md` §8 |
+| 13 | 🛣️ world | M1 สนาม A จาก OSM+Street View | 19:02 | | | |
+| 14 | 🚗 car-model | M1 โมเดลรถ low-poly | 19:02 | | | |
+| 15 | 🎮 game-ui | M1 game loop + ปุ่ม + HUD + integrator | 19:02 | | | |
+| 16 | 🔊 audio-dev | M1 ระบบเสียง | 19:02 | | | |
