@@ -96,6 +96,7 @@
 | 21:46 | Mint ตอบใน #476 ส่งสเปกของที่ต้องใช้ทำ video-story (ฟุตเทจ 1080×1920 60fps 13 โมเมนต์ มี/ไม่มี HUD · flythrough · 1 รอบเต็ม · เสียงแยก · ภาพนิ่ง · โลโก้ · ข้อเท็จจริง · โหมดเดโม่ผ่าน URL) → conductor ใส่ลงบรีฟ clips รอ QA GO | Mint + conductor |
 | 21:52 | Mint แจ้ง Tle ขยายคลิปเป็น 60–90 วิ เล่า workflow · ขอ PANES.md, อัดจอ terminal (เซ็นเซอร์คีย์/อีเมล/path), before/after, FACTS ครบ → ใส่บรีฟ clips (ใช้ข้อความจริงจาก pane เรนเดอร์ ห้ามแต่ง) | Mint + conductor |
 | 22:20 | Tle (ผ่าน Mint) ถามว่าโมเดลรถดูรูป tesla.com/roadster/reserve ไหม → ตอบ: ยัง (เดิม 403) อิงภาพทางการผ่าน Electrek 6 ภาพ · เปิด 🔍 car-ref ดูหน้าทางการด้วย Chrome แล้วเทียบสัดส่วน (แก้หลัง production) | Tle/Mint + conductor |
+| 23:05 | 🔍 car-ref เสร็จ (44 นาที): เปิด tesla.com/roadster ด้วย Chrome ได้ภาพทางการ 13 ภาพ (หน้าจอง #payment ระบบบล็อกเพราะเป็นหน้าชำระเงิน) · พบต้องแก้: ปีกสูงไป 25 ซม. · ฝาท้ายต้องมีกระจกคางหมู · แผงใต้ไฟท้ายเป็นขาว (แก้คำสั่ง conductor รอบก่อนที่ดูภาพข่าวมืด) · รถเตี้ยกว่า 9% · ปีก Hidden Aero กางเมื่อใช้งาน → คิวแก้หลัง production · ปิด tab | car-ref |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -130,4 +131,4 @@
 | 26 | 🚧 checkpoint | ด่านตรวจ กระโดดข้าม/ชนกระเด็น + ย้ายจุดสตาร์ท | 20:31 | 21:17 | 46 นาที | `src/checkpoint/` |
 | 27 | 🔰 wayfinding | ป้ายเตือนทางเลี้ยว + ลูกศร HUD | 21:15 | 21:33 | 18 นาที | `src/wayfinding/` |
 | 28 | 🧪 qa-m3 | QA ด่านก่อน production (GO/NO-GO) | 21:42 | | | |
-| 29 | 🔍 car-ref | เทียบโมเดลรถกับรูปทางการ tesla.com | 22:21 | | | |
+| 29 | 🔍 car-ref | เทียบโมเดลรถกับรูปทางการ tesla.com | 22:21 | 23:05 | 44 นาที | `docs/research/REPORT-car-ref.md` |

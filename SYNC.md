@@ -35,6 +35,7 @@
 3. `vercel deploy --prod` เกม → เช็ค `korat-cyberpunk.vercel.app/koratrocketcar/` 200
 4. pane madebytle: rewrite `/koratrocketcar/*` → เกม → deploy → เช็ค `madebytle.com/koratrocketcar/` 200 + หน้าเดิมของ madebytle ไม่พัง
 5. ✍️ content อัปเดตโพสต์ Facebook ฉบับเต็ม
+4.1 🚗 car-fix หลัง production: แก้โมเดลตาม `docs/research/REPORT-car-ref.md` (ปีกเตี้ยลง + Hidden Aero กางที่ >80 กม./ชม., กระจกหลังคางหมู, แผงท้ายขาว, ตัวรถเตี้ยลง 9%, ไฟท้ายบางลง) → QA ด่วนเฉพาะรถ → deploy ซ้ำ (ก่อน clips อัด)
 5.1 🎬 clips: โหมดเดโม่ผ่าน URL บน production (Mint อัดเอง) + `promo/` (เพลง/SFX/โลโก้/ภาพนิ่ง/FACTS) commit ลง repo → comment ใน tlejay/mint#476
 6. 📘 README (`/kiki-gh-readme`, Tle สั่ง 21:05) หลัง deploy: ภาพจากเกมฉบับจบ + GIF + ลิงก์ madebytle.com/koratrocketcar → **เปิด repo เป็น public** (Tle อนุญาตแล้ว · ตรวจประวัติ git 21:06 สะอาด: ไม่มี secret/อีเมล/IP/ภาพ Google/ภาพข่าว) · ไม่ใส่ open-source license (สงวนสิทธิ์โค้ด · asset ตาม CREDITS) จนกว่า Tle เลือก
 7. สรุปให้ Tle ตอนเช้า
