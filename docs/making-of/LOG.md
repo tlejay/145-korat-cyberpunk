@@ -102,6 +102,7 @@
 | 00:24 | 🚀 **ขึ้น production** `korat-cyberpunk.vercel.app/koratrocketcar/` (หน้าเกม, ข้อมูลสนาม, leaderboard API = 200) → เปิดคู่ขนาน 🌐 madebytle (proxy /koratrocketcar) + 🔧 polish (รถดีด, เครดิต, ป้ายหน้าวัด, ทรงรถตามรูปทางการ + ปีก Hidden Aero, v0.3.0) | conductor |
 | 00:33 | 🌐 madebytle เสร็จ (9 นาที): แก้ไฟล์เดียว next.config.ts ของ madebytle (rewrite + ปิดการตัด / ท้าย URL เฉพาะหน้าเกม) 2 commit + deploy · **https://madebytle.com/koratrocketcar เปิดได้** · หน้าเดิมของ madebytle ยัง 200 ครบ · console error 0 → conductor curl ซ้ำผ่าน · ปิด tab | madebytle |
 | 01:11 | 🔧 polish เสร็จ (45 นาที): รถดีดหาย 5.85 → 0 ม. (ต้นเหตุ: แรงเอียงตัวรถเอาแรงกระแทกกำแพงมาคิดด้วย) · ป้ายเลี้ยวห่างซุ้มวัด ≥ 25 ม. · GPU mid 29.7 MB · ทรงรถตามรูปทางการ + ปีก Hidden Aero · v0.3.0-build003 · Playwright 54/54 → conductor เทียบภาพผ่าน · ปิด tab | polish |
+| 01:58 | 🎬 clips ส่งโหมดเดโม่ 17 ช็อต + promo/ ~20 MB (เพลง/SFX/พากย์/โลโก้/ภาพนิ่ง/คลิป terminal จากข้อความจริงที่เซ็นเซอร์แล้ว/before-after/FACTS/PANES) → conductor ตรวจภาพ terminal + grep ข้อมูลส่วนตัวผ่าน · commit · preview → เปิด 🧪 qa-release รอบสั้น | conductor |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -140,3 +141,4 @@
 | 30 | 🌐 madebytle | ต่อ madebytle.com/koratrocketcar | 00:25 | 00:33 | 9 นาที | `docs/dev/release/REPORT-madebytle.md` |
 | 31 | 🔧 polish | แก้หลัง production → v0.3.0 | 00:25 | 01:11 | 45 นาที | `docs/dev/release/REPORT-polish.md` |
 | 32 | 🎬 clips | โหมดเดโม่ผ่าน URL + promo/ ให้ Mint | 01:13 | | | |
+| 33 | 🧪 qa-release | QA รอบสั้นก่อน v0.3.0 | 01:59 | | | |
