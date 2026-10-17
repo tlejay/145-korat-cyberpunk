@@ -38,7 +38,7 @@
 | 29 | 22:21 | 23:05 | 44 นาที | 🔍 car-ref | Claude Opus 5.5 | เทียบโมเดลรถกับรูปทางการ tesla.com | `docs/research/REPORT-car-ref.md` |
 | 30 | 00:25 | 00:33 | 9 นาที | 🌐 madebytle | Claude Opus 5.5 | ต่อ madebytle.com/koratrocketcar | `docs/dev/release/REPORT-madebytle.md` |
 | 31 | 00:25 | 01:11 | 45 นาที | 🔧 polish | Claude Opus 5.5 | แก้หลัง production → v0.3.0 | `docs/dev/release/REPORT-polish.md` |
-| 32 | 01:13 | ~02:10 | ~1 ชม. | 🎬 clips | Claude Opus 5.5 | โหมดเดโม่ผ่าน URL + promo/ ให้ Mint | `src/capture/` โหมดเดโม่ `?demo=1` · `promo/` |
+| 32 | 01:13 | 02:06 | ~1 ชม. | 🎬 clips | Claude Opus 5.5 | โหมดเดโม่ผ่าน URL + promo/ ให้ Mint | `src/capture/` โหมดเดโม่ `?demo=1` · `promo/` |
 
 ## ผู้ช่วยนอก workspace
 

@@ -1,0 +1,44 @@
+{
+ "res": [
+  {
+   "label": "parked",
+   "kmh": 0,
+   "inside": false,
+   "camDist": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "label": "fast-120",
+   "kmh": 139.25369924415594,
+   "inside": false,
+   "camDist": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "label": "slow-50",
+   "kmh": 60.54732910646246,
+   "inside": false,
+   "camDist": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ ],
+ "errors": []
+}

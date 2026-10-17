@@ -1,4 +1,4 @@
-# REPORT — 🎬 clips · 2026-10-18 (01:13–~02:15)
+# REPORT — 🎬 clips · 2026-10-18 (01:13–02:06)
 
 > ## สรุป
 > 1. **โหมดเดโม่เสร็จ** `?demo=1&shot=<ชื่อ>&hud=0|1&cam=chase|fly&wing=auto|up|down&seed=&fixedDt=1` — 17 ช็อต (Mint ขอ 13 + `fly` + `full-lap` + แถม `checkpoint-crash`, `rear-hero`) · โค้ด `src/capture/**` + **`src/main.ts` เพิ่ม 1 บรรทัด** (else-if `demo=1` → dynamic import, chunk แยก 12 KB) · ไม่แตะ physics/model/track
@@ -26,3 +26,6 @@
 - คลิป terminal ไม่ใช่การอัดหน้าจอสด (pane เกือบทั้งหมดปิดแล้ว) → เรนเดอร์จาก log จริงของ Claude Code (`~/.claude/projects/…/*.jsonl`) — เขียนที่มา + ผลเซ็นเซอร์ไว้ใน SHOTLIST §6 · ช่อง 8 pane ใน `05-workspace-7-panes` เป็นการจัดวาง ไม่ใช่ภาพหน้าจอ herdr จริง
 - before/after ใช้ git worktree ใน scratchpad build commit `988177a` `7beb1f7` `01d1916` `56d34dd` + ปัจจุบัน ถ่ายมุมเดียวกันด้วย `?qa=1` teleport (ลบ worktree แล้ว)
 - โลโก้แบบมีคำว่า "KORAT ROADSTER" เพิ่มอีกไฟล์ (ใช้หรือไม่ใช้ก็ได้)
+
+### ผลอัดครบ (02:06)
+- 34/34 ไฟล์ 1080×1920 60 fps เฟรมครบ (`full-lap` 6,840 เฟรม · เข้าเส้นชัย ~103 วิ เวลา autopilot 1:40.592 · ออกตัวสมบูรณ์ 4.0g บน HUD) · ปิด vite preview (5260) และลบ git worktree แล้ว
