@@ -105,6 +105,7 @@
 | 01:58 | 🎬 clips ส่งโหมดเดโม่ 17 ช็อต + promo/ ~20 MB (เพลง/SFX/พากย์/โลโก้/ภาพนิ่ง/คลิป terminal จากข้อความจริงที่เซ็นเซอร์แล้ว/before-after/FACTS/PANES) → conductor ตรวจภาพ terminal + grep ข้อมูลส่วนตัวผ่าน · commit · preview → เปิด 🧪 qa-release รอบสั้น | conductor |
 | 02:09 | 🧪 qa-release: **GO** (WebKit 27/27 · preview 15/15 · ชน 60 ครั้งดีด 0 ม. · เดโม่ 34 แบบ 0 error) · ปิด tab | qa-release |
 | 02:12 | 🚀 **production v0.3.0-build003** ที่ https://madebytle.com/koratrocketcar → ส่งของให้ Mint ใน #476 (promo/ + รายชื่อ shot= ทุกช็อต) | conductor |
+| 02:15 | Mint อัดเอง 16 ช็อตจาก commit + script record-demo (deterministic ได้ตั้งแต่ครั้งแรก) · บท/พากย์ไทย/มิกซ์เสร็จ 89.7 วิ เล่าแบบ Mint เป็นคนเล่า + Charlie แทรก · ส่ง Tle ตอนเช้า · ใช้ตัวเลข FACTS: 6 ชม., 33 session, พร้อมกัน 7 → เปิด ✍️ content (โพสต์ฉบับเต็ม ใช้ตัวเลขชุดเดียวกัน) + 📘 readme (README + เปิด public) | Mint + conductor |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -144,3 +145,5 @@
 | 31 | 🔧 polish | แก้หลัง production → v0.3.0 | 00:25 | 01:11 | 45 นาที | `docs/dev/release/REPORT-polish.md` |
 | 32 | 🎬 clips | โหมดเดโม่ผ่าน URL + promo/ ให้ Mint | 01:13 | | | |
 | 33 | 🧪 qa-release | QA รอบสั้นก่อน v0.3.0 | 01:59 | 02:09 | 10 นาที | `docs/qa/reports/2026-10-18-v0.3.0-build003.md` |
+| 34 | ✍️ content | โพสต์ Facebook ฉบับเต็ม | 02:14 | | | |
+| 35 | 📘 readme | README + เปิด repo public | 02:14 | | | |
