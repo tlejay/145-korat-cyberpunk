@@ -151,3 +151,5 @@
 | 33 | 🧪 qa-release | QA รอบสั้นก่อน v0.3.0 | 01:59 | 02:09 | 10 นาที | `docs/qa/reports/2026-10-18-v0.3.0-build003.md` |
 | 34 | ✍️ content | โพสต์ Facebook ฉบับเต็ม | 02:14 | 02:16 | ~3 นาที (เขียนจาก LOG/FACTS ที่เตรียมไว้) | `docs/content/facebook-post.md` |
 | 35 | 📘 readme | README + เปิด repo public | 02:14 | 02:19 | 5 นาที | `README.md` `docs/readme/` |
+
+- 04:12–05:08 🩹 hotfix arch-flicker (pane 36, w54:p14): z-fighting ประตูชุมพล + 4 จุด → v0.3.1-build004 deploy prod · แจ้ง Mint #476
