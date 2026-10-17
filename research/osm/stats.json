@@ -1,0 +1,834 @@
+{
+  "attribution": "© OpenStreetMap contributors (ODbL)",
+  "fetched_at": "2026-10-17T11:18:31.055Z",
+  "osm_base": "2026-10-17T11:16:56Z",
+  "bbox": {
+    "south": 14.962,
+    "west": 102.084,
+    "north": 14.988,
+    "east": 102.122
+  },
+  "origin": {
+    "lat": 14.974730500000001,
+    "lon": 102.09811697499998,
+    "source": "way/549315244",
+    "note": "centroid of monument polygon; x=east, y=north in metres"
+  },
+  "road_tag_coverage_pct": {
+    "major_ways": 171,
+    "name": 89,
+    "lanes": 27,
+    "width": 0,
+    "surface": 64,
+    "oneway": 55
+  },
+  "roads": [
+    {
+      "name": "ถนนมิตรภาพ",
+      "name_en": "Mittraphap Road",
+      "highway": "primary,trunk",
+      "lanes": "3,4,2",
+      "width": null,
+      "surface": "asphalt,concrete,paved",
+      "length_m": 8411,
+      "ways": 48,
+      "oneway_share": 100
+    },
+    {
+      "name": "ถนนราชสีมา-โชคชัย",
+      "name_en": "Ratchasima–Chok Chai Road",
+      "highway": "primary",
+      "lanes": null,
+      "width": null,
+      "surface": "paved",
+      "length_m": 3974,
+      "ways": 17,
+      "oneway_share": 100
+    },
+    {
+      "name": "ถนนสุรนารายณ์",
+      "name_en": "Suranarai Road",
+      "highway": "primary",
+      "lanes": null,
+      "width": null,
+      "surface": null,
+      "length_m": 2239,
+      "ways": 13,
+      "oneway_share": 86
+    },
+    {
+      "name": "ถนนกำแหงสงคราม",
+      "name_en": "Kamhaeng Songkhram Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1851,
+      "ways": 3,
+      "oneway_share": 14
+    },
+    {
+      "name": "ถนนมหาดไทย",
+      "name_en": "Mahat Thai Road",
+      "highway": "tertiary,secondary",
+      "lanes": "2",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1723,
+      "ways": 3,
+      "oneway_share": 4
+    },
+    {
+      "name": "ถนนราชนิกูล",
+      "name_en": "Ratchanikun Road",
+      "highway": "secondary",
+      "lanes": null,
+      "width": null,
+      "surface": null,
+      "length_m": 1714,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนยมราช",
+      "name_en": "Yommarat Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1666,
+      "ways": 2,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนจอมพล",
+      "name_en": "Chom Phon Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1662,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนอัษฎางค์",
+      "name_en": "Atsadang Road",
+      "highway": "secondary",
+      "lanes": null,
+      "width": null,
+      "surface": null,
+      "length_m": 1656,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนพลแสน",
+      "name_en": "Phon Saen Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1584,
+      "ways": 2,
+      "oneway_share": 34
+    },
+    {
+      "name": "ถนนสรรพสิทธิ์",
+      "name_en": "Sarnbasiddhi Road",
+      "highway": "tertiary,unclassified",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1573,
+      "ways": 2,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนราชดำเนิน",
+      "name_en": "Ratchadamnoen Road",
+      "highway": "tertiary,secondary",
+      "lanes": "2",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1572,
+      "ways": 3,
+      "oneway_share": 49
+    },
+    {
+      "name": "ถนนจอมสุรางค์ยาตร์",
+      "name_en": "Chom Surang Yat Road",
+      "highway": "secondary",
+      "lanes": null,
+      "width": null,
+      "surface": null,
+      "length_m": 1519,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนโพธิ์กลาง",
+      "name_en": "Pho Klang Road",
+      "highway": "secondary",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1501,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนสุรนารี",
+      "name_en": "Suranari Road",
+      "highway": "secondary",
+      "lanes": "2,4",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 1480,
+      "ways": 2,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนพิบูลละเอียด",
+      "name_en": "Phibun La-iat Road",
+      "highway": "unclassified,tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "paved",
+      "length_m": 1376,
+      "ways": 5,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนไชยณรงค์",
+      "name_en": "Chai Narong Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "paved,asphalt",
+      "length_m": 1225,
+      "ways": 3,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนริมบุ่ง",
+      "name_en": "Rim Bung Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "concrete,asphalt",
+      "length_m": 1075,
+      "ways": 5,
+      "oneway_share": 4
+    },
+    {
+      "name": "ซอยเบญจรงค์",
+      "name_en": "Soi Bencharong",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "paved",
+      "length_m": 934,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนพายัพทิศ",
+      "name_en": "Phayap Thit Road",
+      "highway": "unclassified",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 921,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนมนัส",
+      "name_en": "Manat Road",
+      "highway": "unclassified",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 917,
+      "ways": 3,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนจิระ",
+      "name_en": "Chira Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "paved",
+      "length_m": 858,
+      "ways": 3,
+      "oneway_share": 5
+    },
+    {
+      "name": "ซอยท้าวสุระ 2",
+      "name_en": "Soi Thao Sura 2",
+      "highway": "unclassified",
+      "lanes": null,
+      "width": null,
+      "surface": "concrete",
+      "length_m": 857,
+      "ways": 4,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนกุดั่น",
+      "name_en": "Kudan Road",
+      "highway": "unclassified",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 854,
+      "ways": 3,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนชุมพล",
+      "name_en": "Chum Phon Road",
+      "highway": "secondary",
+      "lanes": "2",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 763,
+      "ways": 3,
+      "oneway_share": 100
+    },
+    {
+      "name": "ถนนพลล้าน",
+      "name_en": "Phon Lan Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 733,
+      "ways": 2,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนจักรี",
+      "name_en": "Chakri Road",
+      "highway": "unclassified",
+      "lanes": "2",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 588,
+      "ways": 3,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนประจักษ์",
+      "name_en": "Prajak Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": null,
+      "length_m": 572,
+      "ways": 3,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนวัชรสฤษดิ์",
+      "name_en": "Watcharasarit Road",
+      "highway": "unclassified",
+      "lanes": "2",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 551,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนโยธา",
+      "name_en": "Yotha Road",
+      "highway": "tertiary",
+      "lanes": "2",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 462,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ซอยวัดม่วง",
+      "name_en": "Soi Wat Muang",
+      "highway": "unclassified",
+      "lanes": "2",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 455,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนเดชอุดม",
+      "name_en": "Det Udom Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 443,
+      "ways": 3,
+      "oneway_share": 100
+    },
+    {
+      "name": "ถนนจันทน์",
+      "name_en": "Chan Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 413,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนบัวรอง",
+      "name_en": "Bua Rong Road",
+      "highway": "tertiary",
+      "lanes": "2",
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 397,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนไปหัวทะเล",
+      "name_en": "Pai Hua Thale Road",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "paved",
+      "length_m": 342,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ถนนบุรินทร์",
+      "name_en": "Burin Road",
+      "highway": "unclassified",
+      "lanes": null,
+      "width": null,
+      "surface": "asphalt",
+      "length_m": 314,
+      "ways": 1,
+      "oneway_share": 0
+    },
+    {
+      "name": "ประจักษ์ชัยณรงค์",
+      "name_en": "Prajak Chairnarong",
+      "highway": "tertiary",
+      "lanes": null,
+      "width": null,
+      "surface": "paved",
+      "length_m": 269,
+      "ways": 1,
+      "oneway_share": 0
+    }
+  ],
+  "buildings": {
+    "total": 1087,
+    "ways": 1084,
+    "relations": 3,
+    "with_height": 0,
+    "with_levels": 8,
+    "with_name": 168,
+    "by_type": {
+      "yes": 701,
+      "terrace": 186,
+      "house": 100,
+      "retail": 53,
+      "roof": 14,
+      "part": 8,
+      "stadium": 6,
+      "commercial": 5,
+      "hospital": 5,
+      "hotel": 2,
+      "residential": 2,
+      "apartments": 1,
+      "university": 1,
+      "train_station": 1,
+      "warehouse": 1,
+      "toilets": 1
+    },
+    "area_m2": {
+      "lt100": 95,
+      "100_400": 463,
+      "400_1500": 449,
+      "gt1500": 77
+    },
+    "tall": [
+      {
+        "id": "way/1273389679",
+        "name": "อาคารผู้ป่วยนอกและอำนวยการ โรงพยาบาลมหาราชนครราชสีมา",
+        "levels": "9",
+        "height": null,
+        "xy": [
+          561,
+          1120
+        ],
+        "area_m2": 7655
+      },
+      {
+        "id": "way/1274178744",
+        "name": "อาคาร 60 ปี อายุรกรรม โรงพยาบาลมหาราชนครราชสีมา",
+        "levels": "8",
+        "height": null,
+        "xy": [
+          494,
+          1143
+        ],
+        "area_m2": 3952
+      },
+      {
+        "id": "way/1530452381",
+        "name": null,
+        "levels": "28",
+        "height": null,
+        "xy": [
+          -1496,
+          607
+        ],
+        "area_m2": 1336
+      }
+    ],
+    "near_track_area": 823
+  },
+  "tracks": {
+    "A": {
+      "title": "วงคูเมืองตะวันตก (Ya Mo Moat Loop)",
+      "length_m": 3361,
+      "corners": 7,
+      "corners_ge_70": 6,
+      "corner_list": [
+        {
+          "at_m": 520,
+          "angle": 53,
+          "dir": "ซ้าย",
+          "xy": [
+            -74,
+            558
+          ]
+        },
+        {
+          "at_m": 550,
+          "angle": 148,
+          "dir": "ขวา",
+          "xy": [
+            -93,
+            569
+          ]
+        },
+        {
+          "at_m": 1180,
+          "angle": 90,
+          "dir": "ขวา",
+          "xy": [
+            532,
+            601
+          ]
+        },
+        {
+          "at_m": 2100,
+          "angle": 87,
+          "dir": "ขวา",
+          "xy": [
+            604,
+            -312
+          ]
+        },
+        {
+          "at_m": 2415,
+          "angle": 89,
+          "dir": "ซ้าย",
+          "xy": [
+            292,
+            -338
+          ]
+        },
+        {
+          "at_m": 2545,
+          "angle": 92,
+          "dir": "ขวา",
+          "xy": [
+            303,
+            -466
+          ]
+        },
+        {
+          "at_m": 2845,
+          "angle": 84,
+          "dir": "ขวา",
+          "xy": [
+            3,
+            -472
+          ]
+        }
+      ],
+      "against_oneway_m": 48,
+      "self_crossings": 0,
+      "closed": true,
+      "sequence": [
+        {
+          "name": "ถนนราชดำเนิน",
+          "highway": "secondary",
+          "lanes": "2",
+          "length_m": 546
+        },
+        {
+          "name": "ถนนมิตรภาพ",
+          "highway": "primary",
+          "lanes": null,
+          "length_m": 48
+        },
+        {
+          "name": "(secondary_link ไม่มีชื่อ)",
+          "highway": "secondary_link",
+          "lanes": "3",
+          "length_m": 38
+        },
+        {
+          "name": "ถนนมิตรภาพ",
+          "highway": "primary",
+          "lanes": null,
+          "length_m": 267
+        },
+        {
+          "name": "ถนนนครราชสีมา - หินโคน",
+          "highway": "primary",
+          "lanes": null,
+          "length_m": 25
+        },
+        {
+          "name": "ถนนมิตรภาพ",
+          "highway": "primary",
+          "lanes": null,
+          "length_m": 257
+        },
+        {
+          "name": "ถนนมนัส",
+          "highway": "unclassified",
+          "lanes": null,
+          "length_m": 917
+        },
+        {
+          "name": "ถนนสรรพสิทธิ์",
+          "highway": "tertiary",
+          "lanes": null,
+          "length_m": 316
+        },
+        {
+          "name": "ถนนวัชรสฤษดิ์",
+          "highway": "unclassified",
+          "lanes": "2",
+          "length_m": 129
+        },
+        {
+          "name": "ถนนกำแหงสงคราม",
+          "highway": "tertiary",
+          "lanes": null,
+          "length_m": 304
+        },
+        {
+          "name": "ถนนราชดำเนิน",
+          "highway": "secondary",
+          "lanes": "2",
+          "length_m": 514
+        }
+      ]
+    },
+    "B": {
+      "title": "วงย่านการค้าฝั่งตะวันตก (Downtown West Loop)",
+      "length_m": 2352,
+      "corners": 4,
+      "corners_ge_70": 4,
+      "corner_list": [
+        {
+          "at_m": 125,
+          "angle": 74,
+          "dir": "ซ้าย",
+          "xy": [
+            -44,
+            164
+          ]
+        },
+        {
+          "at_m": 860,
+          "angle": 84,
+          "dir": "ซ้าย",
+          "xy": [
+            -773,
+            249
+          ]
+        },
+        {
+          "at_m": 1325,
+          "angle": 95,
+          "dir": "ซ้าย",
+          "xy": [
+            -820,
+            -211
+          ]
+        },
+        {
+          "at_m": 2130,
+          "angle": 87,
+          "dir": "ซ้าย",
+          "xy": [
+            -17,
+            -180
+          ]
+        }
+      ],
+      "against_oneway_m": 0,
+      "self_crossings": 0,
+      "closed": true,
+      "sequence": [
+        {
+          "name": "ถนนราชดำเนิน",
+          "highway": "secondary",
+          "lanes": "2",
+          "length_m": 124
+        },
+        {
+          "name": "ถนนสุรนารี",
+          "highway": "secondary",
+          "lanes": "2",
+          "length_m": 738
+        },
+        {
+          "name": "ถนนโยธา",
+          "highway": "tertiary",
+          "lanes": "2",
+          "length_m": 462
+        },
+        {
+          "name": "ถนนจอมสุรางค์ยาตร์",
+          "highway": "secondary",
+          "lanes": null,
+          "length_m": 805
+        },
+        {
+          "name": "ถนนราชดำเนิน",
+          "highway": "secondary",
+          "lanes": "2",
+          "length_m": 223
+        }
+      ]
+    },
+    "C": {
+      "title": "สปรินต์รอบประตูชุมพล-คูใต้ (Gate & South Moat Sprint)",
+      "length_m": 2083,
+      "corners": 6,
+      "corners_ge_70": 6,
+      "corner_list": [
+        {
+          "at_m": 130,
+          "angle": 94,
+          "dir": "ขวา",
+          "xy": [
+            -43,
+            169
+          ]
+        },
+        {
+          "at_m": 200,
+          "angle": 86,
+          "dir": "ขวา",
+          "xy": [
+            27,
+            173
+          ]
+        },
+        {
+          "at_m": 375,
+          "angle": 85,
+          "dir": "ซ้าย",
+          "xy": [
+            40,
+            3
+          ]
+        },
+        {
+          "at_m": 605,
+          "angle": 86,
+          "dir": "ขวา",
+          "xy": [
+            270,
+            7
+          ]
+        },
+        {
+          "at_m": 1155,
+          "angle": 111,
+          "dir": "ขวา",
+          "xy": [
+            340,
+            -532
+          ]
+        },
+        {
+          "at_m": 1490,
+          "angle": 85,
+          "dir": "ขวา",
+          "xy": [
+            9,
+            -549
+          ]
+        }
+      ],
+      "against_oneway_m": 73,
+      "self_crossings": 0,
+      "closed": true,
+      "sequence": [
+        {
+          "name": "ถนนราชดำเนิน",
+          "highway": "secondary",
+          "lanes": "2",
+          "length_m": 129
+        },
+        {
+          "name": "(secondary ไม่มีชื่อ)",
+          "highway": "secondary",
+          "lanes": null,
+          "length_m": 73
+        },
+        {
+          "name": "ถนนชุมพล",
+          "highway": "secondary",
+          "lanes": "2",
+          "length_m": 171
+        },
+        {
+          "name": "ถนนจอมพล",
+          "highway": "tertiary",
+          "lanes": null,
+          "length_m": 234
+        },
+        {
+          "name": "ถนนวัชรสฤษดิ์",
+          "highway": "unclassified",
+          "lanes": "2",
+          "length_m": 551
+        },
+        {
+          "name": "ถนนราชนิกูล",
+          "highway": "secondary",
+          "lanes": null,
+          "length_m": 335
+        },
+        {
+          "name": "ถนนราชดำเนิน",
+          "highway": "secondary",
+          "lanes": "2",
+          "length_m": 591
+        }
+      ]
+    }
+  }
+}

@@ -90,6 +90,7 @@ Tle สั่ง 2026-10-17: **Claude ใน tab ซ้ายสุด (`🏁 ma
 - **ภาพประกอบคุณภาพสูง** (texture, skybox, ป้ายนีออน, หน้าโหลด, ไอคอน UI, concept art) → ลูกน้องสั่ง `/kiki-gpt` ให้ pane ChatGPT วาด แล้วก๊อปเข้า `public/assets/` — Tle อนุญาตแล้ว 2026-10-17 · ตัวอักษรไทยบนภาพให้ใส่ทีหลังด้วยฟอนต์จริง · ส่งงานวาดทีละ pane (ChatGPT มีตัวเดียว)
 - **QA pane = ด่านก่อน production** — ห้าม `vercel deploy --prod` จนกว่า QA จะรันตาม `docs/qa/RELEASE-GATE.md` แล้วผ่านทุกข้อ 🔴 · รายงานอยู่ `docs/qa/reports/` · ผล QA แย้ง dev ได้ conductor เป็นคนตัดสิน
 - ลูกน้อง **ห้าม commit / push / deploy** · ใช้ Chrome ได้ **ทีละ pane** เท่านั้น
+- **Making-of content:** conductor จดทุกเหตุการณ์ (เวลา · pane ไหนเปิด/ปิด · ทำอะไร · ผล) ลง `docs/making-of/LOG.md` ทันทีที่เกิด — ท้ายโปรเจคเปิด pane `✍️ content` เขียนบทความเล่าเบื้องหลังจาก LOG นี้ (Tle สั่ง 2026-10-17)
 - workspace id อาจเปลี่ยน — `herdr workspace list` ก่อนทุกครั้ง
 
 ## 11. Gotchas (เติมเมื่อเจอจริง พร้อมวันที่)

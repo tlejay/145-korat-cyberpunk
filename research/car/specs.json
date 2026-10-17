@@ -1,0 +1,162 @@
+{
+  "_meta": {
+    "vehicle": "Tesla Roadster (2nd generation)",
+    "revealed": "2026-10-15",
+    "reveal_venue": "SpaceX test site, McGregor, Texas, USA",
+    "production": "2028 (Texas)",
+    "price": null,
+    "compiled": "2026-10-17",
+    "status_legend": {
+      "official": "Tesla launch post / website / on-stage claim",
+      "exec_interview": "Tesla executives (Lars Moravy, Franz von Holzhausen) in Top Gear / Hagerty interviews, reported by press",
+      "unconfirmed": "press or fan estimate, not from Tesla",
+      "estimated": "measured by us from official photos (+-5%)"
+    },
+    "notes": "2017 concept figures (1.9 s, 250+ mph, 620 mi, 3-motor AWD, 2+2) are obsolete. See REPORT.md section 3 for conflicting figures."
+  },
+  "trims": {
+    "performance": {
+      "seats": 2,
+      "zero_to_60_mph_s": { "value": 1.6, "qualifier": "under", "status": "official" },
+      "thrusters": 0,
+      "features": ["active aero", "multi-mode suction fans"],
+      "reservation_usd": 50000
+    },
+    "thrust": {
+      "seats": 2,
+      "zero_to_60_mph_s": { "value": 0.9, "qualifier": "under", "status": "official", "demo_run_s": 0.81 },
+      "thrusters": 4,
+      "thruster_location": "rear diffuser, above suction fans",
+      "tank_l": 200,
+      "tank_location": "trunk",
+      "availability": "limited release",
+      "reservation_usd": 250000
+    },
+    "rocket": {
+      "seats": 1,
+      "zero_to_60_mph_s": { "value": 0.59, "qualifier": "under", "status": "official" },
+      "thrusters": 10,
+      "thruster_location": "4 rear + 1 behind each wheel + 2 at nose",
+      "tank_l": 600,
+      "tank_location": "trunk 200 L + passenger seat 400 L",
+      "can_fly": true,
+      "road_legal": false,
+      "availability": "invite only"
+    }
+  },
+  "performance": {
+    "top_speed_kmh": { "value": 370, "qualifier": "over", "mph": 230, "status": "official" },
+    "top_speed_current_kmh": { "value": 344, "mph": 214, "status": "exec_interview" },
+    "power_kw": { "value": 1000, "qualifier": "over", "hp": 1341, "status": "exec_interview" },
+    "power_kw_base_variant": { "value": 800, "hp": 1073, "status": "exec_interview" },
+    "torque_nm": { "value": 1400, "qualifier": "over", "lbft": 1032, "status": "exec_interview" },
+    "lateral_g_with_fans": { "value": 2.0, "qualifier": "over", "status": "exec_interview" },
+    "lateral_g_tyres_only": { "value": 1.26, "status": "exec_interview" },
+    "range_km": { "value": 480, "qualifier": "over", "miles": 300, "status": "official" },
+    "charge_kw": { "value": 500, "status": "exec_interview" }
+  },
+  "chassis": {
+    "mass_kg": { "value": 1700, "qualifier": "about", "status": "exec_interview" },
+    "drivetrain": "RWD, 2 rear motors, torque vectoring, no differential",
+    "steering": "steer-by-wire, yoke",
+    "brakes": "brake-by-wire, carbon-ceramic",
+    "structure": "aluminium + carbon fibre chassis; magnesium, titanium",
+    "track_mode_lowering_mm": 40,
+    "track_mode_stiffness_x": 3
+  },
+  "dimensions_m": {
+    "length": { "value": 4.40, "status": "estimated" },
+    "width": { "value": 2.00, "status": "unconfirmed", "source": "Sawyer Merritt via EVXL (79 in)" },
+    "height": { "value": 1.27, "status": "estimated" },
+    "wheelbase": { "value": 2.82, "status": "unconfirmed", "source": "Wikipedia citing Top Gear (2825 mm); our photo estimate ~2.80" },
+    "front_overhang": { "value": 0.86, "status": "estimated" },
+    "rear_overhang": { "value": 0.72, "status": "estimated" },
+    "ground_clearance": { "value": 0.11, "status": "estimated" }
+  },
+  "wheels": {
+    "front": { "rim_in": 20, "tyre": "295/30", "diameter_m": 0.69, "status": "unconfirmed" },
+    "rear": { "rim_in": 21, "tyre": "335/30", "diameter_m": 0.73, "status": "unconfirmed" },
+    "tyre_model": "Pirelli P Zero Trofeo RS",
+    "design": "6 thin black spokes over flat light-grey aero disc"
+  },
+  "thrusters": {
+    "type": "cold gas (compressed nitrogen/air), no combustion — white vapour plume, no flame",
+    "vessel": "carbon-fibre overwrapped pressure vessels (COPV)",
+    "max_pressure_psi": 10000,
+    "displayed_pressure_psi": 5500,
+    "thrust_kn": { "value": 80, "qualifier": "over", "status": "exec_interview" },
+    "thrust_vs_tyres": "4-5x the force the tyres can (Tesla on X)",
+    "burn_time_per_fill_s": { "min": 5, "max": 6, "status": "exec_interview" },
+    "refill_hours": { "min": 2, "max": 6, "target_minutes": 30, "status": "exec_interview" },
+    "flight_stabilisation": "electric actuators micro-adjust nozzles",
+    "flight_height_m": { "value": null, "photo_estimate": 7, "status": "estimated", "note": "cleared Tesla Semi (~4.1 m) in kickflip demo" },
+    "flight_duration_s": null
+  },
+  "aero": {
+    "suction_fans": { "count": 4, "power_kw_each": 20, "modes": ["high_downforce", "low_drag"], "retractable": true },
+    "rear_wing": { "active": true, "airbrake_angle_deg": 90, "actuators": "Optimus-derived" },
+    "front_wing_edge_tilt_deg": 80,
+    "downforce_g_at_200mph": 2
+  },
+  "design": {
+    "inspiration": ["SR-71", "F-35", "Cybertruck design language"],
+    "paint": "Ano White",
+    "glass": "Gold Glazed tint",
+    "accents": "titanium",
+    "headlights": "small triangular, pop-down (~15 mm tall stowed)",
+    "front_light": "thin white full-width bar",
+    "taillight": "thin red full-width bar",
+    "roof": "removable glass T-top panels",
+    "doors": "butterfly (upward opening)",
+    "rear_badge": "RDSTR plate (no T logo visible in official photos)",
+    "charge_port": "carbon flap, left rear behind wing"
+  },
+  "game": {
+    "_note": "Proposed values for arcade physics — tuned for fun on a ~1.4 km city map, not a sim. Base on Rocket trim (jump + boost).",
+    "mass_kg": 1700,
+    "drive": "RWD",
+    "center_of_mass_height_m": 0.40,
+    "zero_to_100_kmh_s": 2.5,
+    "top_speed_kmh": 280,
+    "top_speed_boost_kmh": 370,
+    "grip_g": 1.2,
+    "grip_g_fans_active": 2.0,
+    "air_tank": {
+      "capacity": 100,
+      "boost_drain_per_s": 20,
+      "jump_cost": 35,
+      "hover_drain_per_s": 25,
+      "regen_per_s": 4,
+      "refill_station": true
+    },
+    "boost": {
+      "extra_accel_g": 1.5,
+      "nozzles": 4,
+      "vfx": "4 white vapour jets from rear diffuser, FOV widen; no flame"
+    },
+    "jump": {
+      "height_m": 3.5,
+      "airtime_s": 1.6,
+      "hold_to_hover": true,
+      "auto_level": true,
+      "optional_trick": "kickflip"
+    },
+    "wing": { "idle_angle_deg": 5, "brake_angle_deg": 90 },
+    "no_jump_zone": "Thao Suranari monument plaza (Lan Ya Mo) — never jump over/collide with the monument"
+  },
+  "sources": [
+    "https://techcrunch.com/2026/10/15/tesla-reveals-spacex-powered-roadster-that-flies-and-falls-with-style/",
+    "https://electrek.co/2026/10/15/tesla-unveils-cyberfied-new-roadster-kickflip/",
+    "https://www.foxbusiness.com/technology/teslas-new-roadster-makes-flying-debut-hitting-60-mph-under-second",
+    "https://www.teslarati.com/tesla-roadster-specs-configurations/",
+    "https://insideevs.com/news/812242/tesla-roadster-2026-specs/",
+    "https://insideevs.com/news/812205/tesla-roadster-replenishes-air-tanks/",
+    "https://evxl.co/2026/10/16/tesla-roadster-everything-we-know/",
+    "https://autos.yahoo.com/ev-and-future-tech/articles/explained-tesla-roadster-flies-flips-004630568.html",
+    "https://www.autoguide.com/auto/manufacturers/tesla-manufacturers/the-reality-behind-tesla-s-roadster-thruster-system-44640505",
+    "https://carbuzz.com/new-tesla-roadster-debut-features-specs/",
+    "https://www.carwow.co.uk/tesla/news/11408/new-tesla-roadster-revealed-performance-specs-design",
+    "https://www.notateslaapp.com/news/4837/tesla-roadster-event-recap-it-flies-flips-and-hits-0-60-in-081s",
+    "https://en.wikipedia.org/wiki/Tesla_Roadster_(second_generation)"
+  ]
+}
