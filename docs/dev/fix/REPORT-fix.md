@@ -13,6 +13,8 @@
 | 8 | กล้องหลุดเมื่อ fps ต่ำ | จำกัดระยะ 1.5 ม. "ต่อเฟรม" | `src/car/camera.ts` · `src/car/config.ts` | `physics.spec` FEEL-10b gate 60/30/20/15 fps | ✅ |
 | 9 | `qa.teleport(…, speedKmh)` ไม่ใส่ความเร็ว | รถจริงไม่มี `car.qa.setSpeed` | `src/car/index.ts` · `src/car/physics.ts` | `fix.spec` FIX-09 | ✅ |
 | FEEL-05 | เกณฑ์ใหม่ + ล้อที่วาดจมถนนตอนยุบ | ล้อติดตายกับตัวรถ ไม่ขยับตามโช้ค | `src/car/index.ts` · hook `qa.wheelClearanceM()` | `physics.spec` FEEL-05 · TEST-PLAN | ✅ |
+| 10 | แข่ง 1 รอบ | — | `src/net/score.ts` (laps 1) · race/engine/audio/types (BGM 25 % สุดท้าย) · hud/results · GAMEPLAY.md · api.spec | `fix.spec` FIX-10, FIX-10/11 | ✅ |
+| 11 | ข้ามด่านเข้าโบนัสสไตล์ + ghost ผูก track version | — | score.ts · ghost-format v2 · `src/net/track-version.ts` (+ script) · `api/run/finish.ts` · `api/ghost/top.ts` | `fix.spec` FIX-10/11, FIX-11 | ✅ |
 
 typecheck ✅ · build ✅ · ไม่ได้ commit (ตามบรีฟ)
 
@@ -141,3 +143,35 @@ countdownShown = '3'; // already announced — stepOnce() must not fire countdow
 ## #4 — HUD อ่านยากบนควันขาว
 - `src/style.css` เฉพาะ HUD: `.hud-bottom` เพลตแก้วเข้ม `rgba(7,6,15,0.65)` มุมมน · `.speedrow` เงาตัวอักษรหนาขึ้น · `.tank` พื้นหลังเกจจากขาวโปร่ง 12% → ดำ 50% + ขอบบาง
 - test FIX-04: กรณีแย่สุด (เพลตทับควันขาวล้วน) ความต่างสีตัวเลขความเร็ว = **5.75** (เกณฑ์ WCAG AA ≥ 4.5) · ที่ 55% ได้ 3.98 จึงปรับเป็น 65%
+
+## #10 — แข่งรอบเดียว
+- **ต้นทาง:** `TRACK_RULES.A.laps: 2 → 1` (`src/net/score.ts`) — engine (`E.laps`), ตั๋วส่งคะแนน และ server (`BAD_LAPS`, splits = checkpoints × laps, ขีดจำกัดสไตล์ต่อรอบ, `minLapMs` ต่อรอบ) อ่านค่านี้ร่วมกันหมด จึงเปลี่ยนตามทั้งระบบ · คะแนน par = `parLapMs × laps` (78 วิ)
+- **ghost:** เดิมเก็บรอบที่ดีที่สุด → ตอนนี้ = ทั้งการแข่ง (ทั้งของตัวเองและอันดับ 1 ออนไลน์) ไม่ต้องแก้โค้ด
+- **เสียง/เพลง:** "Final lap!" ไม่ถูกเรียกแล้ว (event `finalLap` เกิดเฉพาะ laps > 1 — โหมด QA) ไฟล์ยังอยู่ · event ใหม่ `finalStretch` (`race.ts`) ที่ 75 % ของรอบสุดท้าย → `audio.play('finalStretch')` = `switchToFinal()` สลับ BGM เร็วบนจังหวะห้องถัดไป ไม่มีเสียงพากย์
+- **HUD:** ซ่อนตัวนับรอบเมื่อ 1 รอบ (laps > 1 ยังแสดง "รอบ 1/2") · **หน้าสรุป:** ไม่แสดงรายการเวลาแต่ละรอบ · "สถิติใหม่ของคุณ" · "วิ่งไม่ชนเลย" แทน "รอบไม่ชน n" · เพิ่มบรรทัด "ข้ามด่าน n"
+- **DB (ตรวจแบบอ่านอย่างเดียว ไม่ได้ลบอะไร):** ตาราง `scores` = 0 แถว, `ghosts` = 0 แถว (preview/prod ใช้ DB เดียวกัน) → ไม่มีแต้ม 2 รอบค้าง · schema ไม่มีฟิลด์จำนวนรอบ (อยู่ใน `result` jsonb) ไม่ต้อง migrate
+- `docs/dev/GAMEPLAY.md`: จำนวนรอบ, flow, ตาราง TRACK_RULES, ตัวอย่างคำนวณแต้มใหม่ (1 รอบ 70 วิ = 132,363), หัวข้อข้ามด่าน
+- test ที่ผูก 2 รอบ: `api.spec` (เกม `&net=1`) เปลี่ยน `laps=2 → 1` — ไม่งั้นไม่มีตั๋ว `run/start` · test อื่นที่ใส่ `laps=2` ตั้งใจเป็นโหมด QA ใช้ได้ตามเดิม (UI-02 ยังเห็น "รอบ 1/2")
+- test FIX-10 (ในเกม): ไม่ใส่ `laps=` → จบหลัง 1 รอบ · HUD ไม่มีตัวนับ · หน้าสรุปไม่มีรายการรอบ · BGM เป็น `race` ถึง 70 % แล้วสลับ `race-final` ที่ **75.1 %** ของรอบ ✅
+
+## #11 — ข้ามด่าน + ghost ผูก track version
+**แต้มข้ามด่าน**
+- `RunResult.checkpointClears` (นับจาก event `clear` ของ `src/checkpoint` ใน `wireCheckpoint`) · `SCORE.checkpointClear = 300` รวมใน `styleRaw` → อยู่ใต้เพดาน 20 % เดิม · **ไม่มีคอลัมน์ใหม่** (เก็บใน `result` jsonb)
+- `parseRun`: ฟิลด์นี้ไม่บังคับ (build เก่าไม่ส่ง = 0) · `validateRun`: ≤ จำนวนด่าน (2) × รอบ และ ≤ จำนวนกระโดด ไม่งั้น `BAD_STYLE`
+- **server พิสูจน์จาก ghost** (`api/run/finish.ts`): `ghostCheckpointClears()` นับด่านที่ ghost มีจุด `airborne` ≥ 2 จุดภายใน 14 ม. จากพิกัดด่าน (`SITES` ของ `src/checkpoint/sim.ts` — ไฟล์เดียวกับเกม) → ใช้ `min(ที่ client ส่ง, ที่ ghost พิสูจน์ได้)` · ไม่ส่ง ghost (iOS เก่าบีบอัดไม่ได้) = ไม่ได้แต้มข้ามด่าน แต่สไตล์อื่นยังได้ตามเดิม
+**ghost ผูก track version**
+- `scripts/track-version.mjs` → `src/net/track-version.ts` = sha256(track-A.json) 32 บิตแรก (ตอนนี้ `35e744af`) · รันอัตโนมัติก่อน `pnpm build` (เขียนไฟล์เฉพาะเมื่อค่าเปลี่ยน)
+- ghost format **v2** (`'G2'`, header 14 ไบต์ +u32 track version) · v1 (`'G1'`) ถูกปฏิเสธทั้งหมด — ทุกตัวอัดบนสนามก่อนย้ายเส้นสตาร์ทอยู่แล้ว
+- ไม่เล่น ghost ที่เวอร์ชันไม่ตรง: client `decodeGhost()` (ทั้งของตัวเองใน localStorage และอันดับ 1 ออนไลน์) คืน null · server `checkGhost` ตอบ `BAD_GHOST` ถ้าส่ง ghost เวอร์ชันอื่น · `/api/ghost/top` ดู top 20 แล้วส่งตัวแรกที่เวอร์ชันตรง (เดิม `limit 1`)
+- test FIX-11: ค่า `TRACK_VERSION` ที่ commit = hash ไฟล์ track ปัจจุบัน (จับกรณีสร้างสนามใหม่แล้วไม่ build) · pack/unpack เก็บเวอร์ชัน · เวอร์ชันอื่น/G1 ไม่ผ่าน · ghost วิ่งบนพื้นผ่านด่าน = 0 · ลอยผ่าน = 1 · ลอยที่อื่น (คู) = 0 ✅
+- ⚠️ ข้อควรรู้: ทุกครั้งที่ world pane สร้าง `track-A.json` ใหม่ (แม้แก้เล็กน้อย) ghost เก่าทั้งหมดจะไม่ถูกเล่น — ตั้งใจตามบรีฟ
+
+---
+
+## สถานะ test รวม (build ปัจจุบัน, Chromium + WebKit, เสิร์ฟจาก scratchpad)
+- ✅ `fix.spec` ทั้งหมด (FIX-03/04/05/07/09/10/11) · `voice.spec` FIX-01/02 · `mobile.spec` MOB-03 (input) · `physics.spec` FEEL-05, FEEL-10b · `ui.spec` 9/10
+- ❌ ที่ยังล้ม **ไม่ได้เกิดจาก fix** — ให้ QA/conductor ดู:
+  - `ui.spec` AUD-01/02/05: กดกระโดดหลังออกตัว 4 วิ — ตอนนี้รถอยู่ z≈30 ม. ข้างอนุสาวรีย์ = **เขตลานห้ามกระโดด** (ปุ่ม `locked`) เพราะ commit `a17e0ef` ย้ายเส้นสตาร์ทไปใต้ลานย่าโม → ให้ QA กระโดดหลังพ้นเขต (step ≥ 420) หรือก่อนเข้า (≤ 180)
+  - `physics.spec` PHY-04/PHY-05 (สคริปต์จาก `place(820)`): ระยะ s เลื่อนตามเส้นสตาร์ทใหม่ รถไปไม่ถึงคู (ดูหัวข้อ #9)
+  - ERR-08 `[object Object]` 404 ที่เห็นตอนรัน MOB-03 รอบแรก ไม่เกิดแล้วในรอบล่าสุด (น่าจะแก้ฝั่ง visuals ไปแล้ว) — ให้ QA ยืนยันตอนรันเต็มชุด
+- ⏳ ยังไม่ได้รัน: ชุดเต็ม 86 test, `deploy.spec` (DEP-03 บน preview จริง), `api.spec` บน preview (track `test`)
