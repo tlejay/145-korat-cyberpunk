@@ -57,6 +57,7 @@
 | 19:11 | 🔊 audio-dev เสร็จ (9 นาที): 31 ไฟล์ .ogg + .m4a · โหลดแรก 569 KB · มอเตอร์ synth 4 ชั้น 55→1,050 Hz · พากย์ Charlie ซิงก์นับถอยหลังด้วยนาฬิกาเสียง + ลดเพลง −8 dB · ทดสอบ Chrome+WebKit อัตโนมัติ → ตรวจผ่าน · ปิด tab | audio-dev |
 | 19:15 | 🚗 car-model รอบ 2 (4 นาที): แก้ครบ 6 ข้อ ไฟท้ายแดงเต็มแถบ แผงท้ายดำ ปีกโลหะปลายเชิด หัวพ่นข้างล้อ 2 หัว · 2,759 สามเหลี่ยม 7 draw call → conductor เทียบภาพข่าวแล้วผ่าน (ผิวโลหะ/สะท้อนเก็บไว้ M3) · ปิด tab | car-model |
 | 19:25 | 🧮 car-physics เสร็จ (14 นาที): ฟิสิกส์รถในเกม + เทสต์ headless 40/40 · launch 4.63 g 0–100 ใน 0.63 วิ · เจอรถหมุนเองตอนสลับเลี้ยว 120 กม./ชม. → เพิ่ม stability control · ~2 µs/step → ตรวจผ่าน (รันเทสต์ซ้ำเอง) · ปิด tab | car-physics |
+| 19:29 | 🛣️ world เสร็จ (27 นาที): สนาม A 3,307 ม. จาก OSM+Street View เบี่ยงจากแผนที่จริงสูงสุด 3.07 ม. · แยก 224 เลี้ยวขวา 93° + กรวยนีออน · 33 checkpoint · ขอบลานย่าโมชนนุ่ม · ทั้งสนาม 47 draw calls / 51,617 สามเหลี่ยม (งบ 150/500k) · ข้อมูลแผนที่ 31 KB → ตรวจผ่าน · ปิด tab | world |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -75,7 +76,7 @@
 | 10 | 🧮 physics | โมเดลฟิสิกส์ + 4 จุดโชว์ + sim | 18:38 | 19:10 (ต่อยอดเป็น car-physics) | 32 นาที | `docs/dev/PHYSICS.md` `scripts/physics-sim.mjs` |
 | 11 | ✍️ content | โพสต์ Facebook long form (ร่างแรก) | 18:41 | 18:42 | ~2 นาที + แก้ 1 รอบ | `docs/content/` |
 | 12 | 🎙️ announcer | เสียงพากย์อังกฤษ CC0 | 18:47 | 18:52 | 5 นาที | `research/audio/REPORT.md` §8 |
-| 13 | 🛣️ world | M1 สนาม A จาก OSM+Street View | 19:02 | | | |
+| 13 | 🛣️ world | M1 สนาม A จาก OSM+Street View | 19:02 | 19:29 | 27 นาที | `src/track/` `src/scene/` `public/data/` |
 | 14 | 🚗 car-model | M1 โมเดลรถ low-poly (ส่งกลับแก้ 1 รอบ) | 19:02 | 19:15 | 13 นาที | `src/car/model*.ts` |
 | 15 | 🎮 game-ui | M1 game loop + ปุ่ม + HUD + integrator | 19:02 | | | |
 | 16 | 🔊 audio-dev | M1 ระบบเสียง | 19:02 | 19:11 | 9 นาที | `src/audio/` `public/assets/audio/` |
