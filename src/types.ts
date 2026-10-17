@@ -52,7 +52,7 @@ export interface Car {
   // Optional: physics-pane QA extras (PHYSICS.md §8). Returned objects should be reused, not allocated per call.
   debug?(): Partial<PhysicsCarDebug>;
   physicsDebug?(): Partial<PhysicsDebug>;
-  qa?: Partial<{ setWeather(w: { rain?: number; wind?: number; puddles?: boolean }): void; setTank(units: number): void; armLaunch(): void; setSpeed(kmh: number): void }>;
+  qa?: Partial<{ setWeather(w: { rain?: number; wind?: number; puddles?: boolean }): void; setTank(units: number): void; armLaunch(): void; setSpeed(kmh: number): void; wheelBottoms(): { x: number; y: number; z: number }[] }>;
   // Optional: physics bumps `seq` on every hit so the game can fire audio/haptics/QA events.
   lastImpact?: { impulse: number /* N·s */; kind: 'building' | 'wall' | 'monument' | 'prop' | 'barrier'; seq: number } | null;
 }

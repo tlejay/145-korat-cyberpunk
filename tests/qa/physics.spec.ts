@@ -68,9 +68,9 @@ test('FEEL-05 / 05b jump at 60: height, airtime, landing burn, 4 wheels, tank, s
     const jumps = [];
     for (let i = 0; i < 20; i++) {
       await d.runUp(560 + (i % 4) * 40, 60, { tank: 100 });
-      const u0 = g.car().tank.units; let apex = 0, air = 0, landT = null, four = null, minY = 0;
-      await d.drive((c, t) => { apex = Math.max(apex, c.pos.y); minY = Math.min(minY, c.pos.y); if (c.airborne) air = t; if (t > 0.2 && !c.airborne && landT === null) landT = t; if (landT !== null && four === null && c.wheelsOnGround === 4) four = (t - landT) * 1000; return t < 2.4 ? { throttle: 0.3, jump: t < 0.03 } : null; }, { frames: 1 });
-      jumps.push({ apex, air, four, minY, used: g.car().tank.lastUseUnits });
+      const u0 = g.car().tank.units; let apex = 0, air = 0, landT = null, four = null, minY = 0, clear = Infinity;
+      await d.drive((c, t) => { apex = Math.max(apex, c.pos.y); minY = Math.min(minY, c.pos.y); const wc = g.qa.wheelClearanceM(); if (wc !== null) clear = Math.min(clear, wc); if (c.airborne) air = t; if (t > 0.2 && !c.airborne && landT === null) landT = t; if (landT !== null && four === null && c.wheelsOnGround === 4) four = (t - landT) * 1000; return t < 2.4 ? { throttle: 0.3, jump: t < 0.03 } : null; }, { frames: 1 });
+      jumps.push({ apex, air, four, minY, clear, used: g.car().tank.lastUseUnits });
     }
     // Spam: hammer jump every 50 ms for 4 s with a full tank — must not climb into the sky.
     await d.runUp(560, 60, { tank: 100 });
@@ -79,12 +79,15 @@ test('FEEL-05 / 05b jump at 60: height, airtime, landing burn, 4 wheels, tank, s
     return { jumps, land: land.slice(0, 20), spamApex };
   `);
   const apex = r.jumps.map((j: any) => j.apex), air = r.jumps.map((j: any) => j.air);
-  const sum = { apexMin: Math.min(...apex), apexMax: Math.max(...apex), airMin: Math.min(...air), airMax: Math.max(...air), fourMax: Math.max(...r.jumps.map((j: any) => j.four ?? 9999)), minY: Math.min(...r.jumps.map((j: any) => j.minY)), used: [...new Set(r.jumps.map((j: any) => j.used))], vyMin: Math.min(...r.land.map((l: any) => l.vyMs)), spamApex: r.spamApex, qualities: [...new Set(r.land.map((l: any) => l.quality))] };
+  const sum = { apexMin: Math.min(...apex), apexMax: Math.max(...apex), airMin: Math.min(...air), airMax: Math.max(...air), fourMax: Math.max(...r.jumps.map((j: any) => j.four ?? 9999)), minY: Math.min(...r.jumps.map((j: any) => j.minY)),
+    wheelClearM: Math.min(...r.jumps.map((j: any) => j.clear)), used: [...new Set(r.jumps.map((j: any) => j.used))], vyMin: Math.min(...r.land.map((l: any) => l.vyMs)), spamApex: r.spamApex, qualities: [...new Set(r.land.map((l: any) => l.quality))] };
   record(test.info(), 'FEEL-05', sum);
   expect(sum.apexMin).toBeGreaterThanOrEqual(3.53 * 0.85); expect(sum.apexMax).toBeLessThanOrEqual(3.53 * 1.15);
   expect(sum.airMin).toBeGreaterThanOrEqual(1.53 * 0.85); expect(sum.airMax).toBeLessThanOrEqual(1.53 * 1.15);
   expect(sum.fourMax).toBeLessThanOrEqual(300);
-  expect(sum.minY).toBeGreaterThanOrEqual(-0.05);
+  // conductor 20:52: suspension squat is real — body ref ≥ −0.15 m, and no wheel below the road surface.
+  expect(sum.minY).toBeGreaterThanOrEqual(-0.15);
+  expect(sum.wheelClearM, 'lowest drawn tyre vs road (qa.wheelClearanceM)').toBeGreaterThanOrEqual(-0.03);
   expect(sum.vyMin).toBeGreaterThanOrEqual(-3.5);
   for (const u of sum.used) { expect(u).toBeGreaterThanOrEqual(34); expect(u).toBeLessThanOrEqual(36); }
   expect(sum.spamApex).toBeLessThanOrEqual(6);
@@ -372,11 +375,11 @@ test('PHY-08 physics step budget (this machine) + stub check', async ({ page }) 
   expect(r.stepMs * 2).toBeLessThanOrEqual(1.0);
 });
 
-test('FEEL-10b camera keeps up with the car at 30 / 20 fps (top speed + boost on the 224 straight)', async ({ page }) => {
+test('FEEL-10b camera keeps up with the car at 30 / 20 / 15 fps (top speed + boost on the 224 straight)', async ({ page }) => {
   await setup(page);
   const r = await run<any>(page, `
     const out = {};
-    for (const hz of [60, 30, 20]) {
+    for (const hz of [60, 30, 20, 15]) {
       g.qa.fixedStep(true, 1000 / hz);
       d.place(540); g.qa.setTank(100);
       let maxDist = 0, vmax = 0; const frames = Math.round(hz * 9);
@@ -394,8 +397,7 @@ test('FEEL-10b camera keeps up with the car at 30 / 20 fps (top speed + boost on
     return out;
   `);
   record(test.info(), 'FEEL-10b', r);
-  // camera.ts clamps travel to camMaxStep = 1.5 m per FRAME (config.ts) — at 30 fps that is 45 m/s = 162 km/h.
-  for (const hz of ['60', '30']) expect(r[hz].maxCamDistM, `${hz} fps`).toBeLessThanOrEqual(20);
-  // Below the 30 fps floor the camera falls behind (🟡 in the M1 report) — recorded, not gated.
-  if (r['20'].maxCamDistM > 20) test.info().annotations.push({ type: '🟡 camera lag', description: `20 fps: camera ${r['20'].maxCamDistM} m behind the car` });
+  // fix #8: camera travel limit is per second (camMaxStep × 60 × dt, ≥ the car's own travel) + snap beyond
+  // camSnapM — it used to be 1.5 m per FRAME, so at 20 fps the camera fell 107 m behind (M1 report Y1).
+  for (const hz of ['60', '30', '20', '15']) expect(r[hz].maxCamDistM, `${hz} fps`).toBeLessThanOrEqual(20);
 });

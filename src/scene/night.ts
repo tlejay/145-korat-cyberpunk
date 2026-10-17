@@ -19,7 +19,7 @@ export interface NightEnv {
   fog: THREE.Fog;
   setQuality(q: Quality): void;
   update(camera: THREE.Camera): void; // keeps the sky centred on the camera
-  /** Equirect / wide panorama (art pane). `amount` 0..1 blends it over the gradient sky. */
+  /** Equirect panorama (art pane, horizon at v = 0.5). `amount` 0..1 blends it over the gradient sky. */
   setPanorama(tex: THREE.Texture | null, amount?: number): void;
 }
 
@@ -46,11 +46,12 @@ const SKY_FRAG = /* glsl */ `
     vec3 q = floor(vDir * 420.0);
     float s = step(0.9975, hash(q)) * smoothstep(0.25, 0.6, h);
     c += vec3(s) * 0.6 * uStars;
-    if (uPanoAmt > 0.0 && h > -0.05) {
-      // wide panorama: u = azimuth, v = elevation 0..~50° (the art is a horizon band, not a full sphere)
-      vec2 uv = vec2(atan(vDir.x, -vDir.z) / 6.2831853 + 0.5, clamp(h / 0.75, 0.0, 1.0) * 0.92 + 0.04);
-      vec3 p = texture2D(uPano, uv).rgb;
-      c = mix(c, p, uPanoAmt * smoothstep(-0.05, 0.04, h));
+    if (uPanoAmt > 0.0) {
+      // equirect (art pane: horizon at v = 0.5); faded into the fog haze right at the horizon
+      vec2 uv = vec2(atan(vDir.x, -vDir.z) / 6.2831853 + 0.5, asin(clamp(vDir.y, -1.0, 1.0)) / 3.1415927 + 0.5);
+      // the art is a bright storm-glow sky — darken it to night and pull it toward the fog haze
+      vec3 p = mix(texture2D(uPano, uv).rgb * 0.42, uHorizon, 0.18);
+      c = mix(c, p, uPanoAmt * smoothstep(-0.02, 0.12, h));
     }
     if (h < 0.0) c = mix(uHorizon, vec3(0.03, 0.025, 0.05), smoothstep(0.0, -0.2, h));
     gl_FragColor = vec4(c, 1.0);

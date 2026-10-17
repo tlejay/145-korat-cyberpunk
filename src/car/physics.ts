@@ -133,6 +133,14 @@ export class CarPhysics {
 
   addGas(units: number) { this.gas = clamp(this.gas + units, 0, 100); }
 
+  /** QA: set horizontal velocity without a fake g spike on the next step (body-frame u/w follow it). */
+  setPlanarVelocity(vx: number, vz: number) {
+    this.vx = vx; this.vz = vz;
+    const fx = Math.sin(this.heading), fz = -Math.cos(this.heading), rx = Math.cos(this.heading), rz = Math.sin(this.heading);
+    this.prevU = vx * fx + vz * fz;
+    this.prevW = vx * rx + vz * rz;
+  }
+
   private ensureGrid(env: PhysicsEnv) {
     if (this.gridFor === env.barriers) return;
     const T = TUNING, mj = env.moatJump;

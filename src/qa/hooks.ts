@@ -168,6 +168,13 @@ export function installQaHooks(ui: HTMLElement) {
       resume,
       setInput: (i) => setQaInput(i),
       clearInput: () => clearQaInput(),
+      wheelClearanceM() {
+        // Lowest drawn tyre bottom minus the road under it (< 0 = wheel inside the road). FEEL-05.
+        const wb = (E.car as { qa?: { wheelBottoms?: () => { x: number; y: number; z: number }[] } } | null)?.qa?.wheelBottoms?.();
+        const track = E.track;
+        if (!wb || !track) return null;
+        return Math.min(...wb.map((p) => p.y - track.heightAt(p.x, p.z)));
+      },
       teleport(x, z, yawDeg, speedKmh) {
         const car = E.car, track = E.track;
         if (!car || !track) return;

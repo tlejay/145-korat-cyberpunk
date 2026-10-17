@@ -85,6 +85,7 @@ export interface GameQA {
     pause(): void; resume(): void;
     setInput(i: Partial<{ throttle: number; brake: number; steer: number; jump: boolean; boost: boolean }>): void;  // ใส่ผ่าน input pipeline เดียวกับ touch
     clearInput(): void;
+    wheelClearanceM(): number | null;    // ล้อที่วาดต่ำสุด − ผิวถนน (ม.) · < 0 = ล้อจมถนน (FEEL-05)
     teleport(x: number, z: number, yawDeg: number, speedKmh?: number): void;
     setQuality(q: 'low' | 'medium' | 'high'): void;
     fixedStep(enabled: boolean, dtMs?: number): void;   // โหมด deterministic: แช่ dt คงที่ เพื่อเทสต์ฟิสิกส์ซ้ำได้

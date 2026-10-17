@@ -40,6 +40,7 @@ export class ChaseCamera {
 
   update(dt: number, cam: THREE.PerspectiveCamera) {
     const T = TUNING, c = this.phys, tel = c.tel;
+    const frameDt = dt; // unclamped, for the travel limit below
     dt = Math.min(dt, 0.1);
     const speed = c.speed, kmh = speed * KMH;
     const fx = Math.sin(c.heading), fz = -Math.cos(c.heading);
@@ -95,7 +96,8 @@ export class ChaseCamera {
     if (dist < T.camMinDist) { raise = Math.min(T.camMaxRaise, (T.camMinDist - dist) * 2); dist = T.camMinDist * 0.5 + dist * 0.5; }
     const tx = c.x - yx * dist, tz = c.z - yz * dist, ty = ground + T.camHeight + raise;
 
-    // ── springs (ω 8 horizontal, 4 vertical), snap on reset, clamp per-frame travel ──
+    // ── springs (ω 8 horizontal, 4 vertical), snap on reset or when left far behind, clamp travel per second ──
+    if (Math.hypot(tx - this.p.x, ty - this.p.y, tz - this.p.z) > T.camSnapM) this.snapNext = true;
     if (this.snapNext) {
       this.p.set(tx, ty, tz); this.v.set(0, 0, 0); this.look.set(lx, ly, lz);
       this.snapNext = false;
@@ -105,8 +107,12 @@ export class ChaseCamera {
       [this.p.z, this.v.z] = spring(this.p.z, this.v.z, tz, T.camOmegaXZ, dt);
       [this.p.y, this.v.y] = spring(this.p.y, this.v.y, ty, T.camOmegaY, dt);
       if (frac < 1) { this.p.x = tx; this.p.z = tz; } // blocked → place at the hit point this frame
+      // Travel limit scales with frame time (camMaxStep is per 60 Hz frame — same as before at 60 fps) and
+      // never drops below the car's own travel — a fixed per-frame cap let the camera fall 100 m+ behind
+      // at 20 fps (QA M1 Y1).
+      const maxStep = Math.max(T.camMaxStep * 60 * frameDt, speed * frameDt * 1.2);
       const mv = Math.hypot(this.p.x - ox, this.p.y - oy, this.p.z - oz);
-      if (mv > T.camMaxStep) { const k = T.camMaxStep / mv; this.p.set(ox + (this.p.x - ox) * k, oy + (this.p.y - oy) * k, oz + (this.p.z - oz) * k); }
+      if (mv > maxStep) { const k = maxStep / mv; this.p.set(ox + (this.p.x - ox) * k, oy + (this.p.y - oy) * k, oz + (this.p.z - oz) * k); }
       const kl = 1 - Math.exp(-T.camOmegaXZ * dt);
       this.look.x += (lx - this.look.x) * kl; this.look.z += (lz - this.look.z) * kl;
       this.look.y += (ly - this.look.y) * (1 - Math.exp(-T.camOmegaY * dt));

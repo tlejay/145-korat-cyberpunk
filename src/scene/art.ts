@@ -1,57 +1,59 @@
 // Art from the art pane (docs/dev/m3/art-manifest.json → public/assets/img/). Read at build time, so a
 // missing manifest just means "no art yet" and every user falls back to procedural colours.
-// The manifest schema is loose on purpose: each entry needs a file path and a role/use text; roles are
-// matched by keywords (sky, cover, billboard, window, neon frame).
+// Every entry is { file, use, size, lo?: { file } , cells_px? }. Sponsor backgrounds (sponsor-bg-*) are
+// consumed by src/sponsors itself; og-cover goes into index.html.
+//
+// GPU budget (QA ≤ 32 MB): windows, neon frames and billboard art are *drawn into canvases that already
+// exist* (facade atlas, sign atlas, billboard atlas) → 0 MB extra. Only the sky is a new texture, and it
+// always uses the -lo file (1024×512 ≈ 2.7 MB with mips).
 
-type Entry = Record<string, unknown>;
+type Entry = { file?: string; use?: string; lo?: { file?: string }; cells_px?: number[][] };
 const mods = import.meta.glob<unknown>('../../docs/dev/m3/art-manifest.json', { eager: true, import: 'default' });
-const manifest = Object.values(mods)[0] ?? null;
+const manifest = (Object.values(mods)[0] ?? null) as { files?: Entry[] } | null;
 
-export interface ArtSet { sky: string | null; cover: string | null; billboards: string[]; windows: string[]; neonFrames: string[] }
-
-function entries(m: unknown): Entry[] {
-  if (!m || typeof m !== 'object') return [];
-  if (Array.isArray(m)) return m.filter((e): e is Entry => !!e && typeof e === 'object');
-  const o = m as Record<string, unknown>;
-  for (const k of ['files', 'images', 'assets', 'entries', 'items']) if (Array.isArray(o[k])) return entries(o[k]);
-  // { "path": { use… } } map
-  return Object.entries(o).filter(([, v]) => v && typeof v === 'object').map(([k, v]) => ({ file: k, ...(v as Entry) }));
+export interface ArtFile { full: string; lo: string }
+export interface ArtSet {
+  sky: ArtFile | null;
+  cover: string | null;       // 1920×1080 (desktop)
+  coverSmall: string | null;  // 1280×720 (phones)
+  billboards: ArtFile[];
+  windows: ArtFile[];         // tileable bay × storey modules
+  neonFrames: (ArtFile & { cells: number[][] }) | null; // cells in full-res px [x, y, w, h]
 }
 
-function urlOf(e: Entry): string | null {
-  const f = [e.file, e.path, e.src, e.public, e.url, e.output].find((v) => typeof v === 'string') as string | undefined;
+function url(f: string | undefined): string | null {
   if (!f) return null;
-  if (/^https?:/.test(f)) return f;
   const rel = f.replace(/^\.?\//, '').replace(/^public\//, '');
-  if (!/^assets\//.test(rel)) return null; // only files actually shipped in public/assets
-  return `${import.meta.env.BASE_URL}${rel}`;
+  return /^assets\//.test(rel) ? `${import.meta.env.BASE_URL}${rel}` : null;
 }
 
-function roleOf(e: Entry): string {
-  return [e.role, e.use, e.usage, e.kind, e.type, e.id, e.name, e.file, e.path, e.purpose].filter((v) => typeof v === 'string').join(' ').toLowerCase();
-}
-
+let cached: ArtSet | null = null;
 export function getArt(): ArtSet {
-  const out: ArtSet = { sky: null, cover: null, billboards: [], windows: [], neonFrames: [] };
-  for (const e of entries(manifest)) {
-    const url = urlOf(e);
-    if (!url) continue;
-    const r = roleOf(e);
-    if (/sky|pano|ฟ้า/.test(r) && !out.sky) out.sky = url;
-    else if (/cover|loading|menu|og|ปก/.test(r) && !out.cover) out.cover = url;
-    else if (/billboard|บิลบอร์ด|โฆษณา/.test(r)) out.billboards.push(url);
-    else if (/window|หน้าต่าง/.test(r)) out.windows.push(url);
-    else if (/neon|frame|ป้าย/.test(r)) out.neonFrames.push(url);
+  if (cached) return cached;
+  const out: ArtSet = { sky: null, cover: null, coverSmall: null, billboards: [], windows: [], neonFrames: null };
+  for (const e of manifest?.files ?? []) {
+    const full = url(e.file);
+    if (!full) continue;
+    const af: ArtFile = { full, lo: url(e.lo?.file) ?? full };
+    const name = full.split('/').pop() ?? '';
+    if (/^sky-/.test(name)) out.sky = af;
+    else if (/^cover-1280/.test(name)) out.coverSmall = full;
+    else if (/^cover-/.test(name)) out.cover = full;
+    else if (/^billboard-/.test(name)) out.billboards.push(af);
+    else if (/^window-/.test(name)) out.windows.push(af);
+    else if (/^neon-frames/.test(name)) out.neonFrames = { ...af, cells: e.cells_px ?? [] };
   }
-  return out;
+  out.billboards.sort((a, b) => a.full.localeCompare(b.full));
+  out.windows.sort((a, b) => a.full.localeCompare(b.full));
+  return (cached = out);
 }
 
-export function loadImage(url: string): Promise<HTMLImageElement | null> {
+export function loadImage(src: string): Promise<HTMLImageElement | null> {
   return new Promise((res) => {
     const img = new Image();
     img.decoding = 'async';
     img.onload = () => res(img);
     img.onerror = () => res(null);
-    img.src = url;
+    img.src = src;
   });
 }

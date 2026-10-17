@@ -15,11 +15,8 @@ const audioMods = import.meta.glob<{ createAudio?: CreateAudio }>('../audio/inde
 const fxMods = import.meta.glob<{ createFx?: CreateFx }>('../fx/index.ts');
 
 // M3 🚧 checkpoint pane (BRIEF-checkpoint): alcohol checkpoint to jump over / knock flying.
-// Event contract (CustomEvent on `events`, all detail fields optional):
-//   'hint'  { text }                → HUD toast ("ด่านข้างหน้า! กระโดดข้าม")
-//   'clear' { text }                → HUD combo (clean jump over the checkpoint)
-//   'crash' { text, impulse }       → HUD combo + crash sound + haptic
-//   any of them may add { audio: AudioEvent } to play a specific sound.
+// Events (approach / cue / clear / smash / hit / blown / reset) are documented in src/checkpoint/index.ts;
+// engine.ts wireCheckpoint() maps them to HUD / audio / haptics.
 export interface Checkpoint { update(dt: number): void; events: EventTarget; reset?(): void; dispose?(): void }
 type CreateCheckpoint = (scene: THREE.Scene, track: Track, car: Car) => Checkpoint;
 const checkpointMods = import.meta.glob<{ createCheckpoint?: CreateCheckpoint }>('../checkpoint/index.ts');

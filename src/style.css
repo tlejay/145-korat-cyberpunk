@@ -122,6 +122,9 @@ input, textarea { user-select: text; -webkit-user-select: text; touch-action: ma
 .controls.off, .controls.hidden { display: none; }
 .tbtn { position: absolute; display: grid; place-items: center; border-radius: 50%; background: rgba(10, 10, 20, 0.35); border: 2px solid rgba(34, 230, 255, 0.75); color: var(--text); pointer-events: auto; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; transition: transform 60ms, border-color 60ms; }
 .tbtn svg { width: 46%; height: 46%; }
+/* MOB-03: the button itself must be the touch target — touch pointer capture goes to the hit element, and an
+   icon <path> holding it means pointerleave never fires when the finger slides off (button stays held). */
+.tbtn > *, .tbtn svg * { pointer-events: none; }
 .tbtn.on { transform: scale(0.94); border-color: #fff; box-shadow: 0 0 16px rgba(34, 230, 255, 0.7); }
 .tbtn .lock { display: none; position: absolute; right: -2px; top: -2px; width: 24px; height: 24px; border-radius: 50%; background: var(--bg); color: var(--neon-amber); }
 .tbtn .lock svg { width: 16px; height: 16px; margin: 4px; }

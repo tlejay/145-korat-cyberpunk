@@ -129,14 +129,37 @@ export function createVisuals(o: { renderer: THREE.WebGLRenderer; scene: THREE.S
 
   // ── art (async, optional) ──
   const art = getArt();
+  const hiRes = getQuality().tier === 'high';
   if (art.sky && night) {
-    void loadImage(art.sky).then((img) => {
+    // always the -lo sky (1024×512, no mips: ~2 MB GPU) — the full one costs 11 MB for little gain behind rain + fog
+    void loadImage(art.sky.lo).then((img) => {
       if (!img) return;
       const t = new THREE.Texture(img);
       t.colorSpace = THREE.SRGBColorSpace;
       t.wrapS = THREE.RepeatWrapping;
+      t.generateMipmaps = false;
+      t.minFilter = THREE.LinearFilter; // no mips → no seam line where atan() wraps
       t.needsUpdate = true;
-      night.setPanorama(t, 0.9);
+      night.setPanorama(t, 1);
+    });
+  }
+  // window modules → painted into the existing facade atlas (0 MB extra GPU)
+  if (art.windows.length && real) {
+    const fac = track.root.getObjectByName('facade-0') as THREE.Mesh | undefined;
+    const fm = fac?.material as THREE.MeshLambertMaterial | undefined;
+    if (fm?.map && fm.emissiveMap) {
+      const map = fm.map, em = fm.emissiveMap;
+      void Promise.all(art.windows.map((w) => loadImage(w.lo))).then((imgs) => paintWindows(map, em, imgs));
+    }
+  }
+  // neon frame sheet → under the Thai text of every neon box / blade sign
+  if (art.neonFrames && neon) {
+    const nf = art.neonFrames, sa = neon.atlas;
+    const lo = !hiRes;
+    void loadImage(lo ? nf.lo : nf.full).then((img) => {
+      if (!img) return;
+      const k = img.width / 1024; // cells_px are in full-res pixels (the -lo sheet is exactly half)
+      sa.setFrames(img, nf.cells.map((c) => c.map((v) => v * k)));
     });
   }
   // billboards: sponsor textures win; art-pane backgrounds fill any slot sponsors leave empty
@@ -153,7 +176,7 @@ export function createVisuals(o: { renderer: THREE.WebGLRenderer; scene: THREE.S
     neon.billboards.setArt(imgs, tex.map((t) => !!t?.image));
   };
   if (art.billboards.length && neon) {
-    void Promise.all(art.billboards.slice(0, 5).map(loadImage)).then((imgs) => { artImgs = imgs; sponsorVer = -1; refreshBillboards(); });
+    void Promise.all(art.billboards.slice(0, 5).map((b) => loadImage(hiRes ? b.full : b.lo))).then((imgs) => { artImgs = imgs; sponsorVer = -1; refreshBillboards(); });
   }
   refreshBillboards();
   let sponsorCheck = 0;
@@ -253,20 +276,69 @@ function streetLights(ex: TrackExtras): LightSrc[] {
   return out;
 }
 
-// Menu / loading backdrop from the art pane's cover image (keeps the existing dark gradient on top).
+// Menu / loading backdrop: the art pane's cover image while the city loads, then it fades out so the
+// menu shows the live 3D plaza with Ya Mo (conductor decision M3: cover = loading, live scene = menu).
 // Called by the engine right after the menu is shown (before the world finishes loading).
 export function applyMenuCover(ui: HTMLElement) {
-  const url = getArt().cover;
-  if (url) applyCover(ui, url);
+  const art = getArt();
+  const url = matchMedia('(pointer: coarse)').matches ? (art.coverSmall ?? art.cover) : (art.cover ?? art.coverSmall);
+  const menu = ui.querySelector<HTMLElement>('[data-qa=menu]');
+  if (!url || !menu) return;
+  const cover = document.createElement('div');
+  cover.className = 'menu-cover';
+  cover.setAttribute('aria-hidden', 'true');
+  cover.style.cssText = `position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 60%, rgba(7,6,15,0.1), rgba(7,6,15,0.7)), url("${url}") center / cover no-repeat;transition:opacity 1.2s ease;`;
+  menu.prepend(cover);
+  // fade once the start button is enabled (world + shaders ready)
+  const btn = menu.querySelector<HTMLButtonElement>('[data-qa=btn-start]');
+  const fade = () => { setTimeout(() => { cover.style.opacity = '0'; setTimeout(() => cover.remove(), 1400); }, 600); };
+  if (!btn || !btn.disabled) { fade(); return; }
+  const mo = new MutationObserver(() => { if (!btn.disabled) { mo.disconnect(); fade(); } });
+  mo.observe(btn, { attributes: true, attributeFilter: ['disabled'] });
 }
-function applyCover(ui: HTMLElement, url: string) {
-  const set = () => {
-    const el = ui.querySelector<HTMLElement>('[data-qa=menu]');
-    if (!el) return false;
-    el.style.backgroundImage = `radial-gradient(ellipse at 50% 60%, rgba(7, 6, 15, 0.15), rgba(7, 6, 15, 0.8)), url("${url}")`;
-    el.style.backgroundSize = 'cover';
-    el.style.backgroundPosition = 'center';
-    return true;
-  };
-  if (!set()) requestAnimationFrame(() => set());
+
+// Facade atlas (src/track/facade-atlas.ts): SHOP row 0, upper-floor variants A–D (cols 2–5) get the art
+// window modules. Emissive = the art at 12 % (it is a night photo) + its bright parts (lit glass) at full.
+function paintWindows(map: THREE.Texture, em: THREE.Texture, imgs: (HTMLImageElement | null)[]) {
+  const c = map.image as HTMLCanvasElement, e = em.image as HTMLCanvasElement;
+  if (!(c instanceof HTMLCanvasElement) || !(e instanceof HTMLCanvasElement)) return;
+  const CW = 128, CH = 112, ROW = 0;
+  // A/B are by far the most used bays (≈ 70 % of shop fronts) → the lit warm / cool windows go there;
+  // C → teal TV glow, D → curtain closed (dark). Index = sorted manifest order 01 warm · 02 cool · 03 dark · 04 teal.
+  const pick: Record<number, number> = { 2: 0, 3: 1, 4: 3, 5: 2 };
+  const g = c.getContext('2d')!, ge = e.getContext('2d')!;
+  const tmp = document.createElement('canvas');
+  tmp.width = CW; tmp.height = CH;
+  const tg = tmp.getContext('2d', { willReadFrequently: true })!;
+  const sx = e.width / c.width;
+  for (const [colS, k] of Object.entries(pick)) {
+    const img = imgs[k], col = Number(colS);
+    if (!img) continue;
+    const x = col * CW, y = ROW * CH;
+    // albedo: the art is a dark night photo (mean ≈ 0.23) — brighten ×2.2 ('lighter' = additive, works on
+    // every browser unlike ctx.filter) so night lighting + building paint tint read like the other facades
+    g.drawImage(img, x, y, CW, CH);
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.drawImage(img, x, y, CW, CH);
+    g.globalAlpha = 0.2;
+    g.drawImage(img, x, y, CW, CH);
+    g.restore();
+    tg.clearRect(0, 0, CW, CH);
+    tg.drawImage(img, 0, 0, CW, CH);
+    const d = tg.getImageData(0, 0, CW, CH), p = d.data;
+    for (let i = 0; i < p.length; i += 4) {
+      const lum = (0.2126 * p[i] + 0.7152 * p[i + 1] + 0.0722 * p[i + 2]) / 255;
+      // the art is already a night photo: keep the whole bay faintly visible (0.12) + lit glass at full
+      const k2 = 0.12 + 1.2 * Math.max(0, (lum - 0.36) / 0.64);
+      p[i] = Math.min(255, p[i] * k2); p[i + 1] = Math.min(255, p[i + 1] * k2); p[i + 2] = Math.min(255, p[i + 2] * k2); p[i + 3] = 255;
+    }
+    tg.putImageData(d, 0, 0);
+    ge.save();
+    ge.setTransform(1, 0, 0, 1, 0, 0);
+    ge.drawImage(tmp, x * sx, y * sx, CW * sx, CH * sx);
+    ge.restore();
+  }
+  map.needsUpdate = true;
+  em.needsUpdate = true;
 }

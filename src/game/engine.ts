@@ -409,21 +409,33 @@ function onEvent(e: RaceEvent) {
 }
 
 // Checkpoint events → HUD / audio / haptics (contract in modules.ts).
+// Checkpoint (src/checkpoint) events → HUD / audio / haptics / jump-button hint. Names + detail per
+// src/checkpoint/index.ts. The "Great jump!" voice comes from audio's own landing logic (airtime > 1 s).
+let cpCue: { hint: 'ok' | 'short'; until: number } | null = null;
 function wireCheckpoint(cp: Checkpoint) {
-  type D = { text?: string; audio?: AudioEvent; impulse?: number };
+  type D = { text?: string; audio?: AudioEvent; impulseNs?: number; jump?: string; speedKmh?: number };
   const on = (name: string, fn: (d: D) => void) =>
     cp.events.addEventListener(name, (e) => {
       const d = ((e as CustomEvent).detail ?? {}) as D;
       emit('roadblock', { type: name, ...d }); // QA on('roadblock')
       fn(d);
     });
-  on('hint', (d) => { if (d.text) E.hud?.toast(d.text); if (d.audio) E.audio?.play(d.audio); });
-  on('clear', (d) => { if (d.text) E.hud?.combo(d.text); if (d.audio) E.audio?.play(d.audio); buzz([20, 40, 20]); });
-  on('crash', (d) => {
-    if (d.text) E.hud?.combo(d.text);
-    E.audio?.play(d.audio ?? 'crash');
-    buzz(Math.round(Math.min(60, 30 + (d.impulse ?? 0) / 1000)));
+  on('approach', (d) => { if (d.text) E.hud?.toast(d.text); });
+  on('cue', (d) => {
+    // 'now' = press jump now → green; early / late / slow → amber; 'none' → back to the normal hint
+    const hint = d.jump === 'now' ? 'ok' : d.jump && d.jump !== 'none' ? 'short' : null;
+    cpCue = hint ? { hint, until: performance.now() + 450 } : null;
+    if (hint) E.controls?.setJumpHint(hint);
   });
+  on('clear', (d) => { if (d.text) E.hud?.combo(d.text); buzz([20, 40, 20]); });
+  on('smash', (d) => { if (d.text) E.hud?.combo(d.text); E.audio?.play(d.audio ?? 'crash'); buzz(50); });
+  let lastHit = 0;
+  on('hit', (d) => {
+    buzz(Math.round(Math.min(40, 15 + (d.impulseNs ?? 0) / 500)));
+    const now = performance.now();
+    if (now - lastHit > 250) { lastHit = now; E.audio?.play('crash'); } // a smash hits many props at once
+  });
+  on('blown', (d) => { if (d.text) E.hud?.combo(d.text); });
 }
 
 async function finishRace() {
@@ -584,14 +596,18 @@ function updateLocks() {
     race.toast('ท่าโชว์: กระโดดข้ามคูเมือง กดค้างให้ลอย', true); // PHYSICS §2.3 — a show move, not a shortcut
     const okSpeed = s.speedKmh >= 90 && s.speedKmh <= 115; // clean-landing window with hover (PHYSICS §2.2)
     E.controls?.setJumpHint(s.gas >= GAS.shortcut / GAS.capacity && okSpeed ? 'ok' : 'short');
-  } else E.controls?.setJumpHint('none');
+  } else if (cpCue && performance.now() < cpCue.until) E.controls?.setJumpHint(cpCue.hint); // checkpoint cue
+  else E.controls?.setJumpHint('none');
 }
 
 function render(dt: number) {
   const car = E.car, race = E.race, cam = E.camera;
   if (car && race) {
-    if (E.phase === 'intro' || (E.phase === 'menu' && !E.fixedMode)) introCamera(E.phase === 'intro' ? 1 - E.introS / 2.5 : performance.now() / 20000);
-    else car.camera.update(dt, cam);
+    const orbit = E.phase === 'intro' || (E.phase === 'menu' && !E.fixedMode);
+    // menu: swing back and forth across the west side (an ever-growing angle used to orbit into the gate wall)
+    if (orbit) introCamera(E.phase === 'intro' ? 1 - E.introS / 2.5 : 0.5 + 0.5 * Math.sin(performance.now() / 9000));
+    else chaseWithBlend(dt, cam, car);
+    camBlend.wasOrbit = orbit;
     E.track?.update?.(dt, cam);
     const lapT = race.lapTimeMs();
     const ghosts = [E.ghostOwn, E.ghostTop];
@@ -611,6 +627,25 @@ function render(dt: number) {
   }
   if (E.visuals) E.visuals.render(dt);
   else E.renderer.render(E.scene, cam);
+}
+
+// Menu/intro orbit → chase cam: glide over 1.6 s instead of cutting. The chase cam keeps its own pose
+// (restored before each update) so its damping never sees the blended camera.
+const camBlend = { wasOrbit: false, t: 1, from: new THREE.Vector3(), fromQ: new THREE.Quaternion(), fromFov: 55, chase: new THREE.Vector3(), chaseQ: new THREE.Quaternion(), chaseFov: 55 };
+function chaseWithBlend(dt: number, cam: THREE.PerspectiveCamera, car: Car) {
+  const b = camBlend;
+  if (b.wasOrbit && !QA) { b.t = 0; b.from.copy(cam.position); b.fromQ.copy(cam.quaternion); b.fromFov = cam.fov; car.camera.update(0, cam); }
+  else if (b.t < 1) { cam.position.copy(b.chase); cam.quaternion.copy(b.chaseQ); cam.fov = b.chaseFov; }
+  car.camera.update(dt, cam);
+  if (b.t >= 1) return;
+  b.chase.copy(cam.position); b.chaseQ.copy(cam.quaternion); b.chaseFov = cam.fov;
+  b.t = Math.min(1, b.t + dt / 1.6);
+  const e = b.t * b.t * (3 - 2 * b.t);
+  cam.position.lerpVectors(b.from, b.chase, e);
+  cam.quaternion.slerpQuaternions(b.fromQ, b.chaseQ, e);
+  cam.fov = b.fromFov + (b.chaseFov - b.fromFov) * e;
+  cam.updateProjectionMatrix();
+  cam.updateMatrixWorld();
 }
 
 const HAIRPIN = 80;
@@ -643,7 +678,7 @@ function introCamera(t: number) {
   const a = Math.PI + (t - 0.5) * 0.9; // centred on west (the statue faces west)
   const cam = E.camera;
   cam.position.set(Math.cos(a) * 34, 8 - t * 2.5, Math.sin(a) * 34);
-  cam.lookAt(0, 5, 0);
+  cam.lookAt(0, 12, 0); // aim above the statue → it sits in the lower third, under the menu buttons
   if (cam.fov !== 55) { cam.fov = 55; cam.updateProjectionMatrix(); }
 }
 

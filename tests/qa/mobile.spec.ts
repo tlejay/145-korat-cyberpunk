@@ -1,6 +1,7 @@
 // MOB-* + FEEL-01: touch layout, multi-touch, orientation, DPR, input latency.
 import { expect, test, type Page } from '@playwright/test';
 import { box, expectClean, openGame, pct, record, shot, watch } from './helpers';
+import type { GameQA } from '../../src/qa/types';
 
 const DRIVE = ['btn-throttle', 'btn-brake', 'steer-left', 'steer-right'];
 const OTHER = ['btn-jump', 'btn-boost', 'btn-pause'];
@@ -90,23 +91,27 @@ test('MOB-03 multi-touch: throttle + steer + boost, release, slide-off', async (
   const cdp = await page.context().newCDPSession(page);
   const t = await box(page, 'btn-throttle'), s = await box(page, 'steer-right'), b = await box(page, 'btn-boost');
   await page.evaluate(() => window.__game!.qa.setTank(100));
+  // Poll for each expected state (≤ 5 s): with M3 visuals SwiftShader frames take 0.5–1.3 s, so a fixed
+  // 200 ms sleep read input from before the touch was processed (fix #6). Same assertions as before.
+  type In = ReturnType<GameQA['input']>;
+  const until = async (ok: (i: In) => boolean) => {
+    const t0 = Date.now();
+    let i = await page.evaluate(() => window.__game!.input());
+    while (!ok(i) && Date.now() - t0 < 5000) { await page.waitForTimeout(100); i = await page.evaluate(() => window.__game!.input()); }
+    return i;
+  };
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: t.cx, y: t.cy, id: 1 }, { x: s.cx, y: s.cy, id: 2 }] });
-  await page.waitForTimeout(400);
-  const two = await page.evaluate(() => window.__game!.input());
+  const two = await until((i) => i.activePointers === 2 && i.throttle > 0.9 && i.steer > 0.3);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: t.cx, y: t.cy, id: 1 }, { x: s.cx, y: s.cy, id: 2 }, { x: b.cx, y: b.cy, id: 3 }] });
-  await page.waitForTimeout(300);
-  const three = await page.evaluate(() => window.__game!.input());
+  const three = await until((i) => i.activePointers === 3 && i.boost);
   // lift the steer finger only (CDP: touchEnd lists the points that are lifted)
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [{ x: s.cx, y: s.cy, id: 2 }] });
-  await page.waitForTimeout(200);
-  const afterLift = await page.evaluate(() => window.__game!.input());
+  const afterLift = await until((i) => i.activePointers === 2 && Math.abs(i.steer) < 0.5);
   // slide the throttle finger off its button
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: t.cx - 160, y: t.cy - 150, id: 1 }, { x: b.cx, y: b.cy, id: 3 }] });
-  await page.waitForTimeout(100);
-  const slid = await page.evaluate(() => window.__game!.input());
+  const slid = await until((i) => i.throttle === 0);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-  await page.waitForTimeout(100);
-  const none = await page.evaluate(() => window.__game!.input());
+  const none = await until((i) => i.activePointers === 0);
   record(test.info(), 'MOB-03', { two, three, afterLift, slid, none });
   expect(two.activePointers).toBe(2);
   expect(two.throttle).toBeGreaterThan(0.9);

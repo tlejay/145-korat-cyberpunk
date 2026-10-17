@@ -20,7 +20,13 @@ export interface SignAtlas {
   blade: { rect: Rect; color: number }[];  // per BLADE_TEXTS entry
   dark: Rect;                              // solid dark cell for frames / backs
   redraw(): void;
+  /** Art-pane neon frame sheet (6 blank frames, black background) drawn under the Thai text. */
+  setFrames(img: CanvasImageSource, cells: number[][]): void;
 }
+
+// Art frame order (art-manifest neon-frames-atlas): pink · cyan · amber · lime · purple+red · white-blue
+// → NEON_COLORS index, so the text and the wet-road light match the frame tube.
+const FRAME_COLOR = [1, 0, 4, 3, 2, 6];
 
 function glowText(g: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, color: string) {
   g.shadowColor = color;
@@ -61,8 +67,10 @@ export function createSignAtlas(): SignAtlas {
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
 
-  const neon = NEON_TEXTS.map((_, i) => ({ rect: rect((i % 2) * NW, Math.floor(i / 2) * NH, NW, NH, 2), color: (i * 3 + 1) % NEON_COLORS.length }));
-  const blade = BLADE_TEXTS.map((_, i) => ({ rect: rect(i * BW, BY, BW, BH, 2), color: (i * 5 + 2) % NEON_COLORS.length }));
+  const frameOf = (k: number) => k % FRAME_COLOR.length;
+  const neon = NEON_TEXTS.map((_, i) => ({ rect: rect((i % 2) * NW, Math.floor(i / 2) * NH, NW, NH, 2), color: FRAME_COLOR[frameOf(i)] }));
+  const blade = BLADE_TEXTS.map((_, i) => ({ rect: rect(i * BW, BY, BW, BH, 2), color: FRAME_COLOR[frameOf(i + 2)] }));
+  let frames: { img: CanvasImageSource; cells: number[][] } | null = null;
 
   const redraw = () => {
     g.fillStyle = '#06060b';
@@ -73,26 +81,33 @@ export function createSignAtlas(): SignAtlas {
       const x = (i % 2) * NW, y = Math.floor(i / 2) * NH, col = NEON_COLORS[neon[i].color];
       g.fillStyle = '#0b0912';
       g.fillRect(x + 2, y + 2, NW - 4, NH - 4);
-      tube(g, x + 10, y + 10, NW - 20, NH - 20, 14, col);
-      g.font = `700 50px ${FONT}`;
-      glowText(g, t, x + NW / 2, y + NH * 0.54, NW - 60, col);
+      const fc = frames?.cells[frameOf(i)];
+      if (frames && fc) g.drawImage(frames.img, fc[0], fc[1], fc[2], fc[3], x + 2, y + 2, NW - 4, NH - 4);
+      else tube(g, x + 10, y + 10, NW - 20, NH - 20, 14, col);
+      g.font = `700 ${frames ? 44 : 50}px ${FONT}`;
+      glowText(g, t, x + NW / 2, y + NH * 0.54, NW - (frames ? 110 : 60), col);
     });
     BLADE_TEXTS.forEach((t, i) => {
       const x = i * BW, y = BY, col = NEON_COLORS[blade[i].color];
       g.fillStyle = '#0b0912';
       g.fillRect(x + 2, y + 2, BW - 4, BH - 4);
-      tube(g, x + 7, y + 7, BW - 14, BH - 14, 8, col);
+      const fc = frames?.cells[frameOf(i + 2)];
+      if (!(frames && fc)) tube(g, x + 7, y + 7, BW - 14, BH - 14, 8, col);
       g.save();
       g.translate(x + BW / 2, y + BH / 2);
       g.rotate(-Math.PI / 2);
-      g.font = `700 36px ${FONT}`;
-      glowText(g, t, 0, 3, BH - 44, col);
+      if (frames && fc) g.drawImage(frames.img, fc[0], fc[1], fc[2], fc[3], -BH / 2 + 2, -BW / 2 + 2, BH - 4, BW - 4);
+      g.font = `700 ${frames ? 30 : 36}px ${FONT}`;
+      glowText(g, t, 0, 3, BH - (frames ? 70 : 44), col);
       g.restore();
     });
     texture.needsUpdate = true;
   };
   redraw();
-  return { texture, neon, blade, dark: rect(4, 4, 2, 2), redraw };
+  return {
+    texture, neon, blade, dark: rect(4, 4, 2, 2), redraw,
+    setFrames(img, cells) { frames = { img, cells }; redraw(); },
+  };
 }
 
 // ── billboards: 5 cells of 512×205 (2.5 : 1, the 10 × 4 m rooftop board) ──

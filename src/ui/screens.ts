@@ -19,7 +19,7 @@ function overlay(root: HTMLElement, cls: string, html: string, qa?: string): HTM
 export function showMenu(root: HTMLElement, h: { onStart(): void; onBoard(): void; onCredits(): void; onSettings(): void; loading: boolean }) {
   const el = overlay(root, 'menu', `
     <div class="menu-title">
-      <h1>โคราชไซเบอร์พังก์</h1>
+      <h1>โคราชโรสเตอร์</h1>
       <p>แข่งรถรอบคูเมือง ลานย่าโม นครราชสีมา</p>
     </div>
     <button class="btn btn-primary btn-big btn-icon" type="button" data-qa="btn-start" ${h.loading ? 'disabled' : ''}>${ICONS.flag}<span>${h.loading ? 'กำลังสร้างสนาม…' : 'เริ่มแข่ง'}</span></button>
@@ -143,6 +143,8 @@ export function showCredits(root: HTMLElement) {
       <p><strong>สร้างโดย</strong> Tle J ร่วมกับ Claude Opus 5.5 · ${VERSION}</p>
       <p>ข้อมูลแผนที่ © OpenStreetMap contributors (ODbL)</p>
       <p>ได้แรงบันดาลใจจาก Tesla Roadster (2026) ไม่มีส่วนเกี่ยวข้องกับ Tesla, Inc.</p>
+      <p><strong>สนับสนุนโดย</strong> สมาคมดิจิทัลนครราชสีมา · MADEBYTLE</p>
+      <p>ภาพประกอบบางส่วน (ฟ้า ป้ายนีออน บิลบอร์ด หน้าต่าง ภาพปก) สร้างด้วย ChatGPT (OpenAI) · ตัวอักษรไทยในเกมเรนเดอร์ด้วยฟอนต์จริง</p>
       <p>เสียงพากย์: ElevenLabs (ใช้แบบไม่แสวงหากำไร) · เสียงประกอบและเพลง CC0 ขอบคุณผู้สร้างทุกท่านด้านล่าง</p>
       <p>ฟอนต์ Noto Sans Thai (SIL OFL) · ไอคอน Heroicons (MIT) · three.js (MIT)</p>
       ${sections.filter((s) => s.rows.length).map((s) => `<h3>${escapeHtml(sectionTitle(s.title))}</h3><ul>${s.rows.map((r) => `<li>${r}</li>`).join('')}</ul>`).join('')}

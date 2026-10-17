@@ -148,7 +148,8 @@ export const TUNING = {
   camMinDist: 2.2,
   camMaxRaise: 4,
   camReturnS: 0.4,
-  camMaxStep: 1.5,
+  camMaxStep: 1.5, // m per 1/60 s of frame time (and ≥ 1.2× the car's own travel that frame)
+  camSnapM: 40, // camera farther than this from its target → snap (very long frame / teleport)
   shakeScale: 1,
 
   // ── weather ──
