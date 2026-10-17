@@ -139,3 +139,43 @@
 ## เสียงพากย์ภาษาอังกฤษ (announcer)
 - โดย Mint (ผู้ช่วย AI ของ Tle) · tlejay/mint#475 · 2026-10-17
 - ElevenLabs TTS model `eleven_v4`, premade voices "Charlie" / "Liam" — บัญชีแพลนฟรี → **ใช้แบบไม่เชิงพาณิชย์เท่านั้น** และแพลนฟรีของ ElevenLabs กำหนดให้ระบุที่มา → หน้าเครดิตในเกมใส่ "เสียงพากย์: ElevenLabs" · ถ้าจะใช้เชิงพาณิชย์ต้องอัดใหม่บนแพลนที่เสียเงิน
+
+## เสียงที่ใช้จริงในเกม — `public/assets/audio/` (M1, 2026-10-17)
+
+สร้างด้วย `scripts/build-audio.sh` จาก `research/audio/candidates/` (ตัด/วนลูป/บีบอัดเป็น Opus `.ogg` + AAC `.m4a`) · รายการเครื่องอ่านได้ที่ `public/assets/audio/manifest.json` (ช่อง `source`) · เสียงมอเตอร์หลักและเสียงลมพุ่งตอน boost **สังเคราะห์ด้วยโค้ด** (`src/audio/motor.ts`, `src/audio/index.ts`) ไม่มีไฟล์
+
+เครดิตในหน้าเครดิตของเกม: "เสียงพากย์: ElevenLabs" (บังคับ — แพลนฟรี) · "เพลง: MintoDog, ZaninDevelopers (OpenGameArt) — CC0" · "เสียงเอฟเฟกต์: Kenney.nl, Freesound (RutgerMuller, squareal, qubodup, magnuswaker, brunoboselli, LPA134, Rubaoliva, Soundkrampf) — CC0"
+
+| ไฟล์ (.ogg/.m4a) | ต้นฉบับ | ผู้สร้าง | license |
+|---|---|---|---|
+| `sfx/ui-click` | [Kenney interface-sounds — click-002.ogg](https://kenney.nl/assets/interface-sounds) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/ui-confirm` | [Kenney interface-sounds — confirm-002.ogg](https://kenney.nl/assets/interface-sounds) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/ui-back` | [Kenney interface-sounds — back-002.ogg](https://kenney.nl/assets/interface-sounds) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/beep` | [Kenney digital-audio — countdown-tone1.ogg](https://kenney.nl/assets/digital-audio) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/beep-go` | [Kenney digital-audio — countdown-go-high-up.ogg](https://kenney.nl/assets/digital-audio) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/checkpoint` | [Kenney digital-audio — checkpoint-three-tone-2.ogg](https://kenney.nl/assets/digital-audio) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/jingle-finish` | [Kenney music-jingles — finish-jingle-sax-07.ogg](https://kenney.nl/assets/music-jingles) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/jingle-lose` | [Kenney music-jingles — lose-jingle-hit-10.ogg](https://kenney.nl/assets/music-jingles) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/motor-layer` | [Kenney sci-fi-sounds — motor-space-engine-000.ogg](https://kenney.nl/assets/sci-fi-sounds) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/tire-loop` | [Tires Squeaking.aif](https://freesound.org/people/RutgerMuller/sounds/104026/) | RutgerMuller | CC0 1.0 |
+| `sfx/crash-heavy` | [Car Crash](https://freesound.org/people/squareal/sounds/237375/) | squareal | CC0 1.0 |
+| `sfx/crash-light` | [Clank Car Crash Collision](https://freesound.org/people/qubodup/sounds/151624/) | qubodup | CC0 1.0 |
+| `sfx/boost-blast` | [Rocket Blast](https://freesound.org/people/magnuswaker/sounds/540091/) | magnuswaker | CC0 1.0 |
+| `sfx/boost-zap` | [Kenney digital-audio — boost-phaser-up-6.ogg](https://kenney.nl/assets/digital-audio) | Kenney (kenney.nl) | CC0 1.0 |
+| `sfx/jump-air` | [Air (or steam) pressure release](https://freesound.org/people/brunoboselli/sounds/457294/) | brunoboselli | CC0 1.0 |
+| `sfx/land` | [Hood Impact](https://freesound.org/people/LPA134/sounds/329516/) | LPA134 | CC0 1.0 |
+| `amb/rain` | [Heavy_Rain_Loop.wav](https://freesound.org/people/Rubaoliva/sounds/624645/) | Rubaoliva | CC0 1.0 |
+| `amb/city` | [Night city atmosphere](https://freesound.org/people/Soundkrampf/sounds/237329/) | Soundkrampf | CC0 1.0 |
+| `music/menu` | [Cyberpunk Menu Music](https://opengameart.org/content/cyberpunk-menu-music) | ZaninDevelopers | CC0 1.0 |
+| `music/race` | [Neon sign Circuit [Remake] (bpm145)](https://opengameart.org/content/neon-sign-circuit-remake) | MintoDog | CC0 1.0 |
+| `music/race-final` | [Neon sign Circuit [Remake] Climax (bpm160)](https://opengameart.org/content/neon-sign-circuit-remake) | MintoDog | CC0 1.0 |
+| `voice/vo-three` | voice/mint/charlie/three.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-two` | voice/mint/charlie/two.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-one` | voice/mint/charlie/one.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-go` | voice/mint/charlie/go.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-final-lap` | voice/mint/charlie/final-lap.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-new-record` | voice/mint/charlie/new-record.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-finish` | voice/mint/charlie/finish.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-boost` | voice/mint/charlie/boost.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-nice-drift` | voice/mint/charlie/nice-drift.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+| `voice/vo-great-jump` | voice/mint/charlie/great-jump.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
