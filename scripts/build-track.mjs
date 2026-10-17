@@ -30,6 +30,7 @@ const CFG = {
   walk: 2.5,              // default sidewalk width (m)
   checkpoints: 33,        // PHYSICS.md §7: ~3,311 m → ~33 checkpoints (≈100 m apart)
   zoneBufferM: 15,        // GAMEPLAY §2.5
+  finishBeforeZoneM: 70,  // start/finish this far south of the plaza zone (grid at +10 m → launch ends ~50 m before it)
   westboundW: 10.5,       // Hwy 224 westbound carriageway, 3 lanes (Street View A-03..A-11)
   bank: 1.5,              // footpath between the westbound kerb and the moat edge
   moatWindowX: [480, 520],// north moat (way/544097464) rail section the jump line crosses (PHYSICS §2.2)
@@ -206,13 +207,16 @@ const plazaRing = fpRing('yamo-plaza'), gateRing = fpRing('chumphon-gate'), monu
 const zonePlaza = bufferHull(convexHull(plazaRing), CFG.zoneBufferM);
 const zoneGate = bufferHull(convexHull(gateRing), CFG.zoneBufferM);
 const inZone = (p) => pointInRing(p[0], p[1], zonePlaza) || pointInRing(p[0], p[1], zoneGate);
-// Walk forward from the research start (in front of the monument) until we leave the zone.
+// Start/finish SOUTH of the Ya Mo plaza on northbound Ratchadamnoen (Tle 2026-10-17 20:55): the race
+// opens by driving past the plaza, monument and Chumphon gate. Walk back from the research start
+// (in front of the monument, inside the zone) to the southern zone edge, then CFG.finishBeforeZoneM
+// further south so the 4.64 g launch (~8 m, 0.6 s) and the grid sit outside the no-boost zone.
 let i0 = 0;
 {
   let k = 0;
   while (!inZone(C[k])) k = (k + 1) % N;         // into zone (we start inside)
-  while (inZone(C[k])) k = (k + 1) % N;          // out of the zone, heading north
-  i0 = (k + 1) % N;                              // finish line ~3 m past the zone edge
+  while (inZone(C[k])) k = (k - 1 + N) % N;      // back out of the zone's southern edge
+  i0 = (k - Math.round(CFG.finishBeforeZoneM / (L / N)) + N) % N;
 }
 const researchStartIdx = 0; // OSM start point = research track_m 0
 C = [...C.slice(i0), ...C.slice(0, i0)];
