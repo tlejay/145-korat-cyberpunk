@@ -22,3 +22,10 @@
 - ไฟล์ทั้งหมด → `/Users/tlej/Works (Local)/Vibe Docs/~Inbox/to-mint/korat-roadster-teaser/` (clips/, stills/, audio-stems/) + `SHOTLIST.md` (ชื่อไฟล์ · ความยาว · เกิดอะไรในช็อต · จุดเด่นที่ควรใส่ข้อความ · ข้อมูลจริงประกอบ เช่น "0–100 ใน 0.63 วิ", "ไอขาวจากแก๊สเย็น −183 °C", "สนามจริง 3.3 กม. รอบลานย่าโม")
 - สำเนาเล็ก (≤ 720p) 2–3 คลิปเก็บ `docs/content/clips/` ได้ (ขนาดรวม ≤ 15 MB)
 - `docs/content/clips/REPORT-clips.md` สรุป ≤ 10 บรรทัด
+
+## ขั้นสุดท้าย — pane นี้ ping Mint เอง (Tle: "ให้คนอื่นทำ conductor เป็นวาทยากร")
+หลังส่งไฟล์ครบ ใช้ skill `/ping-mint` (kind = ถามมิ้น/รอผล) ขอให้ Mint ทำ **video-story** จากคลิปชุดนี้:
+- ที่อยู่ไฟล์บนเครื่อง Tle: `Vibe Docs/~Inbox/to-mint/korat-roadster-teaser/` + `SHOTLIST.md`
+- เกม "โคราชโรสเตอร์" · เล่นที่ `madebytle.com/koratrocketcar` · สปอนเซอร์ MADEBYTLE + สมาคมดิจิทัลนครราชสีมา (NDA)
+- ทำหลายคลิปสั้นแนวตั้ง (Reels/TikTok) ใช้ข้อเท็จจริงใน SHOTLIST · ห้ามแต่งตัวเลข · ห้ามล้อเลียนย่าโม · ด่านตรวจ = มุกขำ ไม่ส่งเสริมเมาแล้วขับ · ไม่ใช้ชื่อ/โลโก้ Tesla (เขียนได้ว่า "ได้แรงบันดาลใจจาก Roadster ที่เพิ่งเปิดตัว")
+- ตอบกลับที่ pane ของ conductor (`w54:p1`) ไม่ใช่ pane นี้ (pane นี้จะถูกปิด) · ใส่ลิงก์ issue ใน REPORT-clips.md
