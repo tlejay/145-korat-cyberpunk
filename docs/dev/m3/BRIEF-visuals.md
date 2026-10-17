@@ -1,0 +1,9 @@
+# BRIEF M3 — 🌃 visuals: cyberpunk pass (แสง นีออน ฝน ถนนเปียก) + integrator ของ M3
+อ่าน CLAUDE.md + docs/dev/M1-CONTRACTS.md + docs/dev/REPORT-M2-streetscape.md (§5 anchors) + docs/dev/PHYSICS.md (ฝน/สายไฟ) + docs/qa/TEST-PLAN.md (VIS/PERF) ก่อน · ห้าม commit/push/deploy · typecheck+build ผ่าน + REPORT ที่ docs/dev/REPORT-M3-<ชื่อ pane>.md · งบมือถือรวมทั้งฉากหลังเพิ่ม M3: ≤ 150 draw calls · ≤ 500k tris · quality tier low/mid/high ต้องปิดของหนักได้ (bloom/ฝน/สะท้อน)
+**เจ้าของไฟล์:** `src/scene/**`, `src/neon/**` (ใหม่) · **เป็น integrator ของ M3** แก้ `src/main.ts` / `src/game/**` ได้เท่าที่ต้องต่อของ M3 (บอกใน REPORT) · ภาพจาก pane art จะมาที่ `public/assets/img/` + `docs/dev/m3/art-manifest.json` (เช็คเป็นระยะ ระหว่างรอใช้สีล้วน)
+1. post-processing: bloom (เฉพาะ emissive) tier high/mid · tone mapping · vignette เบา ๆ · **low = ไม่มี post**
+2. แสงกลางคืนฝน: หมอกฟ้าอมม่วง/ฟ้า ไฟถนนโซเดียมส้มปนนีออน · หน้าต่างตึกมีไฟ (texture art หรือ procedural) · ฟ้าจาก art
+3. **ป้ายนีออนตาม anchors** (blade 138 · neon 74 · billboard 5 · gold glow 31 · lantern 85 โคมจีนนิ่ง — การแกว่งเป็นของ pane fx): ข้อความไทยบนป้ายเรนเดอร์ด้วย canvas + Noto Sans Thai (ชื่อร้านสมมุติแนวโคราช: ผัดหมี่โคราช ข้าวมันไก่ ร้านทอง หมูยอ ซ่อมมือถือ ฯลฯ — ห้ามชื่อแบรนด์จริง) · instancing/atlas · **กะพริบ ≤ 3 ครั้ง/วิ (VIS-04)** · **ห้ามนีออน/โฮโลแกรมบนอนุสาวรีย์ ประตูชุมพล วัด ซุ้มพระบรมฉายาลักษณ์**
+4. **ฝน + ถนนเปียก**: เม็ดฝน (GPU particles รอบกล้อง) · ถนนสะท้อนไฟแบบถูก (roughness ต่ำ + env/planar ราคาถูก หรือ screen-space ปลอม) · แอ่งน้ำตาม PHYSICS (ตำแหน่งให้ car-physics hydroplane ได้ — export) · ตั้ง `rain = 1` ในฟิสิกส์รถเมื่อฝนเปิด (ค่าเปียก ×0.85)
+5. คูเมืองสะท้อนไฟ (ใช้จุดเสียบของ landmarks-3d) · ย่าโมยังสว่างสวยที่สุดในฉาก ไม่มีนีออนรบกวน
+6. หน้าเมนูใช้ภาพปกจาก art เมื่อมา · ภาพเทียบก่อน/หลัง 5 มุม เก็บ `refs/m3/` + วัดงบ
