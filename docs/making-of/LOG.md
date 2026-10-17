@@ -35,6 +35,7 @@
 | 18:35 | Tle เลือกสนาม A วงคูเมือง 3.36 กม. → เปิด 🔎 streetview-A เก็บข้อมูลให้ครบวง · แจ้ง backend/gameplay | Tle + conductor |
 | 18:38 | Tle ถามเรื่องฟิสิกส์ → conductor เสนอ 4 จุดโชว์จากข้อมูลจริง · Tle เลือกครบ 4 → เปิด 🧮 physics (คำนวณจากสเปกรถ + ขนาดคูเมือง พร้อมสคริปต์จำลองพิสูจน์ตัวเลข) | Tle + conductor |
 | 18:41 | Tle ย้ำ: content จะโพสต์ Facebook → เปิด ✍️ content ร่างโพสต์ long form ตั้งแต่ตอนนี้ (อัปเดตทุก milestone) | Tle + conductor |
+| 18:39 | ⚙️ backend ส่งงาน (9 นาที): Vite + three.js scaffold · API leaderboard 4 ตัว · base path /koratrocketcar · typecheck/build ผ่าน → **ติด: Tle ต้องกดยอมรับเงื่อนไข Neon บน Vercel** (pane หยุดเองตามบรีฟ ไม่กดแทน) | backend |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
