@@ -103,7 +103,8 @@ test('PERF-10 no leak: 10 autopilot laps with restart + 10 menu round-trips', as
   }
   for (let i = 0; i < 10; i++) await page.evaluate(async () => { const g = window.__game!; await g.qa.toMenu(); await g.qa.start('A', { laps: 1, skipCountdown: true }); });
   const end = await snap();
-  const r2 = rows[1] as { geo: number; tex: number; prog: number; heap: number };
+  // Baseline = lap 3: the first finishes build the ghost car / results UI once (+2 geometries, +2 programs) — warm-up, not a leak.
+  const r2 = rows[2] as { geo: number; tex: number; prog: number; heap: number };
   const r10 = rows[9] as { geo: number; tex: number; prog: number; heap: number };
   record(test.info(), 'PERF-10', { rows, end, heapGrowthPct: ((end.heap - r2.heap) / r2.heap) * 100 });
   expect(r10.geo).toBe(r2.geo); expect(r10.tex).toBe(r2.tex); expect(r10.prog).toBe(r2.prog);

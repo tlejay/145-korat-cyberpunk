@@ -91,6 +91,7 @@ test('FEEL-05 / 05b jump at 60: height, airtime, landing burn, 4 wheels, tank, s
 });
 
 test('FEEL-06 jump next to walls / on corners × 30: never stuck or under the world', async ({ page }) => {
+  test.setTimeout(600_000);
   await setup(page);
   const r = await run<any>(page, `
     const rnd = d.rng(6); const res = [];

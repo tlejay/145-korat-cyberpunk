@@ -22,3 +22,11 @@
 - แทนทุกที่ที่ผู้เล่นเห็น: `<title>` + meta (index.html), หัวเมนู, หน้าโหลด, หน้าเครดิต, ข้อความแชร์/OG ถ้ามี, ข้อความ error ที่อ้างชื่อเกม · ภาษาอังกฤษ (ถ้ามี) = "Korat Roadster"
 - ห้ามเปลี่ยน: ชื่อโปรเจค/repo/โฟลเดอร์/URL `/koratrocketcar/`/ชื่อ Vercel project · `src/ui/**` อาจมี visuals แก้อยู่ — แก้เฉพาะข้อความ
 - หลังแก้ grep ชื่อเก่าใน src index.html public ต้องไม่เหลือในส่วนที่ผู้เล่นเห็น · test UI ที่เช็คชื่อเกมให้อัปเดตด้วย
+
+## จาก QA รอบ M1 (`docs/qa/reports/2026-10-17-build002.md`) — conductor 20:52 · เรียงตามความสำคัญ
+- #6 🔴 **MOB-03** ลากนิ้วออกจากปุ่มแล้วปุ่มค้าง (pointer capture ติดที่ `<path>` ของไอคอน) — แก้ตามที่ QA เสนอใน report + test `tests/qa/mobile.spec.ts` ต้องผ่าน
+- #7 🔴 **DEP-03** asset ที่มี hash ต้อง `Cache-Control: public, max-age=31536000, immutable` ใน `vercel.json` (อย่าครอบ `assets/audio/` ที่ไม่มี hash) · index.html คง max-age=0
+- #8 🟡(สำคัญ) **กล้องหลุดจากรถเมื่อ fps ต่ำ** (จำกัดระยะ "ต่อเฟรม" → 20 fps หลุด 107 ม.) — ทำให้ขึ้นกับเวลา (dt) และ snap ถ้าห่างเกิน · test ที่ fps 15/20/30
+- #9 🟡 hook `qa.teleport(x,z,yaw,speedKmh)` ต้องใส่ความเร็วให้รถจริง (PHY-04 ต้องรันได้)
+- FEEL-05: **conductor ตัดสินแล้ว** = ผ่าน · เกณฑ์ใหม่ "ล้อไม่ต่ำกว่าผิวถนน และตัวรถยุบ ≥ −0.15 ม." (ช่วงล่างยุบจริง) — อัปเดต TEST-PLAN FEEL-05 + test
+- ส่ง REPORT-fix ให้ครบทุกข้อ · QA จะรันซ้ำตอนจบ M3
