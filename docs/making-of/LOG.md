@@ -154,3 +154,4 @@
 
 - 04:12–05:08 🩹 hotfix arch-flicker (pane 36, w54:p14): z-fighting ประตูชุมพล + 4 จุด → v0.3.1-build004 deploy prod · แจ้ง Mint #476
 - 05:29 🖼️ cover-r1 (pane 37, w54:p15) 2 รอบ (รอบแรกรถโดนครอป ตีกลับ) → v0.3.2-build005 deploy prod จาก worktree สะอาด · แจ้ง Mint
+- 06:38 🛞 handling (pane 38, w54:p16): wobble ทางตรง 0.49°→0.11° → v0.3.3-build006 deploy prod · แจ้ง Mint
