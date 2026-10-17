@@ -12,7 +12,7 @@
 - [x] Landmarks: อนุสาวรีย์ ประตูชุมพล ฯลฯ + ภาพ CC → `research/landmarks/`
 - [x] Car: Tesla Roadster รุ่นใหม่ — ข่าว สเปก ฟีเจอร์กระโดด/ออกตัว รูปทรงด้านท้าย → `research/car/`
 - [x] Backend: scaffold + Vercel + Neon + leaderboard API → `docs/dev/REPORT-leaderboard.md`
-- [ ] Physics: โมเดล + 4 จุดโชว์ (ข้ามคูเมือง, ออกตัว 4.6g, ดริฟต์ 148°, ฝน+สายไฟ) → `docs/dev/PHYSICS.md`
+- [x] Physics: โมเดล + 4 จุดโชว์ (ข้ามคูเมือง, ออกตัว 4.6g, ดริฟต์ 148°, ฝน+สายไฟ) → `docs/dev/PHYSICS.md`
 - [x] Content (ร่าง 1): ร่างโพสต์ Facebook long form → `docs/content/facebook-post.md`
 - [x] Gameplay: การควบคุม กล้อง ฟิสิกส์ สูตรแต้ม → `docs/dev/GAMEPLAY.md`
 - [x] Audio: BGM + SFX license ใช้ได้ + แนวทางใช้บนมือถือ → `research/audio/`
