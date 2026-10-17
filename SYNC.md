@@ -17,7 +17,7 @@
 - [x] Gameplay: การควบคุม กล้อง ฟิสิกส์ สูตรแต้ม → `docs/dev/GAMEPLAY.md`
 - [x] Audio: BGM + SFX license ใช้ได้ + แนวทางใช้บนมือถือ → `research/audio/`
 - [x] Street View รอบ 1 (8 ถนนรอบลาน)
-- [ ] Street View รอบ 2: สนาม A ทั้งวง → `research/streetview/REPORT-track-A.md`
+- [x] Street View รอบ 2: สนาม A ทั้งวง → `research/streetview/REPORT-track-A.md`
 
 - [x] QA: TEST-PLAN + TEST-HOOKS + RELEASE-GATE → `docs/qa/` (QA เป็นด่านก่อน production ทุกครั้ง)
 
