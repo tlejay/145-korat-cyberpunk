@@ -255,8 +255,8 @@
       "use": "Menu/loading background (desktop, high tier) + Facebook post cover. Title goes in the empty sky top-centre.",
       "size": "1920x1080",
       "artwork_aspect": "16:9",
-      "bytes": 238636,
-      "source": "~gpt-generated-images/mobile-racing-thai-rain-keyart.png",
+      "bytes": 95886,
+      "source": "in-game render: ?demo=1&shot=cover&hud=0&fixedDt=1&quality=high, DPR 2, Lanczos down (hotfix round 2 2026-10-18, replaces imagegen key art; prompt below is history)",
       "prompt": "Generate ONE image: cinematic key art cover for a mobile racing game. Subject: ONE white wedge-shaped two-door electric hypercar (low long hood, fastback, a sleek generic design not resembling any real brand, no badges, no license plate text) seen from BEHIND at a low three-quarter rear angle, its single full-width thin red LED light bar glowing across the entire rear, driving fast on a wet asphalt road at night, red and neon reflections on the puddles, rain falling. Setting: a Thai provincial town street lined with 3 to 5 storey concrete shophouses with metal roller shutters, overhead tangled electric cables on concrete poles, blank glowing neon sign boxes in magenta, cyan and amber with NO lettering, steam from a street food cart, a few palm trees. Not a megacity, no skyscrapers. Mood: cyberpunk, electric, rainy, cinematic, shallow depth of field, motion blur on the road. No monuments, no statues, no people faces, no logos. SIZE: WIDE LANDSCAPE 16:9 (for example 1920 x 1080), do NOT produce a square image. Keep the car in the lower middle third with free space at the top for a game title added later. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
       "gpu_mb": 0,
       "notes": "DOM <img>/meta only - not a GPU texture."
@@ -266,8 +266,8 @@
       "use": "Menu/loading background for mobile (low/mid tier).",
       "size": "1280x720",
       "artwork_aspect": "16:9",
-      "bytes": 132174,
-      "source": "~gpt-generated-images/mobile-racing-thai-rain-keyart.png",
+      "bytes": 55866,
+      "source": "in-game render: ?demo=1&shot=cover&hud=0&fixedDt=1&quality=high, DPR 2, Lanczos down (hotfix round 2 2026-10-18, replaces imagegen key art; prompt below is history)",
       "prompt": "Generate ONE image: cinematic key art cover for a mobile racing game. Subject: ONE white wedge-shaped two-door electric hypercar (low long hood, fastback, a sleek generic design not resembling any real brand, no badges, no license plate text) seen from BEHIND at a low three-quarter rear angle, its single full-width thin red LED light bar glowing across the entire rear, driving fast on a wet asphalt road at night, red and neon reflections on the puddles, rain falling. Setting: a Thai provincial town street lined with 3 to 5 storey concrete shophouses with metal roller shutters, overhead tangled electric cables on concrete poles, blank glowing neon sign boxes in magenta, cyan and amber with NO lettering, steam from a street food cart, a few palm trees. Not a megacity, no skyscrapers. Mood: cyberpunk, electric, rainy, cinematic, shallow depth of field, motion blur on the road. No monuments, no statues, no people faces, no logos. SIZE: WIDE LANDSCAPE 16:9 (for example 1920 x 1080), do NOT produce a square image. Keep the car in the lower middle third with free space at the top for a game title added later. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
       "gpu_mb": 0,
       "notes": "DOM <img>/meta only - not a GPU texture."
@@ -277,8 +277,8 @@
       "use": "og:image / twitter:image (JPEG on purpose - Facebook/LINE crawlers do not reliably read WebP).",
       "size": "1200x630",
       "artwork_aspect": "1.91:1 (bottom-anchored crop of 16:9)",
-      "bytes": 179295,
-      "source": "~gpt-generated-images/mobile-racing-thai-rain-keyart.png",
+      "bytes": 70468,
+      "source": "in-game render: ?demo=1&shot=og-cover&hud=0&fixedDt=1&quality=high, DPR 2, Lanczos down (hotfix round 2 2026-10-18, replaces imagegen key art; prompt below is history)",
       "prompt": "Generate ONE image: cinematic key art cover for a mobile racing game. Subject: ONE white wedge-shaped two-door electric hypercar (low long hood, fastback, a sleek generic design not resembling any real brand, no badges, no license plate text) seen from BEHIND at a low three-quarter rear angle, its single full-width thin red LED light bar glowing across the entire rear, driving fast on a wet asphalt road at night, red and neon reflections on the puddles, rain falling. Setting: a Thai provincial town street lined with 3 to 5 storey concrete shophouses with metal roller shutters, overhead tangled electric cables on concrete poles, blank glowing neon sign boxes in magenta, cyan and amber with NO lettering, steam from a street food cart, a few palm trees. Not a megacity, no skyscrapers. Mood: cyberpunk, electric, rainy, cinematic, shallow depth of field, motion blur on the road. No monuments, no statues, no people faces, no logos. SIZE: WIDE LANDSCAPE 16:9 (for example 1920 x 1080), do NOT produce a square image. Keep the car in the lower middle third with free space at the top for a game title added later. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
       "gpu_mb": 0,
       "notes": "DOM <img>/meta only - not a GPU texture."

@@ -56,7 +56,8 @@ export function getTrackRule(id: unknown, allowTest: boolean): TrackRule | null 
 // drop old ones once their physics/scoring is no longer comparable.
 // build003 only changed body roll after wall hits + visuals → build002 lap times stay comparable.
 // build004 is a visual hotfix (z-fighting) → build003 lap times stay comparable.
-export const ACCEPTED_BUILDS: readonly string[] = [VERSION, 'v0.3.0-build003', 'v0.2.0-build002'];
+// build005 only swaps the cover/OG images → build004 lap times stay comparable.
+export const ACCEPTED_BUILDS: readonly string[] = [VERSION, 'v0.3.1-build004', 'v0.3.0-build003', 'v0.2.0-build002'];
 
 export const SCORE = {
   timeBase: 100_000, // score at exactly par

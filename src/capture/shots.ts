@@ -309,6 +309,13 @@ export const SHOTS: Record<string, Shot> = {
     },
   },
 
+  // Key art (docs/dev/hotfix/BRIEF-cover-from-r1.md): R1 cruising in the rain, rigid low rear three-quarter
+  // camera turned so the whole car sits right of centre. cover = menu/loading backdrop (car in the right half,
+  // clear of the title + buttons), og-cover = share image, 1200×630 viewport (car centre-right, Wat
+  // Sutthachinda's gate in the distance). Every number can be overridden from the URL (coverS=…, see keyArt).
+  cover: keyArtShot({ s: 1720, yaw: 11 }),
+  'og-cover': keyArtShot({ s: 2900, yaw: 6 }),
+
   // Flythrough: slow crane past the monument and Chumphon Gate at night in the rain (no car in frame).
   fly: {
     seconds: 14, cam: 'fly',
@@ -338,6 +345,43 @@ let jumpLine: { T: { x: number; z: number }; u: { x: number; z: number } } | nul
 let jumpT = -1;
 const Q = new URLSearchParams(location.search);
 const JUMP_RUN = Number(Q.get('jumpRun') ?? 20), JUMP_KMH = Number(Q.get('jumpKmh') ?? 100), JUMP_HOVER = Number(Q.get('jumpHover') ?? 0.64), JUMP_AT = Number(Q.get('jumpAt') ?? -10);
+const cq = (k: string, d: number) => Number(Q.get(k) ?? d);
+function keyArt(d: { s: number; yaw: number }) {
+  // 25 km/h keeps the wet-road wheel spray from puffing up over the tail
+  return {
+    s: cq('coverS', d.s), kmh: cq('coverKmh', 25), lat: cq('coverLat', 0),
+    right: cq('coverRight', -3.4), up: cq('coverUp', 0.55), fwd: cq('coverFwd', -5.6),
+    lookFwd: cq('coverLookFwd', 0), lookUp: cq('coverLookUp', 0.6), fov: cq('coverFov', 48),
+    yaw: cq('coverYaw', d.yaw), pitch: cq('coverPitch', 3),
+    // optional fixed world camera: coverPos=x,y,z&coverLook=x,y,z (overrides the car-relative one)
+    pos: cv('coverPos'), look: cv('coverLook'),
+  };
+}
+// URL params are read lazily: SHOTS is built before the constants below exist.
+function keyArtShot(d: { s: number; yaw: number }): Shot {
+  let kk: ReturnType<typeof keyArt> | null = null;
+  const K = () => (kk ??= keyArt(d));
+  return {
+    seconds: 4, cam: 'fly', wing: 'up',
+    async setup(c) { const k = K(); await raceFromGrid(c, true); c.place(k.s, k.kmh, k.lat); c.preroll(1, (cc) => follow(cc, k.kmh)); },
+    drive: tracked((c) => follow(c, K().kmh)),
+    fly: (c) => { const k = K(); return k.pos && k.look
+      ? { pos: k.pos, look: k.look, fov: k.fov }
+      : { ...aim(carFrame(c, k.right, k.up, k.fwd, k.lookFwd, k.lookUp), k.yaw, k.pitch), fov: k.fov }; },
+  };
+}
+/** Turn the view yaw° left (car slides right in frame) and pitch° up, keeping the camera where it is. */
+function aim(p: CamPose, yawDeg: number, pitchDeg: number): CamPose {
+  const dx = p.look[0] - p.pos[0], dy = p.look[1] - p.pos[1], dz = p.look[2] - p.pos[2];
+  const a = (yawDeg * Math.PI) / 180, h = Math.hypot(dx, dz);
+  const rx = dx * Math.cos(a) + dz * Math.sin(a), rz = -dx * Math.sin(a) + dz * Math.cos(a);
+  const el = Math.atan2(dy, h) + (pitchDeg * Math.PI) / 180;
+  return { ...p, look: [p.pos[0] + rx, p.pos[1] + Math.tan(el) * h, p.pos[2] + rz] };
+}
+function cv(k: string): Vec | null {
+  const v = Q.get(k)?.split(',').map(Number);
+  return v && v.length === 3 && v.every(Number.isFinite) ? (v as Vec) : null;
+}
 let driftT = -1;
 const DRIFT_AT = Number(new URLSearchParams(location.search).get('driftAt') ?? 45);
 const DRIFT_KMH = Number(new URLSearchParams(location.search).get('driftKmh') ?? 100);

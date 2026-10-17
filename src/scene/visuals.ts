@@ -291,6 +291,7 @@ function streetLights(ex: TrackExtras): LightSrc[] {
 
 // Menu / loading backdrop: the art pane's cover image while the city loads, then it fades out so the
 // menu shows the live 3D plaza with Ya Mo (conductor decision M3: cover = loading, live scene = menu).
+// Anchored at 80 % across: the car sits in the right half, so screens narrower than 16:9 crop the left side.
 // Called by the engine right after the menu is shown (before the world finishes loading).
 export function applyMenuCover(ui: HTMLElement) {
   const art = getArt();
@@ -300,7 +301,7 @@ export function applyMenuCover(ui: HTMLElement) {
   const cover = document.createElement('div');
   cover.className = 'menu-cover';
   cover.setAttribute('aria-hidden', 'true');
-  cover.style.cssText = `position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 60%, rgba(7,6,15,0.1), rgba(7,6,15,0.7)), url("${url}") center / cover no-repeat;transition:opacity 1.2s ease;`;
+  cover.style.cssText = `position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 60%, rgba(7,6,15,0.1), rgba(7,6,15,0.7)), url("${url}") 80% 50% / cover no-repeat;transition:opacity 1.2s ease;`;
   menu.prepend(cover);
   // fade once the start button is enabled (world + shaders ready)
   const btn = menu.querySelector<HTMLButtonElement>('[data-qa=btn-start]');
