@@ -79,11 +79,16 @@ pnpm dev · pnpm typecheck · pnpm build · pnpm preview
 - กรณีที่ต้องออกแบบไว้: WebGL ไม่รองรับ · โหลดข้อมูลแผนที่ไม่สำเร็จ (มีปุ่ม "ลองใหม่") · จอแนวตั้ง (บอกให้หมุนจอ) · fps ต่ำมาก (เสนอลดคุณภาพกราฟิก)
 - หน้าตาตาม design ของเกม (นีออน cyberpunk) · `role="alert"` สำหรับข้อความ error
 
-## 10. Research panes (herdr)
+## 10. Conductor + Agent panes (herdr) — กติกาหลักของโปรเจคนี้
 
-งานสำรวจสถานที่แบ่งให้ Claude แยก tab ใน workspace `145 KORAT Cyberpunk` — บรีฟอยู่ `docs/research/BRIEF-*.md` ผลลัพธ์ลง `research/<หัวข้อ>/`
-- มี pane ที่ใช้ Chrome (Street View) ได้ **ตัวเดียว** — Chrome ตัวเดียวแชร์กันหลาย agent จะแย่ง tab กัน
-- pane research **ห้าม commit** — pane หลัก (conductor) เป็นคนตรวจแล้ว commit รวม
+Tle สั่ง 2026-10-17: **Claude ใน tab ซ้ายสุด (`🏁 main`) = วาทยากร (conductor) เท่านั้น — ห้ามลงมือทำงานเอง**
+- Tle คุยงานผ่าน conductor คนเดียว · conductor แตกงาน → เขียนบรีฟ `docs/<หมวด>/BRIEF-*.md` → เปิด tab ใหม่ใน workspace `145 KORAT Cyberpunk` รัน Claude เป็นลูกน้อง → ตรวจงาน → commit/push/deploy รวม → สรุปให้ Tle
+- งานที่ conductor ทำเองได้: เขียน/แก้บรีฟ, CLAUDE.md, SYNC.md, ตรวจผลงาน (อ่านไฟล์ รัน typecheck/build ตรวจ), git commit/push, ตัดสินใจถาม Tle — **ห้ามเขียนโค้ดเกม/ปั้นโมเดล/ทำ research เอง**
+- ตรวจงานไม่ผ่าน → ส่งกลับ pane เดิม (ถ้ายังเปิด) หรือเปิด pane ใหม่พร้อมบรีฟแก้
+- ลูกน้องทำงานเสร็จ = เขียนผลลงไฟล์ตามบรีฟ (สรุปบนสุด) แล้วจบ turn → conductor อ่านรายงาน → **ปิด tab ของลูกน้องทิ้งได้เลย** (`herdr tab close`) ไม่ต้องถาม Tle
+- เปิด pane: `herdr tab create --workspace w54 --cwd <โปรเจค> --label "<emoji> <งาน>" --no-focus` → `herdr pane run <pane> "claude --permission-mode bypassPermissions '<สั่งงาน>'"` → `send-keys Enter` → pane ใหม่จะถามว่าเชื่อถือโฟลเดอร์ไหม: ส่ง `Down` แล้ว `Enter` → รอจนขึ้น `working`
+- ลูกน้อง **ห้าม commit / push / deploy** · ใช้ Chrome ได้ **ทีละ pane** เท่านั้น
+- workspace id อาจเปลี่ยน — `herdr workspace list` ก่อนทุกครั้ง
 
 ## 11. Gotchas (เติมเมื่อเจอจริง พร้อมวันที่)
 
