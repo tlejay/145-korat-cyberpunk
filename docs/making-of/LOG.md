@@ -139,3 +139,4 @@
 | 29 | 🔍 car-ref | เทียบโมเดลรถกับรูปทางการ tesla.com | 22:21 | 23:05 | 44 นาที | `docs/research/REPORT-car-ref.md` |
 | 30 | 🌐 madebytle | ต่อ madebytle.com/koratrocketcar | 00:25 | 00:33 | 9 นาที | `docs/dev/release/REPORT-madebytle.md` |
 | 31 | 🔧 polish | แก้หลัง production → v0.3.0 | 00:25 | 01:11 | 45 นาที | `docs/dev/release/REPORT-polish.md` |
+| 32 | 🎬 clips | โหมดเดโม่ผ่าน URL + promo/ ให้ Mint | 01:13 | | | |
