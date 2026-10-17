@@ -5,7 +5,7 @@ import { decodeGhost, encodeGhost } from '../net/ghost.js';
 import type { Ghost } from '../net/ghost-format.js';
 import { getTopGhost } from '../net/leaderboard.js';
 import { GAS, TRACK_RULES, computeScore } from '../net/score.js';
-import { clearQaInput, inputInfo, installKeyboard, lastInput, pollGamepad, resetInput, sample } from '../input/index.js';
+import { ASSIST, clearQaInput, inputInfo, installKeyboard, laneAlignSteer, lastInput, pollGamepad, resetInput, sample } from '../input/index.js';
 import { createTouchControls, type TouchControls } from '../input/touch.js';
 import { emit, game, setState } from '../state.js';
 import type { AudioEvent, Car, GameAudio, InputState, Track } from '../types.js';
@@ -22,7 +22,7 @@ import { autopilotInput } from './autopilot.js';
 import { GhostCar } from './ghost.js';
 import { Metrics } from './metrics.js';
 import { loadAudioModule, loadCarModule, loadCheckpointModule, loadFxModule, loadTrackModule, sources, type Checkpoint, type Fx } from './modules.js';
-import { angleDiff } from './path.js';
+import { angleDiff, headingOf } from './path.js';
 import { getQuality, lowerQuality, onQuality } from './quality.js';
 import { GAME, Race, type RaceEvent } from './race.js';
 import { flushPending, RunTicket } from './submit.js';
@@ -571,13 +571,19 @@ function applyAutoThrottle(inp: InputState): InputState {
 }
 
 // Steering assist layer 3 — align with the road when not steering (GAMEPLAY §1.3).
+// Target = chord heading over laneAlignSpanM: the per-5 m segment heading zigzags ±1° on straight
+// roads, and chasing it rocked the car (hotfix handling-wobble).
+let assistPrevHeading = NaN;
 function assist(inp: InputState): InputState {
   const race = E.race!, s = E.car!.state;
+  const yawRate = angleDiff(s.pose.heading, assistPrevHeading) / STEP;
+  assistPrevHeading = s.pose.heading;
   const k = settings.assist === 'off' ? 0 : settings.assist === 'high' ? 0.9 : 0.5;
   if (!k || Math.abs(inp.steer) > 0.02 || s.drifting || s.airborne || s.speedKmh < 20 || E.autopilot) return inp;
-  const err = angleDiff(race.path.at(race.progressM + 8).heading, s.pose.heading);
+  const a = race.path.at(race.progressM + ASSIST.laneAlignSpanM[0]), b = race.path.at(race.progressM + ASSIST.laneAlignSpanM[1]);
+  const err = angleDiff(headingOf(b.x - a.x, b.z - a.z), s.pose.heading);
   if (Math.abs(err) > (15 * Math.PI) / 180) return inp;
-  return { ...inp, steer: Math.max(-0.35, Math.min(0.35, err * k * 1.5)) };
+  return { ...inp, steer: laneAlignSteer(err, Number.isFinite(yawRate) && Math.abs(yawRate) < 5 ? yawRate : 0, k) };
 }
 
 // Jump/BOOST locks: plaza zone (GAMEPLAY §2.5) or not enough gas (§2.4).

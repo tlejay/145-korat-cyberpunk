@@ -328,6 +328,15 @@ export class CarPhysics {
             const lim = T.yawAssistMaxNm;
             rDot += clamp(mz, -lim, lim) / Iz;
           }
+          // straight-line stability: near-centred wheel → torque vectoring pulls the yaw rate onto the
+          // kinematic rate of that steer angle, so a released tap stops turning instead of coasting on
+          // (fades out by |steer| = yawDampSteer, so corners and drift entry are untouched).
+          const free = 1 - Math.abs(inp.steer) / T.yawDampSteer;
+          if (free > 0) {
+            const rCap = (muSurf * (1 + this.fan) * G) / Math.max(u, 1);
+            const rKin = clamp((u * Math.tan(delta)) / L, -rCap, rCap);
+            rDot += clamp(-Iz * T.yawDamp * free * (this.r - rKin), -T.yawAssistMaxNm, T.yawAssistMaxNm) / Iz;
+          }
         }
         this.fxTyre = fxR + fxF;
         if (this.driftExitT > 0) {

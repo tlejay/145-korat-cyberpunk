@@ -389,7 +389,7 @@ export function validateRun(r: RunResult, t: { startedAtMs: number; nowMs: numbe
 
 | กลุ่ม | key (ค่าเริ่มต้น) |
 |---|---|
-| assist | `assist.rampLowS` 0.10 · `assist.rampHighS` 0.22 · `assist.returnS` 0.08 · `assist.laneAlignRad` 0.5 · `assist.laneAlignMaxDeg` 15 · `assist.autoDrift` false |
+| assist | `assist.rampLowS` 0.10 · `assist.rampHighS` 0.22 · `assist.returnS` 0.08 · `assist.laneAlignRad` 0.5 · `assist.laneAlignMaxDeg` 15 · `assist.laneAlignSpanM` [10, 60] (เป้าทิศถนน = คอร์ด 10–60 ม. ข้างหน้า) · `assist.laneAlignKp` 3.5 · `assist.laneAlignKd` 0.05 (hotfix handling-wobble 2026-10-18) · `assist.autoDrift` false |
 | ดริฟต์ (กติกา) | `game.driftEnterSteer` 0.5 · `game.driftEnterKmh` 50 · `game.driftCountSlipDeg` 15 · `game.driftTapS` 0.35 |
 | ถังลม (เศรษฐกิจ) | `game.tankStart` 100 · `game.regen` 3 · `game.regenDelayS` 1.5 · `game.driftRegen` 10 · `game.landingBonus` 5 · `game.refillGate` 35 |
 | launch | `game.launchWindowS` 0.15 · `game.launchLateMaxS` 0.5 · `game.launchArmMinS` 0.4 · `game.falseStartSpinS` 0.5 |

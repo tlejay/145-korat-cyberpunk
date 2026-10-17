@@ -7,8 +7,16 @@ export type Source = 'touch' | 'keyboard' | 'gamepad' | 'qa';
 
 export const ASSIST = {
   rampLowS: 0.10, rampHighS: 0.22, returnS: 0.08, // GAMEPLAY §1.3 layer 1
-  laneAlignRad: 0.5, laneAlignMaxDeg: 15,          // layer 3 (applied by the game, see race.ts)
+  laneAlignRad: 0.5, laneAlignMaxDeg: 15,          // layer 3 (applied by the game, see engine.ts assist())
+  laneAlignSpanM: [10, 60] as [number, number],     // road heading = chord over this window ahead (5 m path steps are jagged)
+  laneAlignKp: 3.5,                                  // steer per rad of heading error (× strength k)
+  laneAlignKd: 0.05,                                 // s, yaw-rate damping so the assist never rocks the car
 };
+
+/** Layer 3 law: steer toward the road heading (P) minus yaw rate (D), k = assist strength. */
+export function laneAlignSteer(errRad: number, yawRate: number, k: number) {
+  return Math.max(-0.35, Math.min(0.35, (errRad - yawRate * ASSIST.laneAlignKd) * k * ASSIST.laneAlignKp));
+}
 
 interface Raw { left: boolean; right: boolean; throttle: number; brake: number; jump: boolean; boost: boolean; axis: number | null }
 

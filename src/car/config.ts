@@ -73,6 +73,8 @@ export const TUNING = {
   escKp: 30,
   escKd: 4,
   yawAssistMaxNm: 23500, // real rear torque vectoring limit (PHYSICS §1.3)
+  yawDamp: 16, // 1/s, yaw-rate damping with the wheel centred (hotfix handling-wobble)
+  yawDampSteer: 0.1, // |steer| where that damping has faded out
   tcShare: 0.6, // traction control while steering
   driftCountDeg: 15,
 

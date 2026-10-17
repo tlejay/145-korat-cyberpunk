@@ -153,3 +153,4 @@
 | 35 | 📘 readme | README + เปิด repo public | 02:14 | 02:19 | 5 นาที | `README.md` `docs/readme/` |
 
 - 04:12–05:08 🩹 hotfix arch-flicker (pane 36, w54:p14): z-fighting ประตูชุมพล + 4 จุด → v0.3.1-build004 deploy prod · แจ้ง Mint #476
+- 05:29 🖼️ cover-r1 (pane 37, w54:p15) 2 รอบ (รอบแรกรถโดนครอป ตีกลับ) → v0.3.2-build005 deploy prod จาก worktree สะอาด · แจ้ง Mint
