@@ -8,7 +8,7 @@ import { GAS, TRACK_RULES, computeScore } from '../net/score.js';
 import { clearQaInput, inputInfo, installKeyboard, lastInput, pollGamepad, resetInput, sample } from '../input/index.js';
 import { createTouchControls, type TouchControls } from '../input/touch.js';
 import { emit, game, setState } from '../state.js';
-import type { Car, GameAudio, InputState, Track } from '../types.js';
+import type { AudioEvent, Car, GameAudio, InputState, Track } from '../types.js';
 import { showError } from '../ui/error.js';
 import { createHud, type Hud } from '../ui/hud.js';
 import { showLeaderboard } from '../ui/leaderboard.js';
@@ -16,10 +16,11 @@ import { showResults } from '../ui/results.js';
 import { showCredits, showMenu, showPause, showSettings, showTutorial } from '../ui/screens.js';
 import { buzz, saveSettings, settings } from '../ui/settings.js';
 import { VERSION } from '../version.js';
+import { applyMenuCover, createVisuals, type Visuals } from '../scene/visuals.js';
 import { autopilotInput } from './autopilot.js';
 import { GhostCar } from './ghost.js';
 import { Metrics } from './metrics.js';
-import { loadAudioModule, loadCarModule, loadTrackModule, sources } from './modules.js';
+import { loadAudioModule, loadCarModule, loadCheckpointModule, loadFxModule, loadTrackModule, sources, type Checkpoint, type Fx } from './modules.js';
 import { angleDiff } from './path.js';
 import { getQuality, lowerQuality, onQuality } from './quality.js';
 import { GAME, Race, type RaceEvent } from './race.js';
@@ -44,6 +45,9 @@ export const E = {
   camera: new THREE.PerspectiveCamera(55, 16 / 9, 0.1, 600),
   track: null as Track | null,
   car: null as Car | null,
+  visuals: null as Visuals | null,   // M3 cyberpunk pass (src/scene/visuals.ts) — null = plain render
+  fx: null as Fx | null,             // M3 fx pane (src/fx) when present
+  checkpoint: null as Checkpoint | null, // M3 alcohol checkpoint (src/checkpoint) when present
   audio: null as AudioX | null,
   race: null as Race | null,
   hud: null as Hud | null,
@@ -127,6 +131,7 @@ export async function boot(ui: HTMLElement, canvas: HTMLCanvasElement) {
 
   setPhase('loading');
   menuView = showMenu(ui, { loading: true, onStart: () => void startFromMenu(), onBoard: () => showLeaderboard(ui), onCredits: () => showCredits(ui), onSettings: openSettings });
+  applyMenuCover(ui);
 
   renderer.setAnimationLoop(frame);
   if (NET) void flushPending();
@@ -141,6 +146,17 @@ async function loadWorld() {
     if (sources.track === 'real') E.scene.children.filter((o) => o.name === 'engine-fallback-light').forEach((o) => E.scene.remove(o));
     E.car = car;
     E.scene.add(car.object);
+    // M3: night/neon/rain/bloom. A failure here must never block the race — fall back to a plain render.
+    try {
+      E.visuals?.dispose();
+      E.visuals = createVisuals({ renderer: E.renderer, scene: E.scene, camera: E.camera, track, car });
+    } catch (err) {
+      console.warn('[game] visuals failed, plain render', err);
+      E.visuals = null;
+    }
+    E.fx = await loadFxModule(E.scene, track, car);
+    E.checkpoint = await loadCheckpointModule(E.scene, track, car);
+    if (E.checkpoint) wireCheckpoint(E.checkpoint);
     E.audio = audio;
     applyVolumes();
     applyShake();
@@ -216,6 +232,7 @@ export async function startRace(opts: { skipCountdown?: boolean; intro?: boolean
   if (opts.laps && opts.laps > 0) E.laps = Math.min(opts.laps, 9);
   E.race = newRace();
   E.race.reset();
+  E.checkpoint?.reset?.();
   E.hud!.setPath(E.race.path);
   E.ticket = NET && E.laps === TRACK_RULES[TRACK_ID].laps ? new RunTicket(TRACK_ID) : null;
   E.acc = 0;
@@ -248,6 +265,7 @@ function beginCountdown() {
   setPhase('countdown');
   E.hud!.countdown('3');
   E.audio?.play('countdown3');
+  countdownShown = '3'; // already announced — stepOnce() must not fire countdown3 again ("Three, Three")
   if (!settings.tutorialSeen || (E.race?.lapTimes.length === 0 && !localStorageGet('launchHintSeen'))) {
     E.hud!.toast('กดค้างสายฟ้า แล้วปล่อยตอน "ไป!" เพื่อออกตัวเร็ว');
     localStorageSet('launchHintSeen', '1');
@@ -365,6 +383,24 @@ function onEvent(e: RaceEvent) {
       break;
     case 'refill': hud.combo('เติมลม +35'); break;
   }
+}
+
+// Checkpoint events → HUD / audio / haptics (contract in modules.ts).
+function wireCheckpoint(cp: Checkpoint) {
+  type D = { text?: string; audio?: AudioEvent; impulse?: number };
+  const on = (name: string, fn: (d: D) => void) =>
+    cp.events.addEventListener(name, (e) => {
+      const d = ((e as CustomEvent).detail ?? {}) as D;
+      emit('roadblock', { type: name, ...d }); // QA on('roadblock')
+      fn(d);
+    });
+  on('hint', (d) => { if (d.text) E.hud?.toast(d.text); if (d.audio) E.audio?.play(d.audio); });
+  on('clear', (d) => { if (d.text) E.hud?.combo(d.text); if (d.audio) E.audio?.play(d.audio); buzz([20, 40, 20]); });
+  on('crash', (d) => {
+    if (d.text) E.hud?.combo(d.text);
+    E.audio?.play(d.audio ?? 'crash');
+    buzz(Math.round(Math.min(60, 30 + (d.impulse ?? 0) / 1000)));
+  });
 }
 
 async function finishRace() {
@@ -529,8 +565,11 @@ function render(dt: number) {
       if (stuck !== E.stuckShown) { E.stuckShown = stuck; E.hud?.showRespawnPrompt(stuck); }
     }
     E.camStats.totalFrames++;
+    E.fx?.update(dt, cam);
+    if (E.phase === 'racing' || E.phase === 'countdown') E.checkpoint?.update(dt);
   }
-  E.renderer.render(E.scene, cam);
+  if (E.visuals) E.visuals.render(dt);
+  else E.renderer.render(E.scene, cam);
 }
 
 const HAIRPIN = 80;
@@ -603,6 +642,7 @@ function resize() {
   E.renderer.setSize(w, h, false);
   E.camera.aspect = w / h;
   E.camera.updateProjectionMatrix();
+  E.visuals?.setSize();
 }
 
 function enterFullscreen() {

@@ -8,13 +8,18 @@ import { G } from './config.js';
 
 export interface CableSpan { ax: number; ay: number; az: number; bx: number; by: number; bz: number; sag: number; n?: number }
 export interface Lantern { x: number; y: number; z: number; length: number }
-export interface WindSource { x: number; y: number; z: number; vx: number; vz: number; airborne: boolean; jumpJet: boolean }
+export interface WindSource {
+  x: number; y: number; z: number; vx: number; vz: number; airborne: boolean; jumpJet: boolean;
+  /** Optional car-made wind field (wake + thruster jets) replacing the built-in wake model (src/fx/wind.ts). */
+  field?: (x: number, y: number, z: number, out: { x: number; y: number; z: number }) => void;
+}
 
 const AIR = 1.2;
 const WIRE_ACC = (0.5 * AIR * 1.2 * 0.03) / 0.6; // bundle Ø30 mm, 0.6 kg/m, Cd 1.2 → a = k·u²
 const LANTERN_K = (0.5 * AIR * 0.5 * 0.126) / 1.0; // Ø40 cm sphere, Cd 0.5, 1 kg
 
-export const CABLE_TUNING = { simRadius: 120, drawRadius: 300, gustMul: 8, damp: 0.99, maxPoints: 1200, stormWind: 0 };
+// stormDirX/Z: unit vector the storm blows toward (world) · maxDisp: safety clamp on displacement (m)
+export const CABLE_TUNING = { simRadius: 120, drawRadius: 300, gustMul: 8, damp: 0.99, maxPoints: 1200, stormWind: 0, stormDirX: 0, stormDirZ: 1, maxDisp: 1.5 };
 
 export class CableSystem {
   /** xyz per point, rest + displacement — feed straight into a LineSegments position attribute. */
@@ -66,6 +71,7 @@ export class CableSystem {
 
   /** Air speed the car (and its thrusters) push at a point: near-wake u ≈ 0.35·v·min(1,(1.5/r)²). */
   private gust(px: number, py: number, pz: number, src: WindSource, out: { x: number; y: number; z: number }) {
+    if (src.field) { src.field(px, py, pz, out); return; }
     const dx = px - src.x, dy = py - (src.y + 1.0), dz = pz - src.z;
     const r = Math.max(0.5, Math.hypot(dx, dy, dz) - 1.2);
     const v = Math.hypot(src.vx, src.vz);
@@ -102,7 +108,8 @@ export class CableSystem {
         // car-made wind is real-sized air speed, its force ×gustMul (real effect is invisible); storm is real
         const side = g.x * sx + g.z * sz, up = g.y;
         const aUp = WIRE_ACC * up * Math.abs(up) * T.gustMul;
-        const aSide = WIRE_ACC * (side * Math.abs(side) * T.gustMul + storm * storm);
+        const stormSide = T.stormDirX * sx + T.stormDirZ * sz; // storm blows one world direction
+        const aSide = WIRE_ACC * (side * Math.abs(side) * T.gustMul + storm * storm * stormSide);
         this.acc[j] = s.c2 * (this.d[j - 2] + this.d[j + 2] - 2 * this.d[j]) * inv + aUp;
         this.acc[j + 1] = s.c2 * (this.d[j - 1] + this.d[j + 3] - 2 * this.d[j + 1]) * inv - (G / s.ell[i]) * this.d[j + 1] + aSide;
       }
@@ -111,7 +118,8 @@ export class CableSystem {
         for (let c = 0; c < 2; c++) {
           const v = (this.d[j + c] - this.dp[j + c]) * T.damp;
           this.dp[j + c] = this.d[j + c];
-          this.d[j + c] += v + this.acc[j + c] * dt * dt;
+          const nd = this.d[j + c] + v + this.acc[j + c] * dt * dt;
+          this.d[j + c] = nd > T.maxDisp ? T.maxDisp : nd < -T.maxDisp ? -T.maxDisp : nd;
         }
         this.write(s.off + i, sx, sz);
       }
@@ -124,7 +132,7 @@ export class CableSystem {
       this.gust(l.x, l.y, l.z, src, g);
       const w0 = Math.sqrt(G / l.length);
       for (let c = 0; c < 2; c++) {
-        const u = (c === 0 ? g.x : g.z) + (c === 1 ? storm * 0.5 : 0);
+        const u = (c === 0 ? g.x : g.z) + storm * 0.5 * (c === 0 ? T.stormDirX : T.stormDirZ);
         const th = this.lanternAngles[i * 2 + c];
         const a = -w0 * w0 * Math.sin(th) - 2 * 0.05 * w0 * this.lv[i * 2 + c] + (LANTERN_K * u * Math.abs(u) * Math.cos(th)) / l.length;
         this.lv[i * 2 + c] += a * dt;

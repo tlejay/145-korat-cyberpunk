@@ -13,3 +13,5 @@ refs/
 
 # Audio candidates (~42 MB) — keep local; only chosen + compressed files go to public/assets/audio/
 research/audio/candidates/
+tests/qa/.results/
+tests/qa/.metrics/

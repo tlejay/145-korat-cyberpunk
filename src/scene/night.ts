@@ -1,5 +1,7 @@
 // Night environment for Korat: gradient sky with city glow + stars, fog, moon/hemisphere light.
-// No bloom / rain yet (M3). Idempotent: calling it twice on the same scene reuses the first one.
+// M3: rainy purple-blue haze (no stars through the rain clouds) and an optional panorama from the art
+// pane (setPanorama) blended over the gradient. Bloom / rain / wet road live in visuals.ts.
+// Idempotent: calling it twice on the same scene reuses the first one.
 import * as THREE from 'three';
 import type { Quality } from '../types.js';
 
@@ -10,13 +12,15 @@ export const NIGHT_TIERS: Record<Quality, NightTier> = {
   high: { fogNear: 120, fogFar: 650, hemi: 1.0, moon: 0.65 },
 };
 
-const FOG = 0x140f26;
+const FOG = 0x1a1534; // rain haze: purple with a little blue
 
 export interface NightEnv {
   sky: THREE.Mesh;
   fog: THREE.Fog;
   setQuality(q: Quality): void;
   update(camera: THREE.Camera): void; // keeps the sky centred on the camera
+  /** Equirect / wide panorama (art pane). `amount` 0..1 blends it over the gradient sky. */
+  setPanorama(tex: THREE.Texture | null, amount?: number): void;
 }
 
 const SKY_VERT = /* glsl */ `
@@ -27,8 +31,10 @@ const SKY_VERT = /* glsl */ `
     gl_Position = p.xyww; // always at the far plane
   }`;
 const SKY_FRAG = /* glsl */ `
+  #include <common>
   varying vec3 vDir;
   uniform vec3 uTop; uniform vec3 uHorizon; uniform vec3 uGlow;
+  uniform sampler2D uPano; uniform float uPanoAmt; uniform float uStars;
   float hash(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
   void main() {
     float h = clamp(vDir.y, -0.2, 1.0);
@@ -39,9 +45,18 @@ const SKY_FRAG = /* glsl */ `
     // sparse stars above 15°
     vec3 q = floor(vDir * 420.0);
     float s = step(0.9975, hash(q)) * smoothstep(0.25, 0.6, h);
-    c += vec3(s) * 0.6;
+    c += vec3(s) * 0.6 * uStars;
+    if (uPanoAmt > 0.0 && h > -0.05) {
+      // wide panorama: u = azimuth, v = elevation 0..~50° (the art is a horizon band, not a full sphere)
+      vec2 uv = vec2(atan(vDir.x, -vDir.z) / 6.2831853 + 0.5, clamp(h / 0.75, 0.0, 1.0) * 0.92 + 0.04);
+      vec3 p = texture2D(uPano, uv).rgb;
+      c = mix(c, p, uPanoAmt * smoothstep(-0.05, 0.04, h));
+    }
     if (h < 0.0) c = mix(uHorizon, vec3(0.03, 0.025, 0.05), smoothstep(0.0, -0.2, h));
     gl_FragColor = vec4(c, 1.0);
+    // same output path as every other material: ACES + sRGB on screen (low), linear into the HDR target (post)
+    #include <tonemapping_fragment>
+    #include <colorspace_fragment>
   }`;
 
 export function setupNight(scene: THREE.Scene, quality: Quality = 'mid'): NightEnv {
@@ -61,7 +76,8 @@ export function setupNight(scene: THREE.Scene, quality: Quality = 'mid'): NightE
       uniforms: {
         uTop: { value: new THREE.Color(0x05040d) },
         uHorizon: { value: new THREE.Color(FOG) },
-        uGlow: { value: new THREE.Color(0x4a2148) },
+        uGlow: { value: new THREE.Color(0x5a2a5e) },
+        uPano: { value: null }, uPanoAmt: { value: 0 }, uStars: { value: 0 },
       },
     }),
   );
@@ -86,6 +102,11 @@ export function setupNight(scene: THREE.Scene, quality: Quality = 'mid'): NightE
       hemi.intensity = t.hemi; moon.intensity = t.moon;
     },
     update(camera) { sky.position.copy(camera.position); },
+    setPanorama(tex, amount = 0.85) {
+      const u = (sky.material as THREE.ShaderMaterial).uniforms;
+      u.uPano.value = tex;
+      u.uPanoAmt.value = tex ? amount : 0;
+    },
   };
   scene.userData.night = env;
   return env;

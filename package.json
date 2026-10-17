@@ -9,7 +9,10 @@
     "build": "tsc --noEmit -p tsconfig.json && vite build",
     "preview": "vite preview",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "qa": "playwright test",
+    "qa:static": "playwright test tests/qa/static.spec.ts --project=chromium-landscape",
+    "qa:preview": "vercel env run -- sh -c 'QA_OIDC_TOKEN=$VERCEL_OIDC_TOKEN playwright test'"
   },
   "packageManager": "pnpm@10.32.1",
   "dependencies": {
@@ -19,6 +22,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@types/node": "^26.6.5",
     "@types/three": "^0.186.0",
     "dotenv": "^18.0.8",
