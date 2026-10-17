@@ -14,7 +14,8 @@
 - [ ] Backend: scaffold + Vercel + Neon + leaderboard API → `docs/dev/REPORT-leaderboard.md`
 - [ ] Gameplay: การควบคุม กล้อง ฟิสิกส์ สูตรแต้ม → `docs/dev/GAMEPLAY.md`
 - [ ] Audio: BGM + SFX license ใช้ได้ + แนวทางใช้บนมือถือ → `research/audio/`
-- [ ] Street View: เดินสำรวจถนนทีละช่วง → `research/streetview/`
+- [x] Street View รอบ 1 (8 ถนนรอบลาน)
+- [ ] Street View รอบ 2: สนาม A ทั้งวง → `research/streetview/REPORT-track-A.md`
 
 - [x] QA: TEST-PLAN + TEST-HOOKS + RELEASE-GATE → `docs/qa/` (QA เป็นด่านก่อน production ทุกครั้ง)
 
@@ -25,4 +26,4 @@
 4. M3 Cyberpunk pass: กลางคืน ฝน นีออน bloom ป้ายไฟไทย (texture จาก `/kiki-gpt`)
 5. M4 เกมเพลย์: จับเวลารอบ ghost เพื่อนแข่ง AI หน้าเมนู/หน้าเครดิต · ปรับ fps มือถือ
 
-**ต้องตัดสินใจ** — เลือกสนามหลังได้ผล OSM
+**ตัดสินใจแล้ว** — สนาม A วงคูเมือง 3.36 กม. · URL madebytle.com/koratrocketcar

@@ -30,6 +30,9 @@
 | 18:29 | 🔎 landmarks เสร็จ (12 นาที): 17 แลนด์มาร์ก · ย่าโมหันหน้าตะวันตก สูง 1.85 ม. บนลาน 26×26 ม. · ประตูชุมพล 43×11 ม. · ภาพ CC 30 ภาพ → ตรวจผ่าน · ปิด tab | landmarks |
 | 18:30 | Tle ตัดสิน: แบริเออร์นีออน · ตามวันเวย์ · ห้ามเข้าลาน · มีทั้ง iPhone/Android | Tle |
 | 18:31 | Tle สั่งเพิ่ม leaderboard ไม่ต้องสมัคร ตั้งชื่อขิงได้ → เปิด ⚙️ backend (Vite scaffold + Vercel + Neon + API) และ 🎮 gameplay (ออกแบบการควบคุม/กล้อง/สูตรแต้ม ตามที่ QA เตือน) | Tle + conductor |
+| 18:32 | 🔎 streetview เสร็จ (14 นาที): 44 ช่วง 8 ถนน ภาพแคป 46 ภาพ (ไม่ขึ้น git) · ถนนรอบลานเป็น 'หุบเหว' ตึกแถว 3–5 ชั้น · เจอ OSM ไม่ตรงของจริง 3 จุด → ตรวจผ่าน · ปิด tab | streetview |
+| 18:33 | Tle สั่ง URL `madebytle.com/koratrocketcar` → ส่งงาน base path ให้ ⚙️ backend | Tle |
+| 18:35 | Tle เลือกสนาม A วงคูเมือง 3.36 กม. → เปิด 🔎 streetview-A เก็บข้อมูลให้ครบวง · แจ้ง backend/gameplay | Tle + conductor |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -38,9 +41,10 @@
 |---|---|---|---|---|---|---|
 | 1 | 🔎 osm | ถนน/ตึก/คูเมืองจาก OSM + สนาม 3 แบบ | 18:17 | 18:24 | 7 นาที | `research/osm/` |
 | 2 | 🔎 landmarks | แลนด์มาร์ก + ภาพ CC | 18:17 | 18:29 | 12 นาที | `research/landmarks/` |
-| 3 | 🔎 streetview | เดินสำรวจ Street View | 18:17 | | | |
+| 3 | 🔎 streetview | เดินสำรวจ Street View | 18:17 | 18:32 | 14 นาที | `research/streetview/` |
 | 4 | 🔎 car | Tesla Roadster ข่าว/สเปก/รูปทรง | 18:17 | 18:25 | 8 นาที | `research/car/` |
 | 5 | 🔎 audio | BGM + SFX | 18:21 | | | |
 | 6 | 🧪 qa | test plan + release gate | 18:23 | 18:27 | 7 นาที | `docs/qa/` |
 | 7 | ⚙️ backend | scaffold + Vercel + Neon + leaderboard API | 18:31 | | | |
 | 8 | 🎮 gameplay | ออกแบบการควบคุม กล้อง ฟิสิกส์ สูตรแต้ม | 18:31 | | | |
+| 9 | 🔎 streetview-A | สำรวจสนาม A ทั้งวง + ไขข้อขัดแย้ง | 18:35 | | | |
