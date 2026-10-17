@@ -119,3 +119,23 @@
 | `ui/kenney-glitch-002.ogg` | [Kenney interface-sounds — glitch-002.ogg](https://kenney.nl/assets/interface-sounds) | Kenney (kenney.nl) | Kenney asset pack | 0.03 |
 | `ui/kenney-lose-jingle-hit-10.ogg` ⭐ | [Kenney music-jingles — lose-jingle-hit-10.ogg](https://kenney.nl/assets/music-jingles) | Kenney (kenney.nl) | Kenney asset pack | 0.75 |
 | `ui/kenney-select-003.ogg` | [Kenney interface-sounds — select-003.ogg](https://kenney.nl/assets/interface-sounds) | Kenney (kenney.nl) | Kenney asset pack | 0.38 |
+
+## research/audio/candidates/voice — เสียงพากย์ภาษาอังกฤษ (ดาวน์โหลด 2026-10-17)
+
+ทุกไฟล์เป็น **CC0 1.0** (https://creativecommons.org/publicdomain/zero/1.0/) — ตรวจจาก `License.txt` ในแพ็ก Kenney / ช่อง License บนหน้า OpenGameArt / ลิงก์ license บนหน้า Freesound · รายการรายไฟล์อยู่ใน `research/audio/sources.json` (category = `voice`) · ⭐ = ชุดที่แนะนำ (ตัวสำรอง — ชุดหลักคือเสียงที่ Mint อัด ถ้าได้มา)
+
+| โฟลเดอร์ / ไฟล์ | ต้นฉบับ | ผู้สร้าง / ผู้พากย์ | แหล่ง |
+|---|---|---|---|
+| `kenney-voiceover-male/` ⭐ (46 ไฟล์) | [Voiceover Pack](https://kenney.nl/assets/voiceover-pack) | Kenney (kenney.nl) · พากย์: Jeffrey M. Smith | Kenney asset pack |
+| `kenney-voiceover-female/` (46 ไฟล์) | [Voiceover Pack](https://kenney.nl/assets/voiceover-pack) | Kenney (kenney.nl) · พากย์: Giselle | Kenney asset pack |
+| `kenney-fighter/` (46 ไฟล์) | [Voiceover Pack: Fighter](https://kenney.nl/assets/voiceover-pack-fighter) | Kenney (kenney.nl) | Kenney asset pack |
+| `oga-timrockk-game-voice/` (46 ไฟล์) | [game voice](https://opengameart.org/content/game-voice) | Tim Rockk | OpenGameArt |
+| `oga-turtle-countdown/` (7 ไฟล์) | [Countdown voiceover (robotic)](https://opengameart.org/content/countdown-voiceover-robotic) | TheStaticTurtle | OpenGameArt |
+| `freesound/fs386803-final-lap.mp3` | [final_lap.wav](https://freesound.org/people/RichieMcMullen/sounds/386803/) | RichieMcMullen | Freesound |
+| `freesound/fs338223-game-vocals.mp3` (+ ตัด `fs338223-cut-checkpoint.wav`) | [Random Video Game Vocals.wav](https://freesound.org/people/pyro13djt/sounds/338223/) | pyro13djt | Freesound |
+
+เครดิตในเกม (แนะนำ): "เสียงพากย์: Kenney.nl (Jeffrey M. Smith) — CC0"
+
+## เสียงพากย์ภาษาอังกฤษ (announcer)
+- โดย Mint (ผู้ช่วย AI ของ Tle) · tlejay/mint#475 · 2026-10-17
+- ElevenLabs TTS model `eleven_v4`, premade voices "Charlie" / "Liam" — บัญชีแพลนฟรี → **ใช้แบบไม่เชิงพาณิชย์เท่านั้น** และแพลนฟรีของ ElevenLabs กำหนดให้ระบุที่มา → หน้าเครดิตในเกมใส่ "เสียงพากย์: ElevenLabs" · ถ้าจะใช้เชิงพาณิชย์ต้องอัดใหม่บนแพลนที่เสียเงิน
