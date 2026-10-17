@@ -107,6 +107,8 @@
 | 02:12 | 🚀 **production v0.3.0-build003** ที่ https://madebytle.com/koratrocketcar → ส่งของให้ Mint ใน #476 (promo/ + รายชื่อ shot= ทุกช็อต) | conductor |
 | 02:15 | Mint อัดเอง 16 ช็อตจาก commit + script record-demo (deterministic ได้ตั้งแต่ครั้งแรก) · บท/พากย์ไทย/มิกซ์เสร็จ 89.7 วิ เล่าแบบ Mint เป็นคนเล่า + Charlie แทรก · ส่ง Tle ตอนเช้า · ใช้ตัวเลข FACTS: 6 ชม., 33 session, พร้อมกัน 7 → เปิด ✍️ content (โพสต์ฉบับเต็ม ใช้ตัวเลขชุดเดียวกัน) + 📘 readme (README + เปิด public) | Mint + conductor |
 | 02:16 | ✍️ content เสร็จ: โพสต์ Facebook ฉบับเต็ม ~2,300 คำ ตัวเลขตรงวิดีโอ Mint · ภาพประกอบ 6 ภาพจากของจริง → conductor ตรวจกติกาน้ำเสียง/ห้ามเรื่องเขย/ศัพท์เทคนิค ผ่าน · ปิด tab | content |
+| 02:19 | 📘 readme เสร็จ: README อังกฤษ+ไทย · hero · GIF 2.9 MB จากโหมดเดโม่ · before/after · ตรวจ secret 88 commit สะอาด · **repo เป็น public** · topics/homepage ตั้งครบ · ชี้ว่ามีภาพข่าวหลุดใน repo 1 ไฟล์ · ปิด tab | readme |
+| 02:22 | conductor ลบภาพ m3-plume-vs-news.png (มีภาพข่าว Tesla — conductor ก๊อปเข้า repo เองตอน 20:42 พลาด) ออกจาก HEAD · การลบจากประวัติต้อง force push → รอ Tle ตัดสินตอนเช้า | conductor |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -147,4 +149,4 @@
 | 32 | 🎬 clips | โหมดเดโม่ผ่าน URL + promo/ ให้ Mint | 01:13 | | | |
 | 33 | 🧪 qa-release | QA รอบสั้นก่อน v0.3.0 | 01:59 | 02:09 | 10 นาที | `docs/qa/reports/2026-10-18-v0.3.0-build003.md` |
 | 34 | ✍️ content | โพสต์ Facebook ฉบับเต็ม | 02:14 | 02:16 | ~3 นาที (เขียนจาก LOG/FACTS ที่เตรียมไว้) | `docs/content/facebook-post.md` |
-| 35 | 📘 readme | README + เปิด repo public | 02:14 | | | |
+| 35 | 📘 readme | README + เปิด repo public | 02:14 | 02:19 | 5 นาที | `README.md` `docs/readme/` |
