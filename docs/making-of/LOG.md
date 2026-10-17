@@ -49,6 +49,7 @@
 | 18:59 | Tle เลือกตามของจริง: ดริฟต์ 95° ผ่านสี่แยก แทนโค้งกลับ 148° ที่ไม่มีจริง → แจ้ง physics | Tle |
 | 19:02 | Tle สั่งเริ่ม M1 → conductor เขียนสัญญากลาง `docs/dev/M1-CONTRACTS.md` (เจ้าของไฟล์ + interface TypeScript) แล้วเปิด 4 pane พร้อมกัน: 🛣️ world · 🚗 car-model · 🎮 game-ui (integrator) · 🔊 audio-dev · ส่วน 🧮 physics จะต่อยอดเป็น car-physics | Tle + conductor |
 | 19:03 | Tle อยากลองเล่นก่อน → สั่ง game-ui หยุดพักเมื่อขับครบวงได้ เพื่อ deploy preview ให้ลอง | Tle |
+| 19:05 | Tle เปลี่ยนใจ: รอ milestone เสร็จทีเดียว ให้ conductor เฝ้าทีม → ยกเลิกการหยุดพักของ game-ui | Tle |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
