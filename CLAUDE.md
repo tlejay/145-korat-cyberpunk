@@ -87,6 +87,7 @@ Tle สั่ง 2026-10-17: **Claude ใน tab ซ้ายสุด (`🏁 ma
 - ตรวจงานไม่ผ่าน → ส่งกลับ pane เดิม (ถ้ายังเปิด) หรือเปิด pane ใหม่พร้อมบรีฟแก้
 - ลูกน้องทำงานเสร็จ = เขียนผลลงไฟล์ตามบรีฟ (สรุปบนสุด) แล้วจบ turn → conductor อ่านรายงาน → **ปิด tab ของลูกน้องทิ้งได้เลย** (`herdr tab close`) ไม่ต้องถาม Tle
 - เปิด pane: `herdr tab create --workspace w54 --cwd <โปรเจค> --label "<emoji> <งาน>" --no-focus` → `herdr pane run <pane> "claude --permission-mode bypassPermissions '<สั่งงาน>'"` → `send-keys Enter` → pane ใหม่จะถามว่าเชื่อถือโฟลเดอร์ไหม: ส่ง `Down` แล้ว `Enter` → รอจนขึ้น `working`
+- **ภาพประกอบคุณภาพสูง** (texture, skybox, ป้ายนีออน, หน้าโหลด, ไอคอน UI, concept art) → ลูกน้องสั่ง `/kiki-gpt` ให้ pane ChatGPT วาด แล้วก๊อปเข้า `public/assets/` — Tle อนุญาตแล้ว 2026-10-17 · ตัวอักษรไทยบนภาพให้ใส่ทีหลังด้วยฟอนต์จริง · ส่งงานวาดทีละ pane (ChatGPT มีตัวเดียว)
 - ลูกน้อง **ห้าม commit / push / deploy** · ใช้ Chrome ได้ **ทีละ pane** เท่านั้น
 - workspace id อาจเปลี่ยน — `herdr workspace list` ก่อนทุกครั้ง
 

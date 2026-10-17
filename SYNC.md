@@ -11,6 +11,7 @@
 - [ ] OSM: ถนน/ตึก/คูเมือง + เสนอสนาม 3 แบบ → `research/osm/`
 - [ ] Landmarks: อนุสาวรีย์ ประตูชุมพล ฯลฯ + ภาพ CC → `research/landmarks/`
 - [ ] Car: Tesla Roadster รุ่นใหม่ — ข่าว สเปก ฟีเจอร์กระโดด/ออกตัว รูปทรงด้านท้าย → `research/car/`
+- [ ] Audio: BGM + SFX license ใช้ได้ + แนวทางใช้บนมือถือ → `research/audio/`
 - [ ] Street View: เดินสำรวจถนนทีละช่วง → `research/streetview/`
 
 **แผนถัดไป (milestone)**

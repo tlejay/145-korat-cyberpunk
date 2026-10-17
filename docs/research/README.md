@@ -16,3 +16,4 @@
 | `BRIEF-landmarks.md` | `research/landmarks/` | ไม่ (web search + Wikimedia) |
 | `BRIEF-streetview.md` | `research/streetview/` + `refs/streetview/` | **ใช่ — ตัวเดียว** |
 | `BRIEF-car.md` | `research/car/` + `refs/car/` | ไม่ (web search) |
+| `BRIEF-audio.md` | `research/audio/` | ไม่ (web search + ดาวน์โหลด CC0) |
