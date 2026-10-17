@@ -6,3 +6,10 @@
 ตอนนับถอยหลัง เสียงพากย์ได้ยินเป็น **"Three, Three"** (Three ซ้ำ 2 ครั้ง) แทน "Three, Two, One, Go!"
 - เป็นไปได้หลายทาง: game loop เรียก event `countdown3` ซ้ำ / mapping ไฟล์ `two` ชี้ไปไฟล์ three / ไฟล์เสียงของ Mint ชื่อสลับ (ตรวจด้วย ffprobe ความยาว + ถ้ามี whisper/STT ในเครื่องลองถอดเสียง) / build-audio แปลงทับชื่อผิด / queue พากย์เล่นซ้ำ
 - ตรวจครบทั้งชุด: three, two, one, go, final-lap, new-record, finish, boost, nice-drift, great-jump ว่าเล่นถูกคำ ถูกจังหวะ ไม่ซ้ำ
+
+## บั๊ก #2 (conductor สั่ง 20:35 จากข้อสังเกตของบั๊ก #1)
+นับถอยหลังเดินตาม physics step → เครื่องเฟรมตก (ตอน compile shader) นับช้าได้ถึง 2.4 วิ/คำ
+- ต้องเดินตาม **นาฬิกาจริง/นาฬิกาเสียง** (AudioContext.currentTime หรือ performance.now) ให้ HUD + เสียง + ไฟสตาร์ท 5 ดวง (จาก 🏁 sponsors) ตรงกันทุกเครื่อง ~0.8 วิ/จังหวะ · การแข่งเริ่มจับเวลาที่ "ไป!" ตรงนาฬิกา
+- พิจารณา warm-up compile shader ก่อนเริ่มนับ (หน้าโหลด) เพื่อไม่ให้เฟรมแรกกระตุก
+- test: จำลองเฟรมช้า (CPU throttle) แล้วจังหวะยังอยู่ใน 0.8 ± 0.1 วิ
+⚠️ `src/game/engine.ts` มีงานของ visuals ค้างอยู่ — แก้เฉพาะจุด
