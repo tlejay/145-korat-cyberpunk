@@ -2,7 +2,8 @@
 // or against a deployed preview when QA_BASE_URL is set (see tests/qa/README.md).
 import { defineConfig } from '@playwright/test';
 
-const BASE = process.env.QA_BASE_URL ?? 'http://localhost:4180/koratrocketcar/';
+const PORT = process.env.QA_PORT ?? '4180'; // override when 4180 is taken (never 5199 — reserved for the conductor)
+const BASE = process.env.QA_BASE_URL ?? `http://localhost:${PORT}/koratrocketcar/`;
 const token = process.env.QA_OIDC_TOKEN;
 
 const landscape = { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: false };
@@ -38,5 +39,5 @@ export default defineConfig({
   ],
   webServer: process.env.QA_BASE_URL
     ? undefined
-    : { command: 'pnpm build && pnpm preview --port 4180 --strictPort', url: BASE, reuseExistingServer: true, timeout: 120_000 },
+    : { command: `pnpm build && pnpm preview --port ${PORT} --strictPort`, url: BASE, reuseExistingServer: !process.env.QA_PORT, timeout: 120_000 },
 });

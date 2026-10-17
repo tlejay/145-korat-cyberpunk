@@ -3,6 +3,8 @@
 import { neon } from '@neondatabase/serverless';
 import { expect, test } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
+import { deflateRawSync } from 'node:zlib';
+import { GHOST_HZ, TRACK_VERSION, packGhost } from '../../src/net/ghost-format';
 import { MESSAGES } from '../../src/net/messages';
 import { VERSION } from '../../src/version';
 import { expectClean, record, seedSettings, watch } from './helpers';
@@ -82,4 +84,31 @@ test('game with &net=1 (QA run) talks to the API and shows the Thai "QA run" not
   expect(calls.some((c) => c.startsWith('POST run/finish'))).toBe(true);
   // run/finish answers 403 QA_RUN by design for ?qa=1 tokens — that is the expected "not saved" path.
   expectClean(w, { allowRequests: /403 .*run\/finish/, allowErrors: /status of 403/ });
+});
+
+test('API ghost (M3, 1-lap race): finish with a v2 ghost → ghost/top returns it · stale track version rejected', async ({ request }, info) => {
+  test.skip(info.project.name !== 'chromium-landscape', 'once is enough');
+  // A 6 s lap round a 300 m loop (track "test": lengthM 300, 1 lap) sampled at GHOST_HZ.
+  const lapMs = 6000, n = Math.floor(lapMs / (1000 / GHOST_HZ)), R = 300 / (2 * Math.PI);
+  const samples = Array.from({ length: n }, (_, i) => { const a = (i / n) * 2 * Math.PI; return { x: R * Math.cos(a), y: 0, z: R * Math.sin(a), yawDeg: (a * 180) / Math.PI + 90, flags: 0 }; });
+  const enc = (trackVersion: number) => Buffer.from(deflateRawSync(packGhost({ hz: GHOST_HZ, lapMs, trackVersion, samples }))).toString('base64');
+  const run = {
+    trackId: 'test', build: VERSION, laps: 1, totalMs: lapMs, lapMs: [lapMs], splitsMs: [2000, 4000, 5500],
+    shortcuts: 0, driftMs: 0, driftChains: 0, jumps: 0, cleanLandings: 0, launches: { perfect: 0, total: 0 },
+    boostMs: 0, refills: 0, cleanLaps: 1, respawns: 0, maxG: 1, checkpointClears: 0,
+  };
+  const finish = async (ghost: string) => {
+    const st = await (await request.post(api('run/start'), { data: { track: 'test', deviceId: device } })).json();
+    await new Promise((r) => setTimeout(r, lapMs + 500));
+    return (await request.post(api('run/finish'), { data: { token: st.token, deviceId: device, result: run, ghost } })).json();
+  };
+  const stale = await finish(enc((TRACK_VERSION + 1) >>> 0));
+  const good = await finish(enc(TRACK_VERSION));
+  const top = await (await request.get(api('ghost/top?track=test'))).json();
+  record(info, 'API-ghost', { stale, good: { ...good, ghostSaved: good.ghostSaved }, top: { ...top, ghost: top.ghost ? { ...top.ghost, data: `${top.ghost.data.length} b64 chars` } : null } });
+  expect(stale.code, 'ghost from another track layout is refused').toBe('BAD_GHOST');
+  expect(good.ok, JSON.stringify(good)).toBe(true);
+  expect(good.ghostSaved).toBe(true);
+  expect(top.ghost, 'ghost/top returns the saved v2 ghost').not.toBeNull();
+  expect(top.ghost.lapMs).toBe(lapMs);
 });

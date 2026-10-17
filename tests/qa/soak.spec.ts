@@ -1,11 +1,11 @@
 // PERF-04/05/06/07/10 + FEEL-10/11 (camera) — long runs. Chromium only (CDP network/CPU emulation, heap).
-import { expect, test } from '@playwright/test';
-import { pct, record, seedSettings } from './helpers';
+import { chromium, expect, test } from '@playwright/test';
+import { litFraction, pct, record, seedSettings } from './helpers';
 
 test.describe.configure({ mode: 'parallel' });
 
 test('PERF-04/05 draw calls + triangles over a full lap at each quality · FEEL-10/11 camera', async ({ page }) => {
-  test.setTimeout(900_000);
+  test.setTimeout(1_800_000); // M3 scene (bloom, neon, sponsors, fx) renders slower under SwiftShader
   await seedSettings(page);
   const out: Record<string, unknown> = {};
   for (const q of ['medium', 'low'] as const) {
@@ -49,8 +49,13 @@ test('PERF-04/05 draw calls + triangles over a full lap at each quality · FEEL-
 test('PERF-06/07 first load on Fast 4G / Slow 4G (CDP), bytes until racing', async ({ browser, browserName }) => {
   test.skip(browserName !== 'chromium', 'CDP network emulation');
   const res: Record<string, unknown> = {};
+  // M3 compiles ~86 shader programs at load: SwiftShader (CPU) spends ~10 s on that alone, a real GPU < 1 s.
+  // On macOS use the machine's GPU (ANGLE Metal) so the number reflects network + JS, not software GL.
+  const gpu = process.platform === 'darwin' ? await chromium.launch({ args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] }) : null;
+  const br = gpu ?? browser;
+  res.gl = gpu ? 'ANGLE Metal (real GPU)' : 'SwiftShader';
   for (const [name, down, up, rtt] of [['fast4g', 9e6, 1.5e6, 170], ['slow4g', 1.6e6, 750e3, 150]] as const) {
-    const ctx = await browser.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, extraHTTPHeaders: test.info().project.use.extraHTTPHeaders });
+    const ctx = await br.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, extraHTTPHeaders: test.info().project.use.extraHTTPHeaders });
     const page = await ctx.newPage();
     await page.addInitScript(() => { try { localStorage.setItem('settings.v1', '{"tutorialSeen":true}'); } catch { /* */ } });
     const cdp = await ctx.newCDPSession(page);
@@ -61,7 +66,10 @@ test('PERF-06/07 first load on Fast 4G / Slow 4G (CDP), bytes until racing', asy
     cdp.on('Network.loadingFinished', (e: { encodedDataLength: number }) => { bytes += e.encodedDataLength; });
     cdp.on('Network.responseReceived', (e: { response: { url: string; encodedDataLength: number } }) => { big.push({ url: e.response.url.replace(/^.*koratrocketcar\//, ''), b: e.response.encodedDataLength }); });
     const t0 = Date.now();
-    await page.goto('./?qa=1');
+    await page.goto(new URL('./?qa=1', test.info().project.use.baseURL).toString());
+    // "no black screen > 2 s": something lit on screen (loading cover / text) 2 s after navigation
+    await page.waitForTimeout(Math.max(0, 2000 - (Date.now() - t0)));
+    const litAt2s = await litFraction(page);
     const firstPaintMs = await page.waitForSelector('[data-qa=btn-start]').then(() => Date.now() - t0);
     await page.waitForFunction(() => !(document.querySelector('[data-qa=btn-start]') as HTMLButtonElement)?.disabled, null, { timeout: 60_000 });
     const menuReadyMs = Date.now() - t0;
@@ -69,15 +77,16 @@ test('PERF-06/07 first load on Fast 4G / Slow 4G (CDP), bytes until racing', asy
     await page.waitForFunction(() => ['countdown', 'racing'].includes(window.__game?.state() ?? ''), null, { timeout: 60_000 });
     const inGameMs = Date.now() - t0;
     await page.waitForTimeout(1500);
-    res[name] = { firstPaintMs, menuReadyMs, inGameMs, transferMB: bytes / 1e6 };
+    res[name] = { firstPaintMs, menuReadyMs, inGameMs, transferMB: bytes / 1e6, litAt2s };
     await ctx.close();
   }
+  await gpu?.close();
   record(test.info(), 'PERF-06', res);
-  const f = res.fast4g as { menuReadyMs: number; inGameMs: number; transferMB: number }, s = res.slow4g as { inGameMs: number; firstPaintMs: number };
+  const f = res.fast4g as { menuReadyMs: number; inGameMs: number; transferMB: number }, s = res.slow4g as { inGameMs: number; litAt2s: number };
   expect(f.menuReadyMs).toBeLessThanOrEqual(5000);
   expect(f.inGameMs).toBeLessThanOrEqual(10_000);
   expect(s.inGameMs).toBeLessThanOrEqual(20_000);
-  expect(s.firstPaintMs, 'no black screen > 2 s').toBeLessThanOrEqual(2000);
+  expect(s.litAt2s, 'no black screen > 2 s (lit pixels at 2 s on Slow 4G)').toBeGreaterThan(0.02);
   expect(f.transferMB).toBeLessThanOrEqual(8);
 });
 

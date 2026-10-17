@@ -57,6 +57,27 @@ test.describe('static', () => {
     covered.add('public/assets/audio/manifest.json');
     // Map data derived from OSM (ODbL) — credited on the credits page.
     for (const f of ['public/data/track-A.json', 'public/data/track-A.debug.json']) covered.add(f);
+    // M3 images (ChatGPT, docs/dev/m3/art-manifest.json): every file + its -lo variant must be in the manifest
+    // and its basename / family listed in research/CREDITS.md.
+    const art = readJson<{ generator: string; files: { file: string; source?: string; lo?: { file: string } | null }[] }>('docs/dev/m3/art-manifest.json');
+    if (!/ChatGPT/.test(art.generator)) problems.push('art-manifest: generator is not ChatGPT/OpenAI');
+    const creditFamily = (f: string) => {
+      const b = path.basename(f).replace(/-lo(\.\w+)$/, '$1');
+      const fam = b.replace(/^(billboard|window)-\d+.*$/, '$1-').replace(/^(sponsor-bg)-.*$/, '$1-').replace(/^(cover)-.*$/, '$1-');
+      return credits.includes(b) || credits.includes(fam);
+    };
+    for (const f of art.files) {
+      for (const file of [f.file, f.lo?.file].filter(Boolean) as string[]) {
+        covered.add(file);
+        if (!creditFamily(file)) problems.push(`${file}: not in research/CREDITS.md`);
+      }
+      if (/google|streetview|gstatic|wikimedia|news|reuters|getty/i.test(f.source ?? '')) problems.push(`${f.file}: source looks external (${f.source})`);
+    }
+    // Sponsor logos (public/assets/sponsors/) — supplied by Tle / the association; must be credited by file name.
+    for (const f of walk(path.join(ROOT, 'public/assets/sponsors')).map(rel)) {
+      covered.add(f);
+      if (!credits.includes(path.basename(f))) problems.push(`${f}: sponsor logo not in research/CREDITS.md`);
+    }
     const files = walk(path.join(ROOT, 'public')).map(rel);
     const unlisted = files.filter((f) => !covered.has(f));
     const h07 = fs.existsSync(path.join(ROOT, 'public/assets/manifest.json'));
@@ -81,7 +102,10 @@ test.describe('static', () => {
     record(info, 'LIC-02', { publicImgs, distImgs, refsCompared: refs.length, dupes, googleNames });
     expect(dupes).toEqual([]);
     expect(googleNames).toEqual([]);
-    expect(publicImgs, 'M1 ships no raster images (car is procedural)').toEqual([]);
+    // M3: raster images are allowed only if they come from the art manifest (ChatGPT) or are sponsor logos.
+    const art = readJson<{ files: { file: string; lo?: { file: string } | null }[] }>('docs/dev/m3/art-manifest.json');
+    const allowed = new Set(art.files.flatMap((f) => [f.file, f.lo?.file].filter(Boolean) as string[]));
+    expect(publicImgs.filter((f) => !allowed.has(f) && !f.startsWith('public/assets/sponsors/')), 'raster images outside art-manifest / sponsors').toEqual([]);
   });
 
   test('LIC-04 no NC / unknown-license audio', () => {

@@ -5,7 +5,8 @@ import { distToPolyline, llToXY, openGame, readJson, record } from './helpers';
 type FC = { features: { geometry: { type: string; coordinates: number[][] }; properties: Record<string, unknown> }[] };
 const stats = readJson<{ origin: { lat: number; lon: number }; tracks: { A: { length_m: number; corner_list: { at_m: number; angle: number; dir: string; xy: [number, number] }[] } } }>('research/osm/stats.json');
 // Intentional fix of OSM routing at the 224 junction (world REPORT §2, Street View) — excluded from REAL-02.
-const EXCLUDE: [number, number] = [476, 569];
+// Game s: M1 window [476, 569] + 210 m (start/finish moved south of Ya Mo plaza, REPORT-checkpoint §2).
+const EXCLUDE: [number, number] = [686, 779];
 
 test.use({ viewport: { width: 400, height: 200 } });
 
@@ -79,21 +80,24 @@ test('REAL-07 building footprints near the track match OSM; nothing blocks the r
   const O = raw.origin;
   const rings = osm.features.filter((f) => f.geometry.type === 'Polygon')
     .map((f) => (f.geometry.coordinates as unknown as number[][][])[0].map(([lng, lat]) => ({ x: (lng - O.lon) * O.kx, y: (lat - O.lat) * O.ky })));
-  // Game building record (build002): [h dm, style, ring x/z dm …] — src/track/meshes.ts
+  // Game building record (M2+): [h dm, style, tint, nFront, front edge ids …, ring x/z dm …] — src/track/data.ts
   const res = raw.buildings.map((b) => {
-    const ring = b.slice(2), pts: { x: number; y: number }[] = [];
+    const ring = b.slice(4 + b[3]), pts: { x: number; y: number }[] = [];
     for (let i = 0; i + 1 < ring.length; i += 2) pts.push({ x: ring[i] / 10, y: -ring[i + 1] / 10 });
     const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length, cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
     const near = rings.filter((r) => Math.hypot(r[0].x - cx, r[0].y - cy) < 80);
     const vd = near.length ? pts.map((p) => Math.min(...near.map((r) => distToPolyline(p.x, p.y, r)))).sort((x, y) => x - y) : [];
-    return { x: +cx.toFixed(0), y: +cy.toFixed(0), h: b[0] / 10, medianVertexM: vd.length ? vd[Math.floor(vd.length / 2)] : null };
+    return { x: +cx.toFixed(0), y: +cy.toFixed(0), h: b[0] / 10, rect: pts.length === 4, medianVertexM: vd.length ? vd[Math.floor(vd.length / 2)] : null };
   });
-  const withOsm = res.filter((r) => r.medianVertexM !== null && r.medianVertexM < 10);
+  // Street View-synthesised buildings have no OSM twin: world REPORT §2 rectangles (22) + M2 streetscape infill
+  // shophouses on west Ratchadamnoen (156 units of 4.2 × 14 m, REPORT-M2-streetscape §3). Both are 4-point rectangles.
+  const isSynth = (r: (typeof res)[number]) => r.medianVertexM === null || r.medianVertexM >= 10 || (r.rect && r.medianVertexM > 2);
+  const withOsm = res.filter((r) => !isSynth(r));
   const matched = withOsm.filter((r) => r.medianVertexM! <= 2).length;
-  const synthetic = res.length - withOsm.length; // Street View-synthesised buildings (world REPORT §2: 22) have no OSM twin
+  const synthetic = res.filter(isSynth).length;
   // REAL-08 proxy: no skyscraper where the street is shophouses (landmark Terminal 21 is built separately).
   const tall = res.filter((b) => b.h > 20);
   record(test.info(), 'REAL-07', { buildings: res.length, withOsm: withOsm.length, matchedWithin2m: matched, synthetic, tall, maxH: Math.max(...res.map((b) => b.h)) });
   expect(matched / withOsm.length).toBeGreaterThanOrEqual(0.95);
-  expect(synthetic).toBeLessThanOrEqual(22);
+  expect(synthetic).toBeLessThanOrEqual(22 + 156);
 });

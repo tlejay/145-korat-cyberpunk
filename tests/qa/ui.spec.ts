@@ -170,6 +170,12 @@ test('AUD-01/02/05 audio unlock on first tap, engine pitch smooth, events audibl
     g.qa.setInput({ throttle: 1 });
     const rates: { r: number; v: number }[] = [];
     for (let i = 0; i < 240; i++) { await g.qa.step(1); await new Promise((r) => setTimeout(r, 4)); rates.push({ r: g.audio().engineRate, v: g.car().speedKmh }); }
+    // The start is now south of Ya Mo plaza and the first ~4 s run through its no-jump zone (CLAUDE.md §1):
+    // jump on the Ratchasima-Chokchai straight (s ≈ 1000) instead.
+    const cl = g.track().centerline; let acc = 0, k = 1;
+    for (; k < cl.length - 1 && acc < 1000; k++) acc += Math.hypot(cl[k][0] - cl[k - 1][0], cl[k][1] - cl[k - 1][1]);
+    g.qa.teleport(cl[k][0], cl[k][1], (Math.atan2(cl[k + 1][0] - cl[k][0], -(cl[k + 1][1] - cl[k][1])) * 180) / Math.PI, 80);
+    await g.qa.step(10);
     g.qa.setInput({ throttle: 1, jump: true }); await g.qa.step(2);
     const afterJump = g.audio().playing.slice();
     g.qa.setInput({ throttle: 1, jump: false });

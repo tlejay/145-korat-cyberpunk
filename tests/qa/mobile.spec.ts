@@ -164,6 +164,8 @@ test('MOB-07 / ERR-03 portrait mid-race pauses with Thai hint; back to landscape
   const hint = page.locator('[data-qa=rotate-hint]');
   await expect(hint).toBeVisible();
   const txt = await hint.innerText();
+  // matchMedia 'change' is delivered with the next rendered frame — ~1 s apart under SwiftShader at portrait DPR 2
+  await expect.poll(() => page.evaluate(() => window.__game!.state()), { timeout: 3000 }).toBe('paused');
   const st = await page.evaluate(() => window.__game!.state());
   await shot(page, `portrait-${test.info().project.name}`);
   await page.setViewportSize({ width: 844, height: 390 });

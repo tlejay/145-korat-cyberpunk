@@ -20,6 +20,8 @@ async function setup(page: Page, laps = 2) {
 }
 
 // Every evaluate below is plain JS against window.__game / window.__drv (see driver.js).
+// Track distances s: the start/finish moved 210 m south of Ya Mo plaza (REPORT-checkpoint §2), so every s here is
+// the M1 value + 210 (224 corner turn-in 710, longest straight 720–1322, corners per wayfinding turns).
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const run = <T>(page: Page, fn: string) => page.evaluate(`(async () => { const g = window.__game, d = window.__drv; ${fn} })()`) as Promise<T>;
 
@@ -27,7 +29,7 @@ test('FEEL-03 / 03b launch: 0–100 normal, boost, launch+boost, peak g, front w
   await setup(page);
   const r = await run<any>(page, `
     const t100 = async (inp, arm) => {
-      d.place(560); g.qa.setTank(100);
+      d.place(770); g.qa.setTank(100);
       if (arm) { await d.drive((c, t) => t < 0.6 ? { boost: true } : null, { frames: 1 }); }
       const g0 = g.car().g.peak;
       let lifted = false, peak = 0, t = 0;
@@ -47,11 +49,11 @@ test('FEEL-03 / 03b launch: 0–100 normal, boost, launch+boost, peak g, front w
 test('FEEL-04 top speed on the longest straight + PHY-06 braking 100→0', async ({ page }) => {
   await setup(page);
   const r = await run<any>(page, `
-    // Ratchasima-Chokchai eastbound (s 510–1112) is the longest straight; start at the corner exit.
-    d.place(540); let vmax = 0, sAt = 0;
-    await d.drive((c) => { vmax = Math.max(vmax, c.speedKmh); const s = d.nearestS(c.pos.x, c.pos.z, 600); sAt = s; if (s > 1060) return null; const a = d.at(s + 25); return { throttle: 1, steer: d.steerTo(c, d.headingTo(c.pos.x, c.pos.z, a.x, a.z)) }; }, { frames: 1, maxS: 20 });
+    // Ratchasima-Chokchai eastbound (s 720–1322) is the longest straight; start at the corner exit.
+    d.place(750); let vmax = 0, sAt = 0;
+    await d.drive((c) => { vmax = Math.max(vmax, c.speedKmh); const s = d.nearestS(c.pos.x, c.pos.z, 810); sAt = s; if (s > 1270) return null; const a = d.at(s + 25); return { throttle: 1, steer: d.steerTo(c, d.headingTo(c.pos.x, c.pos.z, a.x, a.z)) }; }, { frames: 1, maxS: 20 });
     const top = { vmax, untilS: sAt };
-    await d.runUp(560, 101);
+    await d.runUp(770, 101);
     const p0 = d.snap().pos; let p1 = p0;
     await d.drive((c, t) => { p1 = c.pos; return c.speedKmh > 0.5 && t < 6 ? { brake: 1 } : null; }, { frames: 1 });
     return { top, brakeM: Math.hypot(p1.x - p0.x, p1.z - p0.z) };
@@ -67,13 +69,13 @@ test('FEEL-05 / 05b jump at 60: height, airtime, landing burn, 4 wheels, tank, s
     const land = []; g.on('land', (e) => land.push(JSON.parse(JSON.stringify(e))));
     const jumps = [];
     for (let i = 0; i < 20; i++) {
-      await d.runUp(560 + (i % 4) * 40, 60, { tank: 100 });
+      await d.runUp(770 + (i % 4) * 40, 60, { tank: 100 });
       const u0 = g.car().tank.units; let apex = 0, air = 0, landT = null, four = null, minY = 0, clear = Infinity;
       await d.drive((c, t) => { apex = Math.max(apex, c.pos.y); minY = Math.min(minY, c.pos.y); const wc = g.qa.wheelClearanceM(); if (wc !== null) clear = Math.min(clear, wc); if (c.airborne) air = t; if (t > 0.2 && !c.airborne && landT === null) landT = t; if (landT !== null && four === null && c.wheelsOnGround === 4) four = (t - landT) * 1000; return t < 2.4 ? { throttle: 0.3, jump: t < 0.03 } : null; }, { frames: 1 });
       jumps.push({ apex, air, four, minY, clear, used: g.car().tank.lastUseUnits });
     }
     // Spam: hammer jump every 50 ms for 4 s with a full tank — must not climb into the sky.
-    await d.runUp(560, 60, { tank: 100 });
+    await d.runUp(770, 60, { tank: 100 });
     let spamApex = 0;
     await d.drive((c, t) => { spamApex = Math.max(spamApex, c.pos.y); return t < 4 ? { throttle: 0.3, jump: Math.floor(t * 20) % 2 === 0 } : null; }, { frames: 1 });
     return { jumps, land: land.slice(0, 20), spamApex };
@@ -98,7 +100,7 @@ test('FEEL-06 jump next to walls / on corners × 30: never stuck or under the wo
   await setup(page);
   const r = await run<any>(page, `
     const rnd = d.rng(6); const res = [];
-    const corners = [505, 1115, 2017, 2332, 2457, 2750];
+    const corners = [715, 1325, 2227, 2542, 2667, 2960];
     for (let i = 0; i < 30; i++) {
       const s = corners[i % 6] - 40 + rnd() * 30; const lat = (rnd() < 0.5 ? -1 : 1) * (3 + rnd() * 2);
       d.place(s, lat, (rnd() - 0.5) * 30); g.qa.setTank(100);
@@ -127,10 +129,10 @@ test('FEEL-06 jump next to walls / on corners × 30: never stuck or under the wo
 test('FEEL-08 slalom at 120 for 10 s: no spin', async ({ page }) => {
   await setup(page);
   const r = await run<any>(page, `
-    await d.runUp(530, 120);
+    await d.runUp(740, 120);
     let maxDev = 0, maxSlip = 0, hits = 0; const lc0 = JSON.stringify(g.car().lastCollision);
     await d.drive((c, t) => {
-      const s = d.nearestS(c.pos.x, c.pos.z, 600); const dev = Math.abs(d.wrap(c.yawDeg - d.at(s).h));
+      const s = d.nearestS(c.pos.x, c.pos.z, 810); const dev = Math.abs(d.wrap(c.yawDeg - d.at(s).h));
       maxDev = Math.max(maxDev, dev); maxSlip = Math.max(maxSlip, Math.abs(c.slipAngleDeg));
       return t < 10 ? { throttle: c.speedKmh < 120 ? 1 : 0.4, steer: Math.floor(t / 0.5) % 2 ? 1 : -1 } : null;
     }, { frames: 1, maxS: 11 });
@@ -144,21 +146,21 @@ test('FEEL-07 / PHY-02 / PHY-03 drift through the 224 right-hander (scripted dri
   await setup(page);
   const r = await run<any>(page, `
     const tries = [];
-    const turn = d.at(505), exitH = d.at(600).h, entryH = d.at(440).h;
+    const turn = d.at(715), exitH = d.at(810).h, entryH = d.at(650).h;
     for (let i = 0; i < 10; i++) {
       const target = 105 + i * 2;      // 105 … 123 km/h entry
       const brakeAt = 30 + (i % 3) * 4; // metres before the apex
-      d.place(300); g.qa.setTank(100);
+      d.place(510); g.qa.setTank(100);
       let phase = 'run', driftT = 0, maxSpin = 0, entryV = 0, minSlipAfter = 99, releaseT = null, hit = false;
       const lc0 = JSON.stringify(g.car().lastCollision);
       await d.drive((c, t) => {
-        const s = d.nearestS(c.pos.x, c.pos.z, 400);
+        const s = d.nearestS(c.pos.x, c.pos.z, 610);
         if (c.drifting) driftT += 1 / 60;
         maxSpin = Math.max(maxSpin, Math.abs(d.wrap(c.yawDeg - entryH)));
-        if (phase === 'run') { if (s > 505 - brakeAt) { phase = 'turn'; entryV = c.speedKmh; } const a = d.at(s + 20); return { ...d.speedCtl(c, target), steer: d.steerTo(c, d.headingTo(c.pos.x, c.pos.z, a.x, a.z)) }; }
+        if (phase === 'run') { if (s > 715 - brakeAt) { phase = 'turn'; entryV = c.speedKmh; } const a = d.at(s + 20); return { ...d.speedCtl(c, target), steer: d.steerTo(c, d.headingTo(c.pos.x, c.pos.z, a.x, a.z)) }; }
         if (phase === 'turn') {
           const dh = Math.abs(d.wrap(c.yawDeg - exitH));
-          if (dh < 12 || s > 560) { phase = 'exit'; releaseT = t; }
+          if (dh < 12 || s > 770) { phase = 'exit'; releaseT = t; }
           return { throttle: 0.8, brake: t % 1 < 0.15 && c.speedKmh > 60 ? 1 : 0, steer: 1 };
         }
         if (t - releaseT > 0.3) minSlipAfter = Math.min(minSlipAfter, Math.abs(c.slipAngleDeg));
@@ -166,7 +168,7 @@ test('FEEL-07 / PHY-02 / PHY-03 drift through the 224 right-hander (scripted dri
       }, { frames: 1, maxS: 14 });
       hit = JSON.stringify(g.car().lastCollision) !== lc0;
       const c = d.snap();
-      tries.push({ target, entryV: +entryV.toFixed(0), driftS: +driftT.toFixed(2), maxSpin: +maxSpin.toFixed(0), exitDev: +Math.abs(d.wrap(c.yawDeg - exitH)).toFixed(0), slipAfter: +minSlipAfter.toFixed(1), hit, endS: +d.nearestS(c.pos.x, c.pos.z, 560).toFixed(0) });
+      tries.push({ target, entryV: +entryV.toFixed(0), driftS: +driftT.toFixed(2), maxSpin: +maxSpin.toFixed(0), exitDev: +Math.abs(d.wrap(c.yawDeg - exitH)).toFixed(0), slipAfter: +minSlipAfter.toFixed(1), hit, endS: +d.nearestS(c.pos.x, c.pos.z, 770).toFixed(0) });
     }
     return tries;
   `);
@@ -182,13 +184,14 @@ test('FEEL-13 / FEEL-14 crash into walls at 30/80/150/200+ km/h, 0° and 45°: n
   const r = await run<any>(page, `
     const res = [];
     // Overshoot every 90° corner straight into the outer wall (0°) or angled (45°).
-    const corners = [1115, 2017, 2332, 2457, 2750, 505];
+    const corners = [1325, 2227, 2542, 2667, 2960, 715];
     const speeds = [30, 80, 150, 210];
     let n = 0;
     for (const sc of corners) for (const v of speeds) for (const ang of [0, 45]) {
       n++;
       const runup = v > 150 ? 260 : 180;
       d.place(sc - runup); g.qa.setTank(100);
+      await g.qa.step(2); // hook: the previous trial's lastCollision re-appears one step after a teleport — baseline after it
       const h0 = d.at(sc - 30).h;
       let before = 0, after = null, maxY = 0, hitAt = null, blocked = false;
       const lc0 = JSON.stringify(g.car().lastCollision); let lc = lc0;
@@ -247,7 +250,7 @@ test('FEEL-17 cheating: skipping checkpoints or reversing over the line never co
   const r = await run<any>(page, `
     const laps = []; g.on('lap', (e) => laps.push(JSON.parse(JSON.stringify(e))));
     // 1) teleport ahead past most checkpoints, then autopilot over the line
-    d.place(2900); g.qa.autopilot(true);
+    d.place(3110); g.qa.autopilot(true);
     await d.drive((c, t) => t < 25 ? {} : null, { frames: 4, maxS: 26 });
     g.qa.autopilot(false);
     const a = { lap: g.track().lap, lapTimes: g.track().lapTimesMs.slice(), missed: g.track().checkpoint.missed, laps: laps.length };
@@ -290,13 +293,13 @@ test('PHY-04 / PHY-05 / REAL-05 moat jump line (scripted) — falling in respawn
     const ul = Math.hypot(Lp.x - T.x, Lp.z - T.z), u = { x: (Lp.x - T.x) / ul, z: (Lp.z - T.z) / ul };
     const attempt = async (v, hoverS) => {
       const ev = []; const offs = ['jump', 'land', 'splash', 'respawn', 'collision'].map((e) => g.on(e, (x) => { const c = g.car(); ev.push({ e, x: +c.pos.x.toFixed(1), z: +c.pos.z.toFixed(1), v: +c.speedKmh.toFixed(0), k: x?.kind ?? x?.quality ?? '' }); }));
-      d.place(820); g.qa.setTank(100);
+      d.place(1030); g.qa.setTank(100);
       let phase = 'run', tj = null, tSplash = null, tResp = null; const rs0 = g.world().respawnCount;
       await d.drive((c, t) => {
         const P = c.pos, along = (P.x - T.x) * u.x + (P.z - T.z) * u.z;
         if (tSplash === null && c.contact.surface === 'water' && !c.airborne) tSplash = t;
         if (tResp === null && g.world().respawnCount > rs0) tResp = t;
-        if (phase === 'run') { if (P.x > 455) phase = 'cut'; const s = d.nearestS(P.x, P.z, 900), a = d.at(s + 20); return { ...d.speedCtl(c, v), steer: d.steerTo(c, d.headingTo(P.x, P.z, a.x, a.z)) }; }
+        if (phase === 'run') { if (P.x > 455) phase = 'cut'; const s = d.nearestS(P.x, P.z, 1110), a = d.at(s + 20); return { ...d.speedCtl(c, v), steer: d.steerTo(c, d.headingTo(P.x, P.z, a.x, a.z)) }; }
         const aim = { x: T.x + u.x * (along + 14), z: T.z + u.z * (along + 14) };
         if (phase === 'cut') { if (along > -3.2) { phase = 'air'; tj = t; } return { ...d.speedCtl(c, v), steer: d.steerTo(c, d.headingTo(P.x, P.z, aim.x, aim.z)), jump: phase === 'air' }; }
         if (phase === 'air') { if (!c.airborne && t - tj > 0.3) phase = 'out'; return { throttle: 0.2, jump: t - tj < 0.05 || (hoverS > 0 && t - tj > 0.6 && t - tj < 0.6 + hoverS), steer: d.steerTo(c, d.headingTo(P.x, P.z, aim.x, aim.z)) }; }
@@ -381,11 +384,11 @@ test('FEEL-10b camera keeps up with the car at 30 / 20 / 15 fps (top speed + boo
     const out = {};
     for (const hz of [60, 30, 20, 15]) {
       g.qa.fixedStep(true, 1000 / hz);
-      d.place(540); g.qa.setTank(100);
+      d.place(750); g.qa.setTank(100);
       let maxDist = 0, vmax = 0; const frames = Math.round(hz * 9);
       for (let i = 0; i < frames; i++) {
-        const c = g.car(); const s = d.nearestS(c.pos.x, c.pos.z, 700); const a = d.at(s + 25);
-        if (s > 1060) break;
+        const c = g.car(); const s = d.nearestS(c.pos.x, c.pos.z, 910); const a = d.at(s + 25);
+        if (s > 1270) break;
         g.qa.setInput({ throttle: 1, boost: true, steer: d.steerTo(c, d.headingTo(c.pos.x, c.pos.z, a.x, a.z)) });
         await g.qa.step(1);
         maxDist = Math.max(maxDist, g.camera().distanceToCarM); vmax = Math.max(vmax, g.car().speedKmh);
