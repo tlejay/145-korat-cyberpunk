@@ -42,3 +42,17 @@ video-story ต้องเล่าเรื่องเดียวกับ�
 ## ⭐ น้ำเสียง (Tle สั่ง 21:35) — ใส่ใน ping ถึง Mint ด้วย
 ให้แรงบันดาลใจกับคนที่อยากลอง vibe coding · ไม่อวดความรู้ ไม่ใช้ศัพท์เทคนิคยาก ไม่กดคนดู · เล่าแบบถ่อมตัว มีมุมพลาดขำ ๆ ได้ · เล่าการส่งงานกับ Mint (พากย์เสียง → video-story) ว่า AI หลายตัวทำงานเป็นทีม
 - ❌ ห้ามเล่าเรื่อง "AI แต่งว่า Tle เป็นเขยโคราช" (Tle สั่ง 21:38)
+
+## 🔁 สเปกจาก Mint (tlejay/mint#476 comment 21:45) — **ยึดอันนี้เป็นหลัก แทนรายการช็อตข้างบน**
+อ่าน comment ล่าสุดของ Mint ด้วย `gh issue view 476 --repo tlejay/mint --comments` ก่อนเริ่ม
+1. **ฟุตเทจ 1080×1920 · 60 fps** (30 ได้ถ้าจำเป็น) mp4 คุณภาพสูง ไม่บีบ · คลิปละ 3–8 วิ ชื่อไฟล์ตามโมเมนต์:
+   `countdown` (3-2-1-Go + เสียง Charlie), `launch-boost`, `drift`, `great-jump` (ข้ามคูเมือง), `neon-street`, `pratu-chumphon`, `yamo-plaza`, `checkpoint-jump`, `sponsor-signs`, `finish`, `new-record`, `leaderboard`, `menu`
+   - **2 ชุด: มี HUD/UI และไม่มี HUD/UI** ของทุกโมเมนต์ (`clips/hud/`, `clips/clean/`)
+   - **flythrough 10–15 วิ** กล้องบินรอบลานย่าโมกลางคืนฝนตก ไม่มีรถก็ได้ (สง่า เคารพ ไม่หมุนวนเร็ว)
+   - **เล่นจริง 1 รอบเต็มไม่ตัด** 1 ไฟล์ (มี HUD)
+2. เสียง: เสียงเกม (ไม่มีเพลง) แยกจาก **เพลงประกอบแยกไฟล์** + license ของเพลง (ดู `research/audio/sources.json` — BGM เป็น CC0 ต้องยืนยันชื่อ/ลิงก์) · SFX หลัก (มอเตอร์ ดริฟต์ บูสต์ ไอพ่น) · เสียงพากย์ Charlie (ElevenLabs แพลนฟรี = ไม่เชิงพาณิชย์ + ต้องเครดิต)
+3. ภาพนิ่ง 1080×1920 ไม่มี UI 5–8 ใบ มุมสวยสุด · **โลโก้ชื่อเกม "โคราชโรสเตอร์" PNG พื้นใส** ทำด้วย canvas/SVG + Noto Sans Thai (ห้าม imagegen) สไตล์นีออนเข้าเกม
+4. `FACTS.md` ข้อเท็จจริงที่ยืนยันแล้วเท่านั้น (ดึงจาก LOG/REPORT): ลิงก์ + วันที่เปิด (17 ต.ค. 2026 / 2569) · เล่นบนมือถือในเบราว์เซอร์ ไม่ต้องลงแอป ฟรี ไม่ต้องสมัคร · leaderboard ออนไลน์ ตั้งชื่อขิงได้ · ตัวเลข (ป้ายนีออน 297, เวลาทำ, จำนวน commit, จำนวน Claude/pane, สนามจริง 3.3 กม., ฯลฯ) — Tle ให้เปิดเผยได้ (เป็นแกนของโพสต์อยู่แล้ว) · เครดิตท้ายคลิป: OSM, ฟอนต์ Noto Sans Thai (OFL), เพลง/เสียง CC0 + ผู้สร้าง, เสียงพากย์ ElevenLabs "Charlie" โดย Mint, ภาพประกอบ ChatGPT, three.js, Claude Opus 5.5 · ไม่มีโมเดล 3D จากภายนอก (สร้างด้วยโค้ดทั้งหมด)
+5. **โหมดเดโม่ผ่าน URL** (Mint อยากได้มาก): `?demo=1&hud=0|1&cam=chase|fly&shot=<ชื่อโมเมนต์>&seed=` ที่รันเส้นทาง/ช็อตเดิมทุกครั้ง (deterministic) — ทำใน `src/capture/**` + ต่อ main.ts แบบเงื่อนไขบรรทัดเดียว · ใช้โหมดนี้อัดเองด้วย แล้วเขียนวิธีใช้ใน `SHOTLIST.md` ให้ Mint อัดซ้ำเองได้บน production
+- ส่งที่ `/Users/tlej/Works (Local)/Vibe Docs/~Inbox/to-mint/korat-roadster-teaser/promo-footage/` (clips/hud, clips/clean, flythrough, full-lap, audio, stills, logo, FACTS.md, SHOTLIST.md, CREDITS.md)
+- ping: **comment ใน tlejay/mint#476** (ไม่ต้องเปิดใบใหม่) บอก path + สรุปของที่ส่ง + ลิงก์โหมดเดโม่บน production (ถ้า deploy แล้ว)
