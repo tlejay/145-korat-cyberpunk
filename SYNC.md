@@ -29,6 +29,13 @@
 - [ ] M3: art + visuals + fx (เริ่ม 20:11)
 - [ ] M3 backlog: รูปหล่อย่าโมยังผอมคล้ายหุ่น — เพิ่มรายละเอียดชุดไทย/ทรงผม (ห้ามล้อเลียน) · Terminal 21 ทรงกลาง ๆ (ไม่มีภาพนอก)
 
+**แผนคืนนี้ (Tle อนุญาต 21:02 ก่อนนอน)**
+1. รอ art (แก้ภาพ) · visuals (ต่อ art/sponsors/checkpoint) · fix (คิว #2–#9) · sponsors · checkpoint (ย้ายสตาร์ท + ด่าน) ให้จบ
+2. 🧪 QA รอบ M3 บน preview → แก้จน 🔴 ที่ทดสอบอัตโนมัติได้ผ่านหมด
+3. `vercel deploy --prod` เกม → เช็ค `korat-cyberpunk.vercel.app/koratrocketcar/` 200
+4. pane madebytle: rewrite `/koratrocketcar/*` → เกม → deploy → เช็ค `madebytle.com/koratrocketcar/` 200 + หน้าเดิมของ madebytle ไม่พัง
+5. ✍️ content อัปเดตโพสต์ Facebook ฉบับเต็ม · สรุปให้ Tle ตอนเช้า
+
 **แผนถัดไป (milestone)**
 1. M0 รวมผลสำรวจ → Tle เลือกสนาม (A/B/C)
 2. M1 Vertical slice: ถนนจาก OSM + รถขับได้ + ปุ่มมือถือ + deploy Vercel ครั้งแรก
