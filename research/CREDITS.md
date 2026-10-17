@@ -179,3 +179,20 @@
 | `voice/vo-boost` | voice/mint/charlie/boost.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
 | `voice/vo-nice-drift` | voice/mint/charlie/nice-drift.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
 | `voice/vo-great-jump` | voice/mint/charlie/great-jump.mp3 | Mint — ElevenLabs TTS (voice "Charlie") | ElevenLabs free plan — **ไม่เชิงพาณิชย์ + ต้องเครดิต** |
+
+## ภาพที่สร้างด้วย AI — `public/assets/img/` (M3, 2026-10-17)
+
+สร้างด้วย **ChatGPT image generation (OpenAI)** ผ่าน pane ChatGPT (skill `/kiki-gpt`) แล้วครอป/บีบ/ทำ tile เองในโปรเจค · ไม่มีตัวอักษร โลโก้แบรนด์จริง ภาพบุคคลจริง อนุสาวรีย์ หรือพระบรมฉายาลักษณ์ในภาพ · ตัวอักษรไทยบนป้ายเรนเดอร์ในเกมด้วย Noto Sans Thai
+ภาพเหล่านี้ไม่ได้ดัดแปลงจากภาพ Google / Wikimedia (ไม่ติด CC BY-SA) · ใช้ตามเงื่อนไขการใช้งานของ OpenAI · ต้นฉบับความละเอียดเต็มเก็บที่ `~gpt-generated-images/` (นอก repo)
+หน้าเครดิตในเกมเขียนว่า: "ภาพประกอบบางส่วนสร้างด้วย ChatGPT (OpenAI)"
+
+| ไฟล์ | ใช้ทำ |
+|---|---|
+| `neon-frames-atlas.webp` | กรอบป้ายนีออนว่าง 6 แบบ |
+| `billboard-01..05-*.webp` | บิลบอร์ดโฆษณาสมมุติ 5 แบบ |
+| `window-01..04-*.webp` | หน้าต่างตึกแถวกลางคืน (tile ได้) 4 แบบ |
+| `sky-rain-night-equirect.webp` | ฟ้าคืนฝน (skybox) |
+| `cover-*.webp`, `og-cover-1200x630.jpg` | ภาพปก / หน้าเมนู / OG image |
+| `sponsor-bg-*.webp` | พื้นหลังป้ายสปอนเซอร์ MADEBYTLE / สมาคมดิจิทัลนครราชสีมา (โลโก้จริงประกอบในเกม ไม่ได้อยู่ในภาพ) |
+
+รายละเอียดทุกไฟล์ (ขนาด · prompt) อยู่ใน `docs/dev/m3/art-manifest.json`

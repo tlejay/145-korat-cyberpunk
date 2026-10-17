@@ -81,6 +81,7 @@
 | 21:02 | Tle ไปนอน: "ทดสอบให้ด้วย เอาให้เสร็จ deploy ขึ้น madebytle.com ได้เลย" → conductor รับคุมทีมข้ามคืน: จบ M3 → QA → prod → madebytle proxy → content | Tle |
 | 21:05 | Tle สั่ง /kiki-gh-readme + เปิด repo public → conductor ตรวจประวัติ git ทั้งหมดก่อน: ไม่มี secret/token/อีเมล/IP/ภาพ Google/ภาพข่าว → ผ่าน · คิว README ไว้หลัง deploy ให้ภาพเป็นเกมฉบับจบ | Tle + conductor |
 | 21:08 | Tle สั่งทำ teaser แนวตั้งหลายคลิป แล้ว ping Mint ทำ video-story → conductor เขียนบรีฟ 🎬 clips (8 ช็อต 9:16 เรนเดอร์ทีละเฟรม) รออัดหลัง M3 ครบ แล้ว ping Mint พร้อมไฟล์ | Tle + conductor |
+| 21:12 | 🖼️ art เสร็จ (61 นาที): วาดใหม่บิลบอร์ด 3 ภาพที่มีรอยเบลอ + ทำเวอร์ชันย่อ (-lo) ทุกภาพสำหรับ quality ต่ำ/กลาง ให้ GPU อยู่ในงบ → conductor ดูภาพแล้วผ่าน · ปิด tab · ส่งให้ visuals ต่อเข้าเกม | art |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -107,7 +108,7 @@
 | 18 | 🧪 qa-m1 | QA ตรวจ M1 บน preview | 19:41 | 20:51 | 70 นาที | `docs/qa/reports/` `tests/qa/` |
 | 19 | 🏛️ landmarks-3d | M2 ลานย่าโม ประตูชุมพล คูเมือง | 19:41 | 20:06 | 25 นาที | `src/track/landmarks/` |
 | 20 | 🏘️ streetscape | M2 ตึกแถว ของข้างถนน ป้ายชื่อถนน | 19:41 | 20:08 | 27 นาที | `src/track/` `public/data/` |
-| 21 | 🖼️ art | M3 ภาพประกอบจาก ChatGPT | 20:11 | | | |
+| 21 | 🖼️ art | M3 ภาพประกอบจาก ChatGPT (ส่งกลับแก้ 1 รอบ) | 20:11 | 21:12 | 61 นาที | `public/assets/img/` |
 | 22 | 🌃 visuals | M3 แสง นีออน ฝน + integrator | 20:11 | | | |
 | 23 | 💨 fx | M3 สายไฟ/โคมแกว่ง + VFX รถ + ไอขาวฟิสิกส์ | 20:11 | 20:41 | 30 นาที | `src/fx/` |
 | 24 | 🐞 fix | แก้บั๊ก (เริ่มจาก Three ซ้ำ) | 20:15 | | | |

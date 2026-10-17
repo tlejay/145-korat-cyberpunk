@@ -1,0 +1,406 @@
+{
+  "generated": "2026-10-17",
+  "generator": "ChatGPT image generation (OpenAI) via herdr pane ChatGPT, skill /kiki-gpt",
+  "rules": "No text, no real logos/brands, no monument/royal imagery, no real people. Thai text is rendered in-game with Noto Sans Thai.",
+  "total_bytes": 1754591,
+  "gpu_budget": {
+    "lo_atlas_cells": "neon-frames-atlas-lo: same layout, every cells_px value halved (256x85 cells)",
+    "note": "Estimates for this art set only (RGBA8 + mipmaps). M2 already uses ~10 MB (REPORT-M2-streetscape §3); QA texture budget is 32 MB total.",
+    "all_full_mb": 44.0,
+    "all_lo_mb": 11.0,
+    "recommended": {
+      "low": {
+        "use": "every *-lo file; only 2 window tiles + 3 billboards loaded",
+        "art_gpu_mb": 9.0
+      },
+      "mid": {
+        "use": "every *-lo file",
+        "art_gpu_mb": 11.0
+      },
+      "high": {
+        "use": "full-res neon atlas + sponsor billboards (3x1) + sponsor barrier strips (8x1) for brand legibility; *-lo for everything else (sky, windows, ad billboards, gantries)",
+        "art_gpu_mb": 20.0
+      }
+    },
+    "with_m2_mb": {
+      "low": 19.0,
+      "mid": 21.0,
+      "high": 30.0
+    }
+  },
+  "budget_bytes": 3145728,
+  "files": [
+    {
+      "file": "public/assets/img/neon-frames-atlas.webp",
+      "use": "Blank neon sign frames for anchors.neon (3.2x0.9 m) and anchors.blade (rotate 90deg). Thai shop name drawn on top with canvas + Noto Sans Thai. Order: pink-rounded, cyan-hooks, amber-bulbs, lime-bevel, purple+red, white-blue Thai arch.",
+      "size": "1024x512",
+      "artwork_aspect": "~3:1 per cell",
+      "bytes": 101372,
+      "source": "~gpt-generated-images/neon-sign-frames-sheet.png + neon-sign-frames-sheet-v2.png",
+      "prompt": "Generate ONE image: a game texture sheet of EXACTLY three blank neon sign frames, stacked vertically as three rows, on a pure solid black background (#000000) filling the entire canvas edge to edge. Each frame is a wide horizontal rectangle about 4 times wider than tall, spanning almost the full width, with even black gaps between rows and nothing touching the canvas edges. Row 1: hot magenta-pink glass neon tube outline with rounded corners and a thin inner second tube. Row 2: electric cyan neon tube double border with small decorative corner hooks. Row 3: warm amber-orange neon tube border with a dotted chaser-light inner row of tiny bulbs. Inside each frame is EMPTY dark backing panel (very dark grey #0a0a10), the center must be blank so text can be added later in the game. Photorealistic glowing neon tubes with soft bloom halo, slight rain droplets on the backing, cyberpunk night mood. Front-on orthographic view, perfectly straight, no perspective. SIZE: exactly 1024 x 1024 pixels, a perfect SQUARE image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Two 3-frame sheets cropped and packed: column 0 = sheet 1 (prompt below), column 1 = sheet 2 (p02: lime bevel / UV purple + red inner / icy white-blue Thai arch). Black background = treat as emissive map (additive) or alphaTest by luminance. Glow halo baked; still add bloom.",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/neon-frames-atlas-lo.webp",
+        "size": "512x256",
+        "bytes": 19764,
+        "gpu_mb": 0.67
+      },
+      "cells_px": [
+        [
+          0,
+          0,
+          512,
+          170
+        ],
+        [
+          0,
+          171,
+          512,
+          170
+        ],
+        [
+          0,
+          342,
+          512,
+          170
+        ],
+        [
+          512,
+          0,
+          512,
+          170
+        ],
+        [
+          512,
+          171,
+          512,
+          170
+        ],
+        [
+          512,
+          342,
+          512,
+          170
+        ]
+      ]
+    },
+    {
+      "file": "public/assets/img/billboard-01-robot-noodles.webp",
+      "use": "Fictional ad for anchors.billboard (10x4 m): robot-served Korat noodle soup. Left ~third is dark and empty for Thai copy in-game.",
+      "size": "1024x512",
+      "artwork_aspect": "5:2 (stretched into 1024x512; map UV 0..1 on a 2.5:1 quad)",
+      "bytes": 75492,
+      "source": "~gpt-generated-images/korat-cyber-noodle-billboard.png",
+      "prompt": "Generate ONE image: a fictional cyberpunk advertising billboard artwork for a game, front-on flat artwork that fills the entire canvas edge to edge (it is the printed/LED face of the billboard itself, no billboard frame, no street, no perspective). Subject: ONE steaming bowl of Korat-style noodle soup (kuay teow) being served by a sleek chrome robot arm, glowing cyan steam, chopsticks, neon reflections on the broth. Style: glossy high-end product advertisement, cyberpunk neon night palette (magenta, cyan, amber) with a dark background, dramatic rim lighting, clean composition with the main subject large and centered, leave some empty dark space on the left third for in-game text to be added later. No people faces, no real brands, no real products. SIZE: WIDE LANDSCAPE about 2.5:1 panoramic (for example 1536 x 640), do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/billboard-01-robot-noodles-lo.webp",
+        "size": "512x256",
+        "bytes": 23014,
+        "gpu_mb": 0.67
+      }
+    },
+    {
+      "file": "public/assets/img/billboard-02-pad-mee-korat.webp",
+      "use": "Fictional ad for anchors.billboard (10x4 m): pad mee Korat with light trails. Left ~third is dark and empty for Thai copy in-game.",
+      "size": "1024x512",
+      "artwork_aspect": "5:2 (stretched into 1024x512; map UV 0..1 on a 2.5:1 quad)",
+      "bytes": 89888,
+      "source": "~gpt-generated-images/korat-cyber-padmee-billboard.png",
+      "prompt": "Generate ONE image: a fictional cyberpunk advertising billboard artwork for a game, front-on flat artwork that fills the entire canvas edge to edge (it is the printed/LED face of the billboard itself, no billboard frame, no street, no perspective). Subject: ONE plate of Korat fried rice noodles (pad mee Korat, thin rice noodles stir-fried, reddish-orange with bean sprouts and chives) floating in mid-air with tiny glowing circuit-like light trails swirling around it, a lime wedge, magenta backlight. Style: glossy high-end product advertisement, cyberpunk neon night palette (magenta, cyan, amber) with a dark background, dramatic rim lighting, clean composition with the main subject large and centered, leave some empty dark space on the left third for in-game text to be added later. No people faces, no real brands, no real products. SIZE: WIDE LANDSCAPE about 2.5:1 panoramic (for example 1536 x 640), do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/billboard-02-pad-mee-korat-lo.webp",
+        "size": "512x256",
+        "bytes": 28570,
+        "gpu_mb": 0.67
+      }
+    },
+    {
+      "file": "public/assets/img/billboard-03-energy-lion.webp",
+      "use": "Fictional ad for anchors.billboard (10x4 m): blank energy-drink can + neon lion (ราชสีห์). Left ~third is dark and empty for Thai copy in-game.",
+      "size": "1024x512",
+      "artwork_aspect": "5:2 (stretched into 1024x512; map UV 0..1 on a 2.5:1 quad)",
+      "bytes": 116460,
+      "source": "~gpt-generated-images/cyberpunk-energy-can-lion-billboard.png",
+      "prompt": "Generate ONE image: a fictional cyberpunk advertising billboard artwork for a game, front-on flat artwork that fills the entire canvas edge to edge (it is the printed/LED face of the billboard itself, no billboard frame, no street, no perspective). Subject: ONE futuristic glowing energy drink can (blank unlabeled can, no text) splashing through electric blue liquid with lightning sparks, beside ONE stylized neon lion silhouette head made of light lines. Style: glossy high-end product advertisement, cyberpunk neon night palette (magenta, cyan, amber) with a dark background, dramatic rim lighting, clean composition with the main subject large and centered, leave some empty dark space on the left third for in-game text to be added later. No people faces, no real brands, no real products. SIZE: WIDE LANDSCAPE about 2.5:1 panoramic (for example 1536 x 640), do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/billboard-03-energy-lion-lo.webp",
+        "size": "512x256",
+        "bytes": 34142,
+        "gpu_mb": 0.67
+      }
+    },
+    {
+      "file": "public/assets/img/billboard-04-rider-jacket.webp",
+      "use": "Fictional ad for anchors.billboard (10x4 m): motorcycle-taxi rider LED jackets. Left ~third is dark and empty for Thai copy in-game.",
+      "size": "1024x512",
+      "artwork_aspect": "5:2 (stretched into 1024x512; map UV 0..1 on a 2.5:1 quad)",
+      "bytes": 63938,
+      "source": "~gpt-generated-images/cyberpunk-rider-jackets-billboard.png",
+      "prompt": "Generate ONE image: a fictional cyberpunk advertising billboard artwork for a game, front-on flat artwork that fills the entire canvas edge to edge (it is the printed/LED face of the billboard itself, no billboard frame, no street, no perspective). Subject: ONE pair of futuristic cyberpunk motorcycle-taxi rider jackets (orange vest style with glowing LED stripes) displayed on a floating hologram mannequin torso without head, chrome and orange palette. Style: glossy high-end product advertisement, cyberpunk neon night palette (magenta, cyan, amber) with a dark background, dramatic rim lighting, clean composition with the main subject large and centered, leave some empty dark space on the left third for in-game text to be added later. No people faces, no real brands, no real products. SIZE: WIDE LANDSCAPE about 2.5:1 panoramic (for example 1536 x 640), do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/billboard-04-rider-jacket-lo.webp",
+        "size": "512x256",
+        "bytes": 19748,
+        "gpu_mb": 0.67
+      }
+    },
+    {
+      "file": "public/assets/img/billboard-05-phone-repair.webp",
+      "use": "Fictional ad for anchors.billboard (10x4 m): holographic phone repair. Left ~third is dark and empty for Thai copy in-game.",
+      "size": "1024x512",
+      "artwork_aspect": "5:2 (stretched into 1024x512; map UV 0..1 on a 2.5:1 quad)",
+      "bytes": 72590,
+      "source": "~gpt-generated-images/cyberpunk-phone-repair-billboard.png",
+      "prompt": "Generate ONE image: a fictional cyberpunk advertising billboard artwork for a game, front-on flat artwork that fills the entire canvas edge to edge (it is the printed/LED face of the billboard itself, no billboard frame, no street, no perspective). Subject: ONE chrome cybernetic smartphone with a holographic display projecting abstract glowing shapes (no text, no icons with letters), a mobile repair theme with tiny floating screws and circuit boards, cyan and purple. Style: glossy high-end product advertisement, cyberpunk neon night palette (magenta, cyan, amber) with a dark background, dramatic rim lighting, clean composition with the main subject large and centered, leave some empty dark space on the left third for in-game text to be added later. No people faces, no real brands, no real products. SIZE: WIDE LANDSCAPE about 2.5:1 panoramic (for example 1536 x 640), do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/billboard-05-phone-repair-lo.webp",
+        "size": "512x256",
+        "bytes": 23528,
+        "gpu_mb": 0.67
+      }
+    },
+    {
+      "file": "public/assets/img/window-01-warm-grille-ac.webp",
+      "use": "Tileable upper-floor facade module (one window bay ~4.2 m wide x 1 storey): warm tungsten + Thai security grille + AC unit below. RepeatWrapping both axes; mix the 4 per building for variety; usable as emissive with a luminance mask for lit windows.",
+      "size": "512x512",
+      "artwork_aspect": "1:1",
+      "bytes": 39600,
+      "source": "~gpt-generated-images/thai-shophouse-window-tile.png",
+      "prompt": "Generate ONE image: a SEAMLESS TILEABLE game texture of a night-time building facade window module for a 1970s-1990s Thai provincial shophouse (3-5 storey concrete row house), front-on orthographic view, perfectly flat, no perspective, no vanishing lines. Subject: EXACTLY ONE window with an aluminium sliding frame and steel security grille (decorative Thai pattern), warm yellow tungsten light inside, a thin half-drawn floral curtain, ONE boxy air-conditioner condenser unit mounted below the window with a drip stain. The texture must tile seamlessly left-right and top-bottom: the concrete wall continues across all four edges, the window centered with equal wall margin on each side. Lighting: rainy night, cool blue-purple ambient on the wet stained concrete, faint magenta and cyan neon spill from below. SIZE: exactly 1024 x 1024 pixels, a perfect SQUARE image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Post-processed for tiling: low-frequency lighting flattened (80%) + 96px/176px wrap crossfade, then 512x512.",
+      "gpu_mb": 1.33,
+      "lo": {
+        "file": "public/assets/img/window-01-warm-grille-ac-lo.webp",
+        "size": "256x256",
+        "bytes": 9334,
+        "gpu_mb": 0.33
+      }
+    },
+    {
+      "file": "public/assets/img/window-02-cool-jalousie.webp",
+      "use": "Tileable upper-floor facade module (one window bay ~4.2 m wide x 1 storey): cool fluorescent jalousie louvres, laundry, plant. RepeatWrapping both axes; mix the 4 per building for variety; usable as emissive with a luminance mask for lit windows.",
+      "size": "512x512",
+      "artwork_aspect": "1:1",
+      "bytes": 60292,
+      "source": "~gpt-generated-images/thai-shophouse-jalousie-window-tile.png",
+      "prompt": "Generate ONE image: a SEAMLESS TILEABLE game texture of a night-time building facade window module for a 1970s-1990s Thai provincial shophouse (3-5 storey concrete row house), front-on orthographic view, perfectly flat, no perspective, no vanishing lines. Subject: EXACTLY ONE window with louvered glass jalousie panes, cool white fluorescent tube light inside, a few clothes hanging on a rail behind it, potted plant on the sill, a water-stained wall. The texture must tile seamlessly left-right and top-bottom: the concrete wall continues across all four edges, the window centered with equal wall margin on each side. Lighting: rainy night, cool blue-purple ambient on the wet stained concrete, faint magenta and cyan neon spill from below. SIZE: exactly 1024 x 1024 pixels, a perfect SQUARE image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Post-processed for tiling: low-frequency lighting flattened (80%) + 96px/176px wrap crossfade, then 512x512.",
+      "gpu_mb": 1.33,
+      "lo": {
+        "file": "public/assets/img/window-02-cool-jalousie-lo.webp",
+        "size": "256x256",
+        "bytes": 13974,
+        "gpu_mb": 0.33
+      }
+    },
+    {
+      "file": "public/assets/img/window-03-dark-closed-ac.webp",
+      "use": "Tileable upper-floor facade module (one window bay ~4.2 m wide x 1 storey): unlit, curtain closed, neon reflection, AC beside. RepeatWrapping both axes; mix the 4 per building for variety; usable as emissive with a luminance mask for lit windows.",
+      "size": "512x512",
+      "artwork_aspect": "1:1",
+      "bytes": 68454,
+      "source": "~gpt-generated-images/thai-shophouse-dark-window-tile.png",
+      "prompt": "Generate ONE image: a SEAMLESS TILEABLE game texture of a night-time building facade window module for a 1970s-1990s Thai provincial shophouse (3-5 storey concrete row house), front-on orthographic view, perfectly flat, no perspective, no vanishing lines. Subject: EXACTLY ONE window fully dark with the curtain closed (dim navy), no light inside, reflections of distant pink neon on the wet glass, ONE air-conditioner condenser unit mounted beside it, small rust streaks. The texture must tile seamlessly left-right and top-bottom: the concrete wall continues across all four edges, the window centered with equal wall margin on each side. Lighting: rainy night, cool blue-purple ambient on the wet stained concrete, faint magenta and cyan neon spill from below. SIZE: exactly 1024 x 1024 pixels, a perfect SQUARE image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Post-processed for tiling: low-frequency lighting flattened (80%) + 96px/176px wrap crossfade, then 512x512. AC unit sits near right edge and fades slightly across the wrap.",
+      "gpu_mb": 1.33,
+      "lo": {
+        "file": "public/assets/img/window-03-dark-closed-ac-lo.webp",
+        "size": "256x256",
+        "bytes": 14404,
+        "gpu_mb": 0.33
+      }
+    },
+    {
+      "file": "public/assets/img/window-04-teal-screen-cables.webp",
+      "use": "Tileable upper-floor facade module (one window bay ~4.2 m wide x 1 storey): teal TV glow behind curtain, cables across wall, dish. RepeatWrapping both axes; mix the 4 per building for variety; usable as emissive with a luminance mask for lit windows.",
+      "size": "512x512",
+      "artwork_aspect": "1:1",
+      "bytes": 54400,
+      "source": "~gpt-generated-images/thai-shophouse-teal-curtain-tile.png",
+      "prompt": "Generate ONE image: a SEAMLESS TILEABLE game texture of a night-time building facade window module for a 1970s-1990s Thai provincial shophouse (3-5 storey concrete row house), front-on orthographic view, perfectly flat, no perspective, no vanishing lines. Subject: EXACTLY ONE window with a thick blackout curtain glowing teal-green from a TV or screen inside, a tangle of a few cables running across the wall, a tiny satellite dish bracket at one side. The texture must tile seamlessly left-right and top-bottom: the concrete wall continues across all four edges, the window centered with equal wall margin on each side. Lighting: rainy night, cool blue-purple ambient on the wet stained concrete, faint magenta and cyan neon spill from below. SIZE: exactly 1024 x 1024 pixels, a perfect SQUARE image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Post-processed for tiling: low-frequency lighting flattened (80%) + 96px/176px wrap crossfade, then 512x512.",
+      "gpu_mb": 1.33,
+      "lo": {
+        "file": "public/assets/img/window-04-teal-screen-cables-lo.webp",
+        "size": "256x256",
+        "bytes": 11016,
+        "gpu_mb": 0.33
+      }
+    },
+    {
+      "file": "public/assets/img/sky-rain-night-equirect.webp",
+      "use": "Equirectangular skybox / scene.background + low-cost env for wet road reflections. Horizon at v=0.5.",
+      "size": "2048x1024",
+      "artwork_aspect": "2:1 equirect",
+      "bytes": 44806,
+      "source": "~gpt-generated-images/thai-city-rain-skybox-equirectangular.png",
+      "prompt": "Generate ONE image: a 360-degree equirectangular panorama sky for a game skybox, night over a small Thai provincial city in the rain. Subject: low heavy rain clouds lit from below by city light glow in magenta, violet and sodium orange, darker deep indigo sky at the top, faint misty rain streaks. The lower 30 percent is a soft hazy horizon glow with only very distant, very low silhouettes of 3-5 storey buildings and a few water towers and palm trees (no skyscrapers, no tall towers), so the game geometry can sit in front. No moon, no stars visible through the clouds, no aircraft, no monuments, no people. The left and right edges must wrap seamlessly (continuous panorama). SIZE: WIDE 2:1 equirectangular, for example 2048 x 1024, do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Remapped: original horizon was at ~90% height; rows 0..90% squeezed into upper hemisphere, lower hemisphere replaced with horizon-haze to dark gradient, 64px wrap crossfade at the left/right seam.",
+      "gpu_mb": 10.67,
+      "lo": {
+        "file": "public/assets/img/sky-rain-night-equirect-lo.webp",
+        "size": "1024x512",
+        "bytes": 15770,
+        "gpu_mb": 2.67
+      }
+    },
+    {
+      "file": "public/assets/img/cover-1920x1080.webp",
+      "use": "Menu/loading background (desktop, high tier) + Facebook post cover. Title goes in the empty sky top-centre.",
+      "size": "1920x1080",
+      "artwork_aspect": "16:9",
+      "bytes": 238636,
+      "source": "~gpt-generated-images/mobile-racing-thai-rain-keyart.png",
+      "prompt": "Generate ONE image: cinematic key art cover for a mobile racing game. Subject: ONE white wedge-shaped two-door electric hypercar (low long hood, fastback, a sleek generic design not resembling any real brand, no badges, no license plate text) seen from BEHIND at a low three-quarter rear angle, its single full-width thin red LED light bar glowing across the entire rear, driving fast on a wet asphalt road at night, red and neon reflections on the puddles, rain falling. Setting: a Thai provincial town street lined with 3 to 5 storey concrete shophouses with metal roller shutters, overhead tangled electric cables on concrete poles, blank glowing neon sign boxes in magenta, cyan and amber with NO lettering, steam from a street food cart, a few palm trees. Not a megacity, no skyscrapers. Mood: cyberpunk, electric, rainy, cinematic, shallow depth of field, motion blur on the road. No monuments, no statues, no people faces, no logos. SIZE: WIDE LANDSCAPE 16:9 (for example 1920 x 1080), do NOT produce a square image. Keep the car in the lower middle third with free space at the top for a game title added later. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "gpu_mb": 0,
+      "notes": "DOM <img>/meta only - not a GPU texture."
+    },
+    {
+      "file": "public/assets/img/cover-1280x720.webp",
+      "use": "Menu/loading background for mobile (low/mid tier).",
+      "size": "1280x720",
+      "artwork_aspect": "16:9",
+      "bytes": 132174,
+      "source": "~gpt-generated-images/mobile-racing-thai-rain-keyart.png",
+      "prompt": "Generate ONE image: cinematic key art cover for a mobile racing game. Subject: ONE white wedge-shaped two-door electric hypercar (low long hood, fastback, a sleek generic design not resembling any real brand, no badges, no license plate text) seen from BEHIND at a low three-quarter rear angle, its single full-width thin red LED light bar glowing across the entire rear, driving fast on a wet asphalt road at night, red and neon reflections on the puddles, rain falling. Setting: a Thai provincial town street lined with 3 to 5 storey concrete shophouses with metal roller shutters, overhead tangled electric cables on concrete poles, blank glowing neon sign boxes in magenta, cyan and amber with NO lettering, steam from a street food cart, a few palm trees. Not a megacity, no skyscrapers. Mood: cyberpunk, electric, rainy, cinematic, shallow depth of field, motion blur on the road. No monuments, no statues, no people faces, no logos. SIZE: WIDE LANDSCAPE 16:9 (for example 1920 x 1080), do NOT produce a square image. Keep the car in the lower middle third with free space at the top for a game title added later. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "gpu_mb": 0,
+      "notes": "DOM <img>/meta only - not a GPU texture."
+    },
+    {
+      "file": "public/assets/img/og-cover-1200x630.jpg",
+      "use": "og:image / twitter:image (JPEG on purpose - Facebook/LINE crawlers do not reliably read WebP).",
+      "size": "1200x630",
+      "artwork_aspect": "1.91:1 (bottom-anchored crop of 16:9)",
+      "bytes": 179295,
+      "source": "~gpt-generated-images/mobile-racing-thai-rain-keyart.png",
+      "prompt": "Generate ONE image: cinematic key art cover for a mobile racing game. Subject: ONE white wedge-shaped two-door electric hypercar (low long hood, fastback, a sleek generic design not resembling any real brand, no badges, no license plate text) seen from BEHIND at a low three-quarter rear angle, its single full-width thin red LED light bar glowing across the entire rear, driving fast on a wet asphalt road at night, red and neon reflections on the puddles, rain falling. Setting: a Thai provincial town street lined with 3 to 5 storey concrete shophouses with metal roller shutters, overhead tangled electric cables on concrete poles, blank glowing neon sign boxes in magenta, cyan and amber with NO lettering, steam from a street food cart, a few palm trees. Not a megacity, no skyscrapers. Mood: cyberpunk, electric, rainy, cinematic, shallow depth of field, motion blur on the road. No monuments, no statues, no people faces, no logos. SIZE: WIDE LANDSCAPE 16:9 (for example 1920 x 1080), do NOT produce a square image. Keep the car in the lower middle third with free space at the top for a game title added later. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "gpu_mb": 0,
+      "notes": "DOM <img>/meta only - not a GPU texture."
+    },
+    {
+      "file": "public/assets/img/sponsor-bg-madebytle-billboard-3x1.webp",
+      "use": "MADEBYTLE sponsor billboard background. Logo + slogan go in the flat #050505 zone on the left ~55% (centre ~x 0.28).",
+      "size": "1024x512",
+      "artwork_aspect": "3:1 (stretched into 1024x512; map UV 0..1 on a 3:1 quad)",
+      "bytes": 30744,
+      "source": "~gpt-generated-images/madebytle-sponsor-billboard-bg-v2.png",
+      "prompt": "Generate ONE image: a first-brand sponsor billboard background (wide 3:1) for a Formula-1 style racing game. Flat front-on printed artwork filling the entire canvas edge to edge (no frame, no scene, no perspective, no mockup). Base: solid near-black #050505. Accent: crisp sharp-edged diagonal speed slashes and thin clean light streaks with a smooth gradient indigo #818cf8 to purple #c084fc to pink #f472b6, plus a little pure white on the thinnest streak cores. Modern sports graphic design, clean vector-like shapes with smooth gradients. Composition: the left 55 percent of the canvas is a large calm empty area of plain solid #050505 for a logo and slogan added later; all slashes and streaks sit on the right 45 percent and along the far left edge only. STRICTLY CLEAN: NO grain, NO noise texture, NO speckle, NO glitter, NO particles, NO smoke, NO clouds, NO fog, NO blurry blobs, NO bokeh, NO pixelated or mosaic patches, NO smudges - every shape must be crisp and smooth. Palette STRICTLY: #050505, #818cf8, #c084fc, #f472b6 and white only - no other colors. SIZE: WIDE LANDSCAPE, as wide as possible (for example 1536 x 512), do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "v2 (conductor rejected v1: faint grey smoke blotches in the logo zone became visible in-game). Near-black pixels snapped to #050505 so the logo zone is perfectly flat.",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/sponsor-bg-madebytle-billboard-3x1-lo.webp",
+        "size": "512x256",
+        "bytes": 12862,
+        "gpu_mb": 0.67
+      }
+    },
+    {
+      "file": "public/assets/img/sponsor-bg-madebytle-gantry-6x1.webp",
+      "use": "MADEBYTLE start-line gantry banner. Logo in the empty centre (~x 0.35-0.65).",
+      "size": "1024x256",
+      "artwork_aspect": "6:1 (stretched into 1024x256; map on a 6:1 quad)",
+      "bytes": 24940,
+      "source": "~gpt-generated-images/first-brand-startline-gantry-bg.png",
+      "prompt": "Generate ONE image: a first-brand start-line gantry banner background (very wide 6:1 strip). Flat front-on printed artwork for a Formula-1 style trackside sponsor banner, filling the entire canvas edge to edge (no frame, no scene, no perspective, no mockup). Bold dynamic diagonal slashes and speed-blur light streaks, motion and energy, modern sports graphic design, cyberpunk neon accents. Palette STRICTLY: near-black base #050505 with a smooth gradient accent going indigo #818cf8 to purple #c084fc to pink #f472b6, plus a little pure white for highlights - no other colors. Arrange the whole design as ONE thin horizontal band running across the exact vertical middle of the canvas, about one sixth of the canvas height tall; above and below the band fill with plain solid #050505. Inside the band: an empty dark center zone for a logo, gradient diagonal slashes on both ends, speed streaks. SIZE: WIDE LANDSCAPE 1536 x 1024, do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Cropped to the generated band (rows 385-639 of 1536x1024). Dark areas smoothed (blur only where luma<45) to remove blocky/blotchy generation artefacts in the logo zones.",
+      "gpu_mb": 1.33,
+      "lo": {
+        "file": "public/assets/img/sponsor-bg-madebytle-gantry-6x1-lo.webp",
+        "size": "512x128",
+        "bytes": 8432,
+        "gpu_mb": 0.33
+      }
+    },
+    {
+      "file": "public/assets/img/sponsor-bg-madebytle-barrier-8x1.webp",
+      "use": "MADEBYTLE trackside barrier panel, RepeatWrapping on S. Dark gaps at ~x 0.20/0.52/0.83 suit small logos.",
+      "size": "1024x128",
+      "artwork_aspect": "8.3:1 repeating (stretched into 1024x128)",
+      "bytes": 16084,
+      "source": "~gpt-generated-images/first-brand-trackside-barrier-repeat-bg.png",
+      "prompt": "Generate ONE image: a first-brand trackside barrier panel background (extremely wide 8:1 strip that repeats along a race track wall). Flat front-on printed artwork for a Formula-1 style trackside sponsor banner, filling the entire canvas edge to edge (no frame, no scene, no perspective, no mockup). Bold dynamic diagonal slashes and speed-blur light streaks, motion and energy, modern sports graphic design, cyberpunk neon accents. Palette STRICTLY: near-black base #050505 with a smooth gradient accent going indigo #818cf8 to purple #c084fc to pink #f472b6, plus a little pure white for highlights - no other colors. Arrange the design as ONE thin horizontal band across the exact vertical middle of the canvas, about one eighth of the canvas height tall, plain solid #050505 above and below. The band pattern must tile seamlessly left-right (repeating chevron/slash rhythm), with a few evenly spaced calm dark gaps for logos. SIZE: WIDE LANDSCAPE 1536 x 1024, do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Band rows 426-599 + 96px left/right wrap crossfade. Dark areas smoothed (blur only where luma<45) to remove blocky/blotchy generation artefacts in the logo zones.",
+      "gpu_mb": 0.67,
+      "lo": {
+        "file": "public/assets/img/sponsor-bg-madebytle-barrier-8x1-lo.webp",
+        "size": "512x64",
+        "bytes": 5854,
+        "gpu_mb": 0.17
+      }
+    },
+    {
+      "file": "public/assets/img/sponsor-bg-nda-billboard-3x1.webp",
+      "use": "สมาคมดิจิทัลนครราชสีมา (NDA) billboard background: flat peach #fbc3a3 logo zone on the left ~55% (dark logo variant), orange slashes + solid pixel squares + circuit lines on the right.",
+      "size": "1024x512",
+      "artwork_aspect": "3:1 (stretched into 1024x512)",
+      "bytes": 21488,
+      "source": "~gpt-generated-images/nda-sponsor-billboard-bg-v2.png",
+      "prompt": "Generate ONE image: a sponsor billboard background (wide 3:1) for a Korat (Nakhon Ratchasima) digital association, Formula-1 trackside style. Flat front-on printed artwork filling the entire canvas edge to edge (no frame, no scene, no perspective). Palette STRICTLY: orange #f26b38, lighter tints #f79a6e and #fbc3a3, deep warm charcoal #1a0f0a, a little white - no other colors. Design: crisp sharp-edged diagonal slashes in orange tints and a motif of small solid square pixel tiles arranged on a neat grid, dissolving diagonally (solid flat-colored squares with clean edges, not glowing), plus a few thin clean circuit lines. Composition: the left 55 percent is a large calm empty area of smooth flat light peach #fbc3a3 for a logo added later; all slashes, pixel tiles and circuit lines sit on the right 45 percent and along the far left edge only. STRICTLY CLEAN: NO grain, NO noise texture, NO speckle, NO glitter, NO sparkles, NO particles, NO smoke, NO fog, NO glowing blurry blobs or lens flares, NO bokeh, NO smudges - every shape must be crisp with smooth gradients. SIZE: WIDE LANDSCAPE, as wide as possible (for example 1536 x 512), do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "v2 (v1 had a blurred white glow blob in the pixel mosaic). Flat crisp shapes, no glow.",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/sponsor-bg-nda-billboard-3x1-lo.webp",
+        "size": "512x256",
+        "bytes": 9266,
+        "gpu_mb": 0.67
+      }
+    },
+    {
+      "file": "public/assets/img/sponsor-bg-nda-gantry-6x1.webp",
+      "use": "NDA start-line gantry banner. Logo in the dark empty centre (light logo variant).",
+      "size": "1024x256",
+      "artwork_aspect": "6.45:1 (stretched into 1024x256)",
+      "bytes": 21154,
+      "source": "~gpt-generated-images/korat-digital-association-startline-bg.png",
+      "prompt": "Generate ONE image: a start-line gantry banner background for a Korat digital association (very wide 6:1 strip). Flat front-on printed artwork for a Formula-1 style trackside sponsor banner, filling the entire canvas edge to edge (no frame, no scene, no perspective, no mockup). Bold dynamic diagonal slashes and speed-blur light streaks, motion and energy, modern sports graphic design, cyberpunk neon accents. Palette STRICTLY: Korat digital-association orange #f26b38 graded into lighter peach-orange tints (#f79a6e, #fbc3a3) and a deep warm charcoal #1a0f0a, plus a little white - no other colors. Include a motif of small square pixel tiles in a grid (like a pixel mosaic dissolving into squares) and subtle digital circuit lines. Arrange the whole design as ONE thin horizontal band running across the exact vertical middle of the canvas, about one sixth of the canvas height tall; above and below fill with plain solid #1a0f0a. Inside the band: an empty calm center zone for a logo, pixel-tile mosaics and diagonal slashes on both ends. SIZE: WIDE LANDSCAPE 1536 x 1024, do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Band rows 388-626. Dark areas smoothed (blur only where luma<45) to remove blocky/blotchy generation artefacts in the logo zones.",
+      "gpu_mb": 1.33,
+      "lo": {
+        "file": "public/assets/img/sponsor-bg-nda-gantry-6x1-lo.webp",
+        "size": "512x128",
+        "bytes": 8504,
+        "gpu_mb": 0.33
+      }
+    },
+    {
+      "file": "public/assets/img/sponsor-bg-nda-barrier-8x1.webp",
+      "use": "NDA trackside barrier panel, RepeatWrapping on S, alternate with the MADEBYTLE strip.",
+      "size": "1024x128",
+      "artwork_aspect": "8.2:1 repeating (stretched into 1024x128)",
+      "bytes": 19254,
+      "source": "~gpt-generated-images/korat-digital-association-trackside-barrier-repeat-bg.png",
+      "prompt": "Generate ONE image: a trackside barrier panel background for a Korat digital association (extremely wide 8:1 strip that repeats along a race track wall). Flat front-on printed artwork for a Formula-1 style trackside sponsor banner, filling the entire canvas edge to edge (no frame, no scene, no perspective, no mockup). Bold dynamic diagonal slashes and speed-blur light streaks, motion and energy, modern sports graphic design, cyberpunk neon accents. Palette STRICTLY: Korat digital-association orange #f26b38 graded into lighter peach-orange tints (#f79a6e, #fbc3a3) and a deep warm charcoal #1a0f0a, plus a little white - no other colors. Include a motif of small square pixel tiles in a grid (like a pixel mosaic dissolving into squares) and subtle digital circuit lines. Arrange the design as ONE thin horizontal band across the exact vertical middle of the canvas, about one eighth of the canvas height tall, plain solid #1a0f0a above and below. The band pattern must tile seamlessly left-right (repeating pixel squares and slash rhythm), with a few evenly spaced calm gaps for logos. SIZE: WIDE LANDSCAPE 1536 x 1024, do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "Band rows 420-596 + 96px wrap crossfade. Dark areas smoothed (blur only where luma<45) to remove blocky/blotchy generation artefacts in the logo zones.",
+      "gpu_mb": 0.67,
+      "lo": {
+        "file": "public/assets/img/sponsor-bg-nda-barrier-8x1-lo.webp",
+        "size": "512x64",
+        "bytes": 7446,
+        "gpu_mb": 0.17
+      }
+    },
+    {
+      "file": "public/assets/img/sponsor-bg-partners-billboard-3x1.webp",
+      "use": "Combined partners billboard: left dark half for the MADEBYTLE logo (~x 0.25), right flat orange half for the NDA logo (~x 0.70), one clean diagonal split with a white edge. Thai heading drawn in-game.",
+      "size": "1024x512",
+      "artwork_aspect": "3:1 (stretched into 1024x512)",
+      "bytes": 12702,
+      "source": "~gpt-generated-images/partners-sponsor-billboard-bg-v2.png",
+      "prompt": "Generate ONE image: a two-partner combined sponsor billboard background (wide 3:1), Formula-1 trackside style. Flat front-on printed artwork filling the entire canvas edge to edge (no frame, no scene, no perspective). LEFT half: solid near-black #050505 with crisp diagonal speed slashes in a smooth gradient indigo #818cf8 to purple #c084fc to pink #f472b6. RIGHT half: flat orange #f26b38 with lighter tints #f79a6e #fbc3a3 and small solid square pixel tiles on a neat grid. The two halves meet in ONE clean sharp diagonal split line with a thin white edge. Leave TWO calm empty flat zones, one centered in each half, for two logos to be placed later. No other colors besides those listed and a little white. STRICTLY CLEAN: NO grain, NO noise texture, NO speckle, NO glitter, NO sparkles, NO particles, NO smoke, NO fog, NO glowing blurry blobs or lens flares, NO bokeh, NO smudges - every shape must be crisp with smooth gradients. SIZE: WIDE LANDSCAPE, as wide as possible (for example 1536 x 512), do NOT produce a square image. [+ standard tail: no text/letters/logos/watermark, use built-in image tool, save to ~gpt-generated-images]",
+      "notes": "v2 (v1 had grainy speckle patches along the split). Near-black snapped to #050505.",
+      "gpu_mb": 2.67,
+      "lo": {
+        "file": "public/assets/img/sponsor-bg-partners-billboard-3x1-lo.webp",
+        "size": "512x256",
+        "bytes": 5200,
+        "gpu_mb": 0.67
+      }
+    }
+  ]
+}
