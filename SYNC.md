@@ -1,4 +1,17 @@
-อัปเดตล่าสุด: 2026-10-18 00:25 · 🟢 ขึ้น production แล้ว https://korat-cyberpunk.vercel.app/koratrocketcar/ · (เดิม 2026-10-17 · `tlejay/145-korat-cyberpunk` · 🟡 ระยะสำรวจ (ยังไม่มีโค้ดเกม)
+อัปเดตล่าสุด: 2026-10-18 02:25 · `tlejay/145-korat-cyberpunk` (**public**) · 🟢 **v0.3.0-build003 ขึ้นจริง** https://madebytle.com/koratrocketcar
+
+## ☀️ สรุปสำหรับ Tle ตอนเช้า
+
+**เสร็จคืนนี้:** M1–M3 ครบ · QA ผ่าน (GO) · production v0.3.0 · madebytle.com/koratrocketcar · promo/ + โหมดเดโม่ให้ Mint (Mint ทำคลิป 89.7 วิ ส่ง from-mint ตอนเช้า) · โพสต์ Facebook ฉบับเต็ม `docs/content/facebook-post.md` · README + เปิด repo public
+
+**รอ Tle ตัดสิน / ทำเอง**
+1. ⚠️ ภาพ `docs/content/screens/m3-plume-vs-news.png` (มีภาพข่าว Tesla ครึ่งหนึ่ง) ลบจาก HEAD แล้ว แต่ **ยังอยู่ในประวัติ git ของ repo public** → ลบจากประวัติต้อง force push (แนะนำ: ทำ — หรือสลับ repo เป็น private ชั่วคราวก่อน)
+2. อัปโหลด social preview: GitHub repo → Settings → General → Social preview → `docs/readme/social-preview.png`
+3. ลองบนมือถือจริงตาม `docs/qa/M4-CHECKLIST-real-device.md` (fps, ปุ่ม, เสียง iOS) = **M4**
+4. License: ตอนนี้ "all rights reserved" — ถ้าอยากให้คนเอาโค้ดไปใช้ต่อ เลือก MIT ได้
+5. เสียงพากย์ Charlie (ElevenLabs ฟรี) อยู่ใน repo public — ใช้ได้แบบไม่เชิงพาณิชย์ + เครดิตแล้ว
+6. โพสต์ Facebook: นับ commit ใหม่ก่อนโพสต์ (`git log --oneline | wc -l`) · ยาว ~2,300 คำ ย้ายส่วน "ไล่ทีละแท็บ" ไปคอมเมนต์แรกได้
+7. เล็ก: `.env.example` ยังไม่มี `DATABASE_URL` / `RUN_TOKEN_SECRET` (README อธิบายแล้ว)
 
 ## 0. รอบล่าสุด — 2026-10-17 ตั้งโปรเจค + ส่ง research pane
 
