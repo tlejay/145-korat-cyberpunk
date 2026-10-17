@@ -71,3 +71,8 @@ video-story ต้องเล่าเรื่องเดียวกับ�
 3. **before/after**: ฉากหน้าเดิมจาก commit เก่าที่รันได้ (เช่น `988177a` หน้าแรกกริดนีออนเปล่า · M1 กล่อง · M2 ตึกแถว · M3 นีออนฝน) ใช้ git worktree ใน scratchpad + `?demo=1` หรือ screenshot มุมเดียวกัน · มีของพร้อมใช้แล้วใน `docs/content/screens/` (m1-first-drive, m2-*, m3-*) — **ห้ามใช้ m3-plume-vs-news.png** (มีภาพข่าว)
 4. **`promo/FACTS.md`** ครบ: เวลาเริ่ม 18:10 – เวลาเสร็จ (ขึ้น production) · ชั่วโมงรวม · จำนวน pane (นับจากตาราง) · จำนวน commit (`git log --oneline | wc -l`) · โมเดล · เครื่องมือ (herdr, Claude Code, Codex/ChatGPT, three.js, Vite, Vercel, Neon) · แหล่ง research (OpenStreetMap, Google Street View ดูอ้างอิง, Wikimedia Commons, ข่าวเปิดตัว Roadster 15 ต.ค.) — Tle อนุญาตเปิดเผยเต็มที่
 - ไฟล์อัดจอ/วิดีโอ terminal ใส่ `promo/terminal/` (mp4 สั้น รวม ≤ 20 MB) · before/after ใส่ `promo/before-after/`
+
+## หมายเหตุ build ปัจจุบัน (conductor 01:12)
+- v0.3.0-build003 · ทรงรถตามรูปทางการ + **Hidden Aero** ปีกพับตอนจอด/เมนู กางที่ > 80 กม./ชม. → โหมดเดโม่ควรมี `wing=auto|up|down` (ช็อต rear-hero/countdown ให้ปีกกางได้)
+- **pane นี้แก้ `src/main.ts` ได้เฉพาะบรรทัดต่อ capture** · ห้ามแตะ physics/model/track · QA รอบสั้นจะรันหลัง pane นี้เสร็จ แล้ว conductor deploy production ครั้งเดียว → URL โหมดเดโม่ใน SHOTLIST ให้ใช้ `https://madebytle.com/koratrocketcar/?demo=1&...`
+- ทดสอบโหมดเดโม่บน local build (`pnpm build && vite preview --port <ว่าง ไม่ใช่ 5199>`) แล้วระบุใน SHOTLIST ว่ายืนยันบน production หลัง deploy

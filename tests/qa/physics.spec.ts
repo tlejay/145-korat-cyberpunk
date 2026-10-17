@@ -178,14 +178,14 @@ test('FEEL-07 / PHY-02 / PHY-03 drift through the 224 right-hander (scripted dri
   expect(r.filter((t: any) => t.maxSpin > 120 + 93), 'spun past 120° beyond the corner').toEqual([]);
 });
 
-test('FEEL-13 / FEEL-14 crash into walls at 30/80/150/200+ km/h, 0° and 45°: not stuck, no tunnelling, no launch', async ({ page }) => {
+test('FEEL-13 / FEEL-14 crash into walls at 30/80/110/150/200+ km/h, 0° and 45°: not stuck, no tunnelling, no launch', async ({ page }) => {
   test.setTimeout(900_000);
   await setup(page);
   const r = await run<any>(page, `
     const res = [];
     // Overshoot every 90° corner straight into the outer wall (0°) or angled (45°).
     const corners = [1325, 2227, 2542, 2667, 2960, 715];
-    const speeds = [30, 80, 150, 210];
+    const speeds = [30, 80, 110, 150, 210]; // 110 = QA M3 FEEL-14 bounce (Sanphasit → Watcharasarit)
     let n = 0;
     for (const sc of corners) for (const v of speeds) for (const ang of [0, 45]) {
       n++;

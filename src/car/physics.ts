@@ -91,6 +91,7 @@ export class CarPhysics {
   private gLong = 0;
   private gLat = 0;
   private fxTyre = 0; // last step rear+front longitudinal tyre force (load transfer)
+  private fyTyre = 0; // last step lateral tyre force (body roll) — never the wall impulse (QA FEEL-14)
   private betaPrev = 0;
 
   constructor() {
@@ -124,7 +125,7 @@ export class CarPhysics {
     this.airborne = false; this.airT = 0; this.hoverT = 0; this.jumpedThisAir = false; this.landingBurn = false;
     this.cooldown = 0; this.launchArmT = 0; this.launchT = 0; this.freeLaunch = true;
     this.boostOn = false; this.boostHeldT = 0; this.reverseHoldT = 0;
-    this.fan = T.fanStreet; this.prevU = 0; this.prevW = 0; this.gLong = this.gLat = 0; this.fxTyre = 0;
+    this.fan = T.fanStreet; this.prevU = 0; this.prevW = 0; this.gLong = this.gLat = 0; this.fxTyre = this.fyTyre = 0;
     this.tel.g.peak = 0;
   }
 
@@ -292,6 +293,7 @@ export class CarPhysics {
         this.r = (uNew * Math.tan(delta)) / L;
         this.vx = fx * uNew + rx * w * 0.5; this.vz = fz * uNew + rz * w * 0.5;
         axB = (uNew - u) / dt; this.fxTyre = m * axB;
+        ayB = uNew * this.r; // for body roll only (kinematic branch integrates itself)
         integrated = true;
       } else {
         // tyre model
@@ -350,6 +352,11 @@ export class CarPhysics {
       this.fxTyre = 0;
     }
     if (this.driftExitT > 0) this.driftExitT -= dt;
+    // Body roll follows what the tyres can push sideways. The old roll moment used the measured
+    // lateral g, which also counted wall impulses and the post-crash nose swing (60+ g for one step):
+    // the body rolled past the bump stops and the springs fired the car 6–12 m up (QA FEEL-14).
+    const latCap = muSurf * (1 + T.fanFull) * G;
+    this.fyTyre = grounded ? m * clamp(ayB, -latCap, latCap) : 0;
 
     // ── integrate planar ──
     if (!integrated) {
@@ -536,7 +543,7 @@ export class CarPhysics {
     }
     // inertial moments: tyre force acts at the ground (h below CG), thrust near CG height (PHYSICS §3.1)
     mPitch += this.fxTyre * T.cgHeightM - this.tel.thrustN.rear * (T.thrustHeightM - T.cgHeightM);
-    mRoll += m * this.gLat * G * T.cgHeightM;
+    mRoll += this.fyTyre * T.cgHeightM;
     this.vy += (fSum / m - T.gravity) * dt;
     this.y += this.vy * dt;
     this.pitchRate += (mPitch / T.pitchInertia) * dt;

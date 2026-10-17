@@ -16,7 +16,12 @@ export interface PhysicsCar extends Car {
   tuning: typeof TUNING;
   setShakeScale(k: number): void;
   setRain(rain: number): void;
+  /** Hidden Aero: 0 = wing folded flush (parked / menu), 1 = raised (> 80 km/h or hard braking). */
+  readonly aeroDeploy: number;
 }
+
+/** Hidden Aero (tesla.com "flush-mounted aerodynamics"): raise above 80 km/h or on a hard stop, fold below 70. */
+export const AERO = { upKmh: 80, downKmh: 70, brake: 0.7, brakeMinKmh: 30, moveS: 0.4 } as const;
 
 export function createCar(model: CarModel): PhysicsCar {
   const phys = new CarPhysics();
@@ -25,6 +30,8 @@ export function createCar(model: CarModel): PhysicsCar {
   object.name = 'player-car';
   object.add(model.root);
   const wing = (model as CarModel & { wing?: THREE.Object3D }).wing;
+  const setAero = (model as CarModel & { setAero?: (deploy: number, angle: number) => void }).setAero;
+  let aero = 0, aeroUp = false;
   let fanAngle = 0;
   // Wheel proxies in physics order (fl, fr, rl, rr = phys.comp[i]); rest height = their modelled y.
   const wheelList = [model.wheels.fl, model.wheels.fr, model.wheels.rl, model.wheels.rr];
@@ -63,7 +70,8 @@ export function createCar(model: CarModel): PhysicsCar {
     // fans: idle spin + suction level
     fanAngle += (20 + 60 * tel.fans.level + 40 * tel.fans.spool) / 120;
     for (const f of model.fans) f.rotation.z = fanAngle;
-    if (wing) wing.rotation.x = tel.wingAngle;
+    if (setAero) setAero(aero, tel.wingAngle);
+    else if (wing) wing.rotation.x = tel.wingAngle;
   }
 
   const car: PhysicsCar = {
@@ -73,14 +81,19 @@ export function createCar(model: CarModel): PhysicsCar {
     telemetry: phys.tel,
     tuning: TUNING,
     lastImpact: null,
+    get aeroDeploy() { return aero; },
     step(dt: number, input: InputState, track: Track) {
       phys.step(dt, input, track);
+      const kmh = phys.speed * KMH;
+      aeroUp = kmh > AERO.upKmh || (input.brake > AERO.brake && kmh > AERO.brakeMinKmh) || (aeroUp && kmh > AERO.downKmh);
+      aero = Math.max(0, Math.min(1, aero + (aeroUp ? dt : -dt) / AERO.moveS));
       car.lastImpact = phys.lastImpact;
       sync();
     },
     reset(p: Pose) {
       phys.reset(p.x, p.y, p.z, p.heading);
       car.lastImpact = null;
+      aero = 0; aeroUp = false;
       chase.snap();
       sync();
     },

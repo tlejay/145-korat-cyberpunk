@@ -54,7 +54,8 @@ export function getTrackRule(id: unknown, allowTest: boolean): TrackRule | null 
 
 // Builds whose results the server accepts. Add the new VERSION on every release;
 // drop old ones once their physics/scoring is no longer comparable.
-export const ACCEPTED_BUILDS: readonly string[] = [VERSION];
+// build003 only changed body roll after wall hits + visuals → build002 lap times stay comparable.
+export const ACCEPTED_BUILDS: readonly string[] = [VERSION, 'v0.2.0-build002'];
 
 export const SCORE = {
   timeBase: 100_000, // score at exactly par

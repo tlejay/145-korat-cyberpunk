@@ -34,6 +34,10 @@ export const OSM = {
 const CHOMSURANG = frameAt(538, 187, 0);
 // Wat Sutthachinda east gate: closes the T at Kamhaeng Songkhram × Ratchadamnoen (Street View A-30/A-31).
 const SUTT_GATE = { x: -17, z: 469.5 };
+/** Sacred facades a driver looks straight at (wayfinding keeps signs off them and out of their line of sight). */
+export const SACRED_FACES: { id: string; x: number; z: number; halfW: number }[] = [
+  { id: 'wat-sutthachinda-gate', x: SUTT_GATE.x, z: SUTT_GATE.z, halfW: 3.3 },
+];
 
 const W = {
   white: col(0xefe9dc), cream: col(0xe4dccb), shade: col(0xc9c0ae), dark: col(0x26242c), glass: col(0x232a38),

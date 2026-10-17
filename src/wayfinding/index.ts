@@ -8,7 +8,7 @@
 //   getUpcomingTurn(race.progressM)           // → { dir, distM, severity } | null  (HUD arrow, ≤ 200 m)
 //   createTurnHud(hudRoot) (./hud.ts)         // optional ready-made HUD badge + uiTap tick
 //
-// Budget: 2 draw calls (LED faces · posts/backs), one 1024² canvas atlas (512² on the low tier).
+// Budget: 2 draw calls (LED faces · posts/backs), one canvas atlas (1024² high · 768² mid · 512² low).
 // Nothing is placed in the Ya Mo plaza zone, on/near the Chumphon gate, temples or the royal-portrait arch.
 import * as THREE from 'three';
 import { getQuality } from '../game/quality.js';
@@ -16,6 +16,7 @@ import { sacredFilter } from '../neon/index.js';
 import { getTrackExtras } from '../track/index.js';
 import { WALL_BUILDING, WALL_PLAZA, WALL_PROP } from '../track/data.js';
 import type { LandmarksHandle } from '../track/landmarks/index.js';
+import { SACRED_FACES } from '../track/landmarks/sites.js';
 import type { Track, Vec2 } from '../types.js';
 import { settings } from '../ui/settings.js';
 import { CELLS, getAtlas, plateIndex, plateRect, PLATE_DISTS, type Rect } from './textures.js';
@@ -38,6 +39,10 @@ export const SIGN = {
   maxRayM: 32,
   chaseHz: 1.5,               // each chevron lights 1.5×/s (VIS-04 / BRIEF: ≤ 3 flashes per second)
   avoidSponsorM: 5, avoidPropM: 1.4, avoidStreetSignM: 2.5, avoidCheckpointM: 35, zoneMarginM: 12,
+  // Respect rule (QA M3 Y1: chevrons glowed 11 m in front of Wat Sutthachinda's gate): no sign within
+  // sacredFaceM of a temple / city gate, and none standing between the approaching driver and that gate
+  // (seen from every point of the approach, with sacredViewMarginM of clear air beside the gate).
+  sacredFaceM: 25, sacredViewMarginM: 2.5, sacredViewBackM: 160,
 };
 
 export interface WayfindingStats {
@@ -155,6 +160,30 @@ export function buildWayfinding(track: Track): THREE.Group {
     if (near(p, CHECKPOINT_SITES.map((c) => c.at), SIGN.avoidCheckpointM)) return 'checkpoint';
     return null;
   };
+  // gates / temples the driver faces: explicit facades + centroids of claimed gate / temple footprints
+  const faces = [
+    ...SACRED_FACES,
+    ...(((lmh as LandmarksHandle | null)?.claimed ?? []) as { id: string; ring: Vec2[] }[]).filter((r) => /gate|wat|temple|shrine/i.test(r.id)).map((r) => {
+      let cx = 0, cz = 0, rad = 0;
+      for (const p of r.ring) { cx += p.x; cz += p.z; }
+      cx /= r.ring.length; cz /= r.ring.length;
+      for (const p of r.ring) rad = Math.max(rad, Math.hypot(p.x - cx, p.z - cz));
+      return { id: r.id, x: cx, z: cz, halfW: rad };
+    }),
+  ];
+  /** A sign at p (half width hw) sits in front of a sacred facade as seen from any of the viewpoints. */
+  const hidesFace = (p: Vec2, hw: number, views: Vec2[]): string | null => {
+    for (const f of faces) {
+      if (Math.hypot(p.x - f.x, p.z - f.z) < SIGN.sacredFaceM + f.halfW) return `sacred-near:${f.id}`;
+      for (const v of views) {
+        const dS = Math.hypot(p.x - v.x, p.z - v.z), dF = Math.hypot(f.x - v.x, f.z - v.z);
+        if (dS >= dF || dF > SIGN.sacredViewBackM * 1.5) continue;
+        const ang = Math.abs(Math.atan2((p.x - v.x) * (f.z - v.z) - (p.z - v.z) * (f.x - v.x), (p.x - v.x) * (f.x - v.x) + (p.z - v.z) * (f.z - v.z)));
+        if (ang < Math.atan((f.halfW + SIGN.sacredViewMarginM) / dF) + Math.atan(hw / dS)) return `sacred-view:${f.id}`;
+      }
+    }
+    return null;
+  };
   const drivable = (x: number, z: number) => { const k = track.surfaceAt(x, z); return k === 'road' || k === 'curb'; };
 
   /** Ray from the centreline at s to one side → mounting spot behind a rail, or on the pavement. */
@@ -177,12 +206,12 @@ export function buildWayfinding(track: Track): THREE.Group {
     return { x: p.x + dx * d, z: p.z + dz * d, mount: 'pavement' };
   };
   /** Try s, then nudge along the road until the spot is allowed. */
-  const place = (s: number, side: 1 | -1, nudges: number[]) => {
+  const place = (s: number, side: 1 | -1, nudges: number[], views: Vec2[] = [], hw = 2) => {
     let why = 'no-edge';
     for (const ds of nudges) {
       const m = mountAt(s + ds, side);
       if (!m) continue;
-      const w = blockedWhy(m);
+      const w = blockedWhy(m) ?? hidesFace(m, hw, views);
       if (!w) return { ...m, s: (((s + ds) % L) + L) % L };
       why = w;
     }
@@ -190,7 +219,8 @@ export function buildWayfinding(track: Track): THREE.Group {
   };
 
   const tier = getQuality().tier;
-  const atlas = getAtlas(tier === 'low' ? 0.5 : 1);
+  // 1024² high · 768² mid (keeps mid ≤ 32 MB GPU textures, QA M3 Y3) · 512² low
+  const atlas = getAtlas(tier === 'low' ? 0.5 : tier === 'mid' ? 0.75 : 1);
   const led = new Geo(), struct = new Geo();
   const POST: [number, number, number] = [0.16, 0.16, 0.18], BACK: [number, number, number] = [0.1, 0.1, 0.11];
   const Y = new THREE.Vector3(0, 1, 0);
@@ -212,10 +242,16 @@ export function buildWayfinding(track: Track): THREE.Group {
     const nb = SIGN.boardsBySeverity[t.severity], k = t.severity + 1; // 2 / 3 / 4 chevrons per board
     const sA = t.s0 - 6, sB = t.s1 + 6;
     const view = at(t.s0 - 35);
+    const views: Vec2[] = [];
+    for (let d = SIGN.sacredViewBackM; d >= -(t.s1 - t.s0); d -= 10) views.push(at(t.s0 - d));
     for (let j = 0; j < nb; j++) {
       const s = sA + ((sB - sA) * j) / Math.max(1, nb - 1);
-      const m = place(s, outer, [0, 2, -2, 4, -4]);
+      const m = place(s, outer, [0, 2, -2, 4, -4, 7, -7], views, (SIGN.chevronCellW * 1.6 * k) / 2);
       if (!('x' in m)) { stats.skipped.push({ turn: t.id, kind: 'chevron', s: Math.round(s), why: m.why }); continue; }
+      // a nudged board must not land on top of one already standing at this corner
+      if (stats.signs.some((q) => q.turn === t.id && q.kind === 'chevron' && Math.hypot(q.x - m.x, q.z - m.z) < SIGN.chevronCellW * 1.6 * k)) {
+        stats.skipped.push({ turn: t.id, kind: 'chevron', s: Math.round(s), why: 'overlaps-previous-board' }); continue;
+      }
       // boards far across an open junction (224) are scaled up so they read as big as the kerb-side ones
       const sc = Math.max(1, Math.min(1.6, Math.hypot(m.x - at(s).x, m.z - at(s).z) / 15));
       const cw = SIGN.chevronCellW * sc, bw = cw * k + 0.2 * sc, hh = (SIGN.chevronH * sc) / 2;
@@ -241,7 +277,7 @@ export function buildWayfinding(track: Track): THREE.Group {
     const gapBack = ((t.s0 - prev.s1) % L + L) % L;
     for (const d of SIGN.advance) {
       if (d > gapBack - 15) { stats.skipped.push({ turn: t.id, kind: `advance-${d}`, s: Math.round(t.s0 - d), why: 'inside-previous-corner' }); continue; }
-      const m = place(t.s0 - d, -1, [0, 3, -3, 6, -6, 10, -10]);
+      const m = place(t.s0 - d, -1, [0, 3, -3, 6, -6, 10, -10], [t.s0 - d - 150, t.s0 - d - 100, t.s0 - d - 50].map((q) => at(q)), SIGN.plateW / 2);
       if (!('x' in m)) { stats.skipped.push({ turn: t.id, kind: `advance-${d}`, s: Math.round(t.s0 - d), why: m.why }); continue; }
       const p = at(m.s);
       // face the oncoming car, turned 12° towards the road so it reads from the lane

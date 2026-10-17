@@ -24,6 +24,7 @@ const { CarPhysics } = await import('../src/car/physics.ts');
 const { TUNING, G, KMH } = await import('../src/car/config.ts');
 
 const DT = 1 / 120;
+const DEG_R = Math.PI / 180;
 const flat = (barriers = []) => ({
   barriers, heightAt: () => 0, surfaceAt: () => 'road', zones: { noBoostNoJump: [] },
   moatJump: { takeoff: { x: 1e5, z: 1e5 }, landing: { x: 1e5, z: 1e5 + 1 }, widthM: 28.6 },
@@ -238,6 +239,68 @@ check('เฉียด 20° 80: ความเร็วที่เหลือ
 check('FEEL-14 ชน 220 ไม่ทะลุกำแพง (1 = ผ่าน)', boostHit.through ? 0 : 1, [1, 1]);
 check('FEEL-13 ชนแล้วกดเร่งไม่ติด (วิ)', head.stuckS, [0, 2]);
 
+
+// FEEL-14 on the real track A: overshoot every corner into its outer wall at 80/110/150 km/h, straight (0°)
+// and angled (45°), hands off or steering — the car must never leave the ground by more than 3 m.
+// (M3 regression: wall impulses fed the body-roll moment → 5.9 m bounce at Sanphasit→Watcharasarit.)
+{
+  const { readFileSync } = await import('node:fs');
+  const { decodeTrack, makeLookups } = await import('../src/track/data.ts');
+  const raw = JSON.parse(readFileSync(new URL('../public/data/track-A.json', import.meta.url), 'utf8'));
+  const data = decodeTrack(raw);
+  const { surfaceAt, heightAt } = makeLookups(data, raw.water.level);
+  const KIND = ['wall', 'barrier', 'wall', 'building', 'monument', 'prop'];
+  const ring = (a) => { const o = []; for (let i = 0; i < a.length; i += 2) o.push({ x: a[i] * 0.1, z: a[i + 1] * 0.1 }); return o; };
+  const env = {
+    barriers: data.walls.map((w) => ({ a: w.a, b: w.b, h: w.h, kind: KIND[w.kind] })), heightAt, surfaceAt,
+    zones: { noBoostNoJump: raw.zones.map(ring) }, moatJump: raw.moatJump,
+  };
+  const S = data.samples, step = data.lengthM / S.length;
+  const at = (s) => S[((Math.round(s / step) % S.length) + S.length) % S.length];
+  const hdg = (p) => Math.atan2(p.tx, -p.tz);
+  const wrapA = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+  let worst = 0, worstAt = '', hits = 0;
+  for (const c of raw.corners) for (const kmh of [80, 110, 150]) for (const ang of [0, 45]) for (const hands of [0, 1]) {
+    const p0 = at(c.s - 90), car = new CarPhysics();
+    car.reset(p0.x, heightAt(p0.x, p0.z), p0.z, hdg(p0)); settle(car, env);
+    const aim0 = hdg(at(c.s - 30)) + (ang ? (c.dir === 'R' ? -1 : 1) * ang * DEG_R : 0); // angled = away from the turn
+    let maxH = 0, seq0 = car.lastImpact?.seq ?? 0, hit = false, tHit = 0;
+    for (let i = 0; i < 8 * 120; i++) {
+      const sNow = c.s - 90 + i * (kmh / KMH) / 120;
+      const look = at(Math.min(sNow + 20, c.s - 30));
+      const want = sNow > c.s - 35 ? aim0 : Math.atan2(look.x - car.x, -(look.z - car.z));
+      const steer = hit && !hands ? 0 : Math.max(-1, Math.min(1, wrapA(want - car.heading) / (25 * DEG_R)));
+      if (i === 0) { car.vx = Math.sin(car.heading) * kmh / KMH; car.vz = -Math.cos(car.heading) * kmh / KMH; }
+      if (hit) tHit += DT;
+      const inp = !hit || tHit < 0.3 ? { throttle: car.speed * KMH < kmh ? 1 : 0.2, steer }
+        : tHit < 1.5 ? { throttle: 1, steer } : tHit < 3 ? { brake: 1, steer: 1 } : { throttle: 1, steer: -0.5 }; // QA FEEL-13 recovery
+      car.step(DT, { ...idle, ...inp }, env);
+      if ((car.lastImpact?.seq ?? 0) > seq0) hit = true;
+      const hNow = car.y - heightAt(car.x, car.z);
+      if (hNow > maxH) maxH = hNow;
+    }
+    if (hit) hits++;
+    if (maxH > worst) { worst = maxH; worstAt = `s${c.s} ${kmh} กม./ชม. ${ang}°`; }
+  }
+  check(`FEEL-14 ชนทุกโค้งสนาม A ที่ 80/110/150: ลอยสูงสุด (ม.) [${worstAt}]`, worst, [0, 3]);
+  check('FEEL-14 สนาม A: จำนวนครั้งที่ชนจริง (จาก 72)', hits, [72, 72]);
+}
+
+// FEEL-14 sweep on a flat wall: every angle 10–90°, 80–210 km/h, steering held left / none / right.
+// Before the fix a 30° hit at 210 with steering barrel-rolled the car 590° and threw it 8.7 m (90° → 11.8 m).
+{
+  let worst = 0, worstAt = '';
+  for (const kind of ['barrier', 'wall']) for (const ang of [10, 20, 30, 45, 60, 75, 90]) for (const kmh of [80, 110, 150, 210]) for (const steer of [-1, 0, 1]) {
+    const env = flat([{ a: { x: -500, z: -40 }, b: { x: 500, z: -40 }, h: kind === 'barrier' ? 1.15 : Infinity, kind }]);
+    const car = new CarPhysics(), h = (ang - 90) * DEG_R;
+    car.reset(0, 0, -26, h); settle(car, env);
+    car.vx = Math.sin(h) * kmh / KMH; car.vz = -Math.cos(h) * kmh / KMH;
+    let maxY = 0;
+    for (let i = 0; i < 480; i++) { car.step(DT, { ...idle, throttle: 1, steer }, env); maxY = Math.max(maxY, car.y); }
+    if (maxY > worst) { worst = maxY; worstAt = `${kind} ${ang}° ${kmh}`; }
+  }
+  check(`FEEL-14 ชนกำแพงทุกมุม 10–90° ที่ 80–210: ลอยสูงสุด (ม.) [${worstAt}]`, worst, [0, 3]);
+}
 
 // moat rules: railing inside the jump corridor is low (jumpable), a tall wall elsewhere is not
 function jumpOver(wallZ, corridor) {

@@ -117,6 +117,11 @@ test('M3-ZONE no neon / sponsor / turn sign / checkpoint geometry inside Ya Mo p
   }
   record(info, 'M3-ZONE', res);
   for (const q of ['high', 'low']) expect((res[q] as { byZone: object }).byZone, `${q}: decorative geometry inside a sacred zone`).toEqual({});
+  // polish build003 (QA M3 Y1): turn signs keep ≥ 25 m from Wat Sutthachinda's gate (src/wayfinding SIGN.sacredFaceM)
+  for (const q of ['high', 'low']) {
+    const near = (res[q] as { nearWatSutthachindaGate: { k: string; gateM: number }[] }).nearWatSutthachindaGate.filter((p) => p.k.startsWith('wayfinding') && p.gateM < 25);
+    expect(near, `${q}: turn sign in front of Wat Sutthachinda's gate`).toEqual([]);
+  }
   expectClean(w);
 });
 
