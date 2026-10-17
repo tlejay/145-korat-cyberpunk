@@ -9,7 +9,7 @@ import { getQuality, onQuality } from '../game/quality.js';
 import { sacredFilter } from '../neon/index.js';
 import { getTrackExtras } from '../track/index.js';
 import type { LandmarksHandle } from '../track/landmarks/index.js';
-import type { Sample } from '../track/data.js';
+import { WALL_BUILDING, WALL_MOAT, WALL_NEON, WALL_PLAZA, WALL_PROP, WALL_RAIL, type Sample } from '../track/data.js';
 import type { Track, Vec2 } from '../types.js';
 import { Geo, frame, uvRect, uvRot, type Col, type Frame } from './geo.js';
 import { getAtlas, sponsorFor } from './textures.js';
@@ -43,13 +43,22 @@ const C = {
 };
 const FACE: Col = [1.12, 1.12, 1.12]; // LED face brightness (> bloom threshold for the bright pixels only)
 
-const WINDOWS = [
-  { name: 'main-straight', s0: 14, s1: 470, perSide: 5 },
-  { name: 'pre-finish', s0: 2870, s1: 3296, perSide: 3 },
-  { name: 'manat', s0: 1240, s1: 1990, perSide: 5 },
-];
 const BOARD_LEN = 8, BOARD_Y0 = 0.12, BOARD_Y1 = 1.12, MAX_BOARDS = 25;
-const LIGHT_BRIDGE_S = 38; // start-light repeater ahead of the grid (the grid is 10 m past the line)
+const LIGHT_BRIDGE_AHEAD = 20; // start-light repeater this far ahead of the grid (chase cam looks away from the line)
+
+/** Board windows, derived from track features (not raw s) so a rebuilt track-A.json keeps them on the right roads. */
+function boardWindows(L: number, corners: { s: number }[], roads: { s0: number; s1: number; name: string }[]) {
+  const manat = roads.find((r) => r.name.includes('มนัส'));
+  return [
+    // ราชดำเนิน before the line: start 190 m after the last corner so Wat Sutthachinda's gate and lotus-baluster
+    // wall (research A-30/A-31) stay clear
+    { name: 'pre-finish', s0: (corners.at(-1)?.s ?? L - 340) + 190, s1: L - 12, perSide: 3 },
+    // ราชดำเนิน after the line, up to the 224 corner (the plaza stretch is removed by the sacred/zone filter)
+    { name: 'main-straight', s0: 15, s1: (corners[0]?.s ?? 500) - 40, perSide: 5 },
+    // ถนนมนัส after the moat causeway
+    ...(manat ? [{ name: 'manat', s0: manat.s0 + 130, s1: manat.s1 - 35, perSide: 5 }] : []),
+  ];
+}
 
 export function buildSponsors(track: Track): THREE.Group {
   const group = new THREE.Group();
@@ -65,7 +74,8 @@ export function buildSponsors(track: Track): THREE.Group {
   const sacred = sacredFilter({ x: extras.monument.x, z: extras.monument.z }, lmh?.claimed ?? []);
   const zones = track.zones.noBoostNoJump;
   const nearZone = (x: number, z: number, m: number) => zones.some((poly) => inPoly(x, z, poly) || polyDist(x, z, poly) < m);
-  const excluded = (x: number, z: number) => sacred(x, z) || nearZone(x, z, 10);
+  // zone = plaza + gate hull grown 15 m; +30 m more keeps every logo ≥ 45 m from the plaza edge
+  const excluded = (x: number, z: number) => sacred(x, z) || nearZone(x, z, 30);
 
   const at = (s: number): Sample & { rx: number; rz: number } => {
     const f = (((s % L) + L) % L) / step, i = Math.floor(f) % n, j = (i + 1) % n, t = f - Math.floor(f);
@@ -81,35 +91,77 @@ export function buildSponsors(track: Track): THREE.Group {
     return Infinity;
   };
 
+  // collider walls (world): boards are mounted on the track face of rails / moat balustrades / building
+  // fronts — never on neon junction barriers, the plaza balustrade or prop colliders
+  const WALLS = extras.walls.filter((w) => w.kind !== WALL_PROP);
+  const CELL = 8, wallGrid = new Map<string, typeof WALLS>();
+  for (const w of WALLS) {
+    const x0 = Math.floor(Math.min(w.a.x, w.b.x) / CELL), x1 = Math.floor(Math.max(w.a.x, w.b.x) / CELL);
+    const z0 = Math.floor(Math.min(w.a.z, w.b.z) / CELL), z1 = Math.floor(Math.max(w.a.z, w.b.z) / CELL);
+    for (let i = x0; i <= x1; i++) for (let j = z0; j <= z1; j++) {
+      const k = `${i},${j}`;
+      let l = wallGrid.get(k);
+      if (!l) wallGrid.set(k, (l = []));
+      l.push(w);
+    }
+  }
+  const nearestWall = (x: number, z: number, maxD: number, pred: (kind: number) => boolean = () => true) => {
+    let best: { kind: number; d: number; x: number; z: number } | null = null;
+    const ci = Math.floor(x / CELL), cj = Math.floor(z / CELL);
+    for (let i = ci - 1; i <= ci + 1; i++) for (let j = cj - 1; j <= cj + 1; j++) for (const w of wallGrid.get(`${i},${j}`) ?? []) {
+      if (!pred(w.kind)) continue;
+      const dx = w.b.x - w.a.x, dz = w.b.z - w.a.z, l2 = dx * dx + dz * dz || 1;
+      const t = Math.max(0, Math.min(1, ((x - w.a.x) * dx + (z - w.a.z) * dz) / l2));
+      const px = w.a.x + dx * t, pz = w.a.z + dz * t, d = Math.hypot(x - px, z - pz);
+      if (d < maxD && (!best || d < best.d)) best = { kind: w.kind, d, x: px, z: pz };
+    }
+    return best;
+  };
+  const MOUNT = (k: number) => k === WALL_RAIL || k === WALL_MOAT || k === WALL_BUILDING;
+  const AVOID = (k: number) => k === WALL_NEON || k === WALL_PLAZA;
+
   const led = new Geo(), struct = new Geo(), lights = new Geo();
   const placements: SponsorStats['placements'] = [];
   const row = (id: 'madebytle' | 'nda') => (id === 'madebytle' ? 0 : 1);
 
-  // ── 1. perimeter boards ──
+  // ── 1. perimeter boards (runs of 3, F1 style) ──
   let boards = 0;
-  for (const w of WINDOWS) {
+  const LIGHT_BRIDGE_S = (extras.data.raw.startGrid?.s ?? 10) + LIGHT_BRIDGE_AHEAD;
+  for (const w of boardWindows(L, extras.corners, extras.roadNames)) {
     for (const side of [1, -1] as const) {
-      let placed = 0;
+      let placed = 0, run = 0;
       for (let s = w.s0; s + BOARD_LEN <= w.s1 && placed < w.perSide && boards < MAX_BOARDS;) {
-        const ds = [0, BOARD_LEN / 2, BOARD_LEN].map((o) => edge(s + o, side));
+        const skip = () => { s += step; run = 0; };
         const pa = at(s), pb = at(s + BOARD_LEN);
         const turn = Math.abs(Math.atan2(pa.tx * pb.tz - pa.tz * pb.tx, pa.tx * pb.tx + pa.tz * pb.tz));
-        const ok = ds.every((d) => d < 22) && Math.max(...ds) - Math.min(...ds) < 0.7 && turn < 0.1;
-        const P = (p: typeof pa, d: number) => ({ x: p.x + p.rx * side * (d + 0.06), z: p.z + p.rz * side * (d + 0.06) });
-        const A = P(pa, ds[0]), B = P(pb, ds[2]);
+        const ds = [0, BOARD_LEN / 2, BOARD_LEN].map((o) => edge(s + o, side));
+        if (turn > 0.1 || !ds.every((d) => d < 22) || Math.max(...ds) - Math.min(...ds) > 0.7 || Math.abs(s - LIGHT_BRIDGE_S) < BOARD_LEN) { skip(); continue; }
+        // snap the board ends onto the real collider walls
+        const E = (p: typeof pa, d: number) => nearestWall(p.x + p.rx * side * d, p.z + p.rz * side * d, 0.9, MOUNT);
+        const ea = E(pa, ds[0]), eb = E(pb, ds[2]), em = E(at(s + BOARD_LEN / 2), ds[1]);
+        if (!ea || !eb || !em) { skip(); continue; }
+        const A = { x: ea.x, z: ea.z }, B = { x: eb.x, z: eb.z };
+        const len = Math.hypot(B.x - A.x, B.z - A.z);
         const mid = { x: (A.x + B.x) / 2, z: (A.z + B.z) / 2 };
-        if (!ok || [A, B, mid].some((q) => excluded(q.x, q.z)) || Math.abs(s - LIGHT_BRIDGE_S) < BOARD_LEN) { s += step; continue; }
+        // chord must follow the wall (no corner cutting) and stay clear of neon barriers / plaza / sacred sites
+        let bad = len < BOARD_LEN * 0.8 || Math.hypot(mid.x - em.x, mid.z - em.z) > 0.35;
+        for (let q = 0; q <= 4 && !bad; q++) {
+          const x = A.x + (B.x - A.x) * q / 4, z = A.z + (B.z - A.z) * q / 4;
+          bad = excluded(x, z) || !!nearestWall(x, z, 2.5, AVOID);
+        }
+        if (bad) { skip(); continue; }
         // face the road: normal from the board line towards the centreline
-        const len = Math.hypot(B.x - A.x, B.z - A.z), dx = (B.x - A.x) / len, dz = (B.z - A.z) / len;
+        const dx = (B.x - A.x) / len, dz = (B.z - A.z) / len;
         let nx = dz, nz = -dx;
         if (nx * (pa.x - mid.x) + nz * (pa.z - mid.z) < 0) { nx = -nx; nz = -nz; }
-        const f = frame(mid.x, mid.z, nx, nz);
+        const f = frame(mid.x + nx * 0.04, mid.z + nz * 0.04, nx, nz); // 4 cm proud of the collider line, in front of the rail
         const id = sponsorFor(boards);
-        struct.box(f, -len / 2, len / 2, 0, BOARD_Y1 + 0.08, -0.16, 0, C.dark);
-        led.panel(f, -len / 2 + 0.04, len / 2 - 0.04, BOARD_Y0, BOARD_Y1, 0.012, FACE, uvRect(0, 0, 1, 1), [row(id), boards * 0.137, 1]);
+        struct.box(f, -len / 2, len / 2, 0, BOARD_Y1 + 0.06, -0.14, 0, C.dark);
+        led.panel(f, -len / 2 + 0.04, len / 2 - 0.04, BOARD_Y0, BOARD_Y1, 0.008, FACE, uvRect(0, 0, 1, 1), [row(id), boards * 0.137, 1]);
         placements.push({ kind: `board:${w.name}`, x: +mid.x.toFixed(1), z: +mid.z.toFixed(1), s: Math.round(s), sponsor: id });
-        boards++; placed++;
-        s += BOARD_LEN + 0.25;
+        boards++; placed++; run++;
+        s += BOARD_LEN + 0.15;
+        if (run === 3) { run = 0; s += 30; } // gap between runs so they read as separate hoardings
       }
     }
   }
@@ -119,7 +171,9 @@ export function buildSponsors(track: Track): THREE.Group {
   const addLightBank = (f: Frame, y0: number, v: number) => {
     for (let k = 0; k < 5; k++) {
       const start = lights.vertexCount;
-      for (const y of [y0, y0 + 0.46]) lights.panel(f, -1.2 + k * 0.6 - 0.19, -1.2 + k * 0.6 + 0.19, y, y + 0.38, v, C.lens);
+      // spread wide (1.1 m pitch) so the outer lights clear the big HUD countdown digit in the screen centre
+      const u = (k - 2) * 1.1;
+      for (const y of [y0, y0 + 0.56]) lights.panel(f, u - 0.24, u + 0.24, y, y + 0.48, v, C.lens);
       lightRanges[k].push([start, lights.vertexCount]);
     }
   };
@@ -135,7 +189,10 @@ export function buildSponsors(track: Track): THREE.Group {
     const top = 9.8, b0 = 7.1, b1 = 9.5;
     for (const u of [uL, uR]) {
       struct.box(fS, u - 0.45, u + 0.45, 0, top, -0.5, 0.5, C.metal);
-      // tall LED panels on both faces of each leg (text runs bottom → top)
+      // tall LED panels on both faces of each leg (text runs bottom → top) — not on the leg that stands in
+      // the plaza buffer (east leg: 8.7 m from the Ya Mo plaza edge, inside its 15 m no-boost margin)
+      const lx = p.x + p.rx * u, lz = p.z + p.rz * u;
+      if (nearZone(lx, lz, 0)) continue;
       for (const [ff, k] of [[fS, 0], [frame(p.x, p.z, p.tx, p.tz), 1]] as const) {
         const uu = ff === fS ? u : -u, id = sponsorFor((u === uL ? 0 : 1) + k);
         led.panel(ff, uu - 0.38, uu + 0.38, 0.5, 0.5 + 0.76 * 8, 0.505, FACE, uvRot(0, 0, 1, 1), [row(id), 0.3 + k * 0.5, 1]);
@@ -150,7 +207,7 @@ export function buildSponsors(track: Track): THREE.Group {
     lights.panel(fS, uL - 0.4, uR + 0.4, b0 - 0.02, b0 + 0.06, 0.57, C.strip);
     lights.panel(fN, -uR - 0.4, -uL + 0.4, b0 - 0.02, b0 + 0.06, 0.57, C.stripNda);
     // light pod hanging under the beam centre, lenses on both faces
-    struct.box(fS, -1.65, 1.65, 5.75, b0, -0.3, 0.3, C.dark, true);
+    struct.box(fS, -2.85, 2.85, 5.75, b0, -0.3, 0.3, C.dark, true);
     addLightBank(fS, 5.95, 0.31);
     addLightBank(fN, 5.95, 0.31);
     placements.push({ kind: 'gantry', x: +p.x.toFixed(1), z: +p.z.toFixed(1), s: 0, sponsor: 'madebytle|nda' });
@@ -162,7 +219,7 @@ export function buildSponsors(track: Track): THREE.Group {
     const f = frame(p.x, p.z, -p.tx, -p.tz), uL = -(dL + 0.4), uR = dR + 0.4;
     for (const u of [uL, uR]) struct.box(f, u - 0.15, u + 0.15, 0, 7.3, -0.15, 0.15, C.metal);
     struct.box(f, uL - 0.15, uR + 0.15, 6.8, 7.3, -0.2, 0.2, C.metal, true);
-    struct.box(f, -1.65, 1.65, 5.75, 6.8, -0.3, 0.3, C.dark, true);
+    struct.box(f, -2.85, 2.85, 5.75, 7.05, -0.3, 0.3, C.dark, true);
     lights.panel(f, uL, uR, 6.76, 6.84, 0.21, C.strip);
     addLightBank(f, 5.95, 0.31);
     placements.push({ kind: 'start-lights', x: +p.x.toFixed(1), z: +p.z.toFixed(1), s: sB, sponsor: '-' });
@@ -259,7 +316,7 @@ export function buildSponsors(track: Track): THREE.Group {
   const tris = [ledMesh, structMesh, lightMesh].reduce((a, m) => a + (m.geometry.index?.count ?? 0) / 3, 0);
   const stats: SponsorStats = { boards, drawCalls: 3, triangles: tris, textureBytes: Math.round(1024 * 256 * 4 * 4 / 3), placements };
   group.userData.startLights = api;
-  if (typeof location !== 'undefined' && /[?&]qa=1/.test(location.search)) (window as unknown as { __sponsors: unknown }).__sponsors = { stats, lights: api };
+  if (typeof location !== 'undefined' && /[?&]qa=1/.test(location.search)) (window as unknown as { __sponsors: unknown }).__sponsors = { stats, lights: api, group };
   group.userData.stats = stats;
   group.userData.dispose = () => {
     offQ();

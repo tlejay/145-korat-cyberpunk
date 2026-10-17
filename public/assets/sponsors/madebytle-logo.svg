@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 96" role="img" aria-label="made by tle">
+  <!-- madebytle BRAND.md §3–4: T mark on #050505 (rx 8/32) + wordmark, "tle" in the signature gradient -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#818cf8"/><stop offset="0.5" stop-color="#c084fc"/><stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="92" height="92" rx="23" fill="#050505" stroke="url(#g)" stroke-width="4"/>
+  <path d="M22 22h52v15H55.5v38h-15V37H22z" fill="url(#g)"/>
+  <text x="120" y="66" font-family="'Noto Sans Thai', system-ui, sans-serif" font-weight="700" font-size="62" letter-spacing="-1.5" fill="#f2f2f6">made by <tspan fill="url(#g)">tle</tspan></text>
+</svg>

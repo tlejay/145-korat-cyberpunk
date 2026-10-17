@@ -4,39 +4,46 @@
 //   NDA       — สมาคมดิจิทัลนครราชสีมา: official logo converted for dark boards (scripts/sponsor-logos.py →
 //               public/assets/sponsors/nda-h-dark.png). If that ONE file is missing, the board falls back
 //               to the Thai name in Noto Sans Thai bold.
-// Billboard backgrounds come from the art pane (docs/dev/m3/art-manifest.json, roles containing "sponsor").
+// Backgrounds come from the art pane (docs/dev/m3/art-manifest.json → public/assets/img/sponsor-bg-<id>-<slot>…
+// .webp, ChatGPT art without any text). Every lockup sits on a dark plate so it reads over the busy art.
 import * as THREE from 'three';
 
 export type SponsorId = 'madebytle' | 'nda';
 export const SPONSORS: SponsorId[] = ['madebytle', 'nda'];
+type BgKind = 'billboard' | 'barrier' | 'gantry';
+type BgKey = `${SponsorId | 'partners'}-${BgKind}`;
 
-export const NDA_LOGO_URL = `${import.meta.env.BASE_URL}assets/sponsors/nda-h-dark.png`;
+const ASSET = (f: string) => `${import.meta.env.BASE_URL}assets/sponsors/${f}`;
+export const NDA_LOGO_URL = ASSET('nda-h-dark.png');        // white lettering — dark plates
+const NDA_LOGO_COLOR_URL = ASSET('nda-h-color.png');        // official colours — light backgrounds only
 const FONT = '"Noto Sans Thai", system-ui, sans-serif';
 const NDA_TH = 'สมาคมดิจิทัลนครราชสีมา';
 const MBT_GRAD = ['#818cf8', '#c084fc', '#f472b6'];
 const NDA_ORANGE = '#f26b38';
 
-// art-pane backgrounds for the billboards (optional, build-time manifest)
+// art-pane backgrounds (optional, build-time manifest): file name sponsor-bg-<id>-<slot>-<ratio>.webp
 type Entry = Record<string, unknown>;
 const manifestMods = import.meta.glob<unknown>('../../docs/dev/m3/art-manifest.json', { eager: true, import: 'default' });
-function sponsorBgUrls(): string[] {
+function sponsorBgUrls(): Partial<Record<BgKey, string>> {
   const m = Object.values(manifestMods)[0];
-  if (!m || typeof m !== 'object') return [];
+  if (!m || typeof m !== 'object') return {};
   const list: Entry[] = Array.isArray(m) ? m : (['files', 'images', 'assets', 'entries', 'items'].map((k) => (m as Record<string, unknown>)[k]).find(Array.isArray) as Entry[] | undefined)
     ?? Object.entries(m as Record<string, unknown>).filter(([, v]) => v && typeof v === 'object').map(([k, v]) => ({ file: k, ...(v as Entry) }));
-  const out: string[] = [];
+  const out: Partial<Record<BgKey, string>> = {};
   for (const e of list) {
     const f = [e.file, e.path, e.src, e.public, e.output].find((v) => typeof v === 'string') as string | undefined;
-    if (!f || !/sponsor/i.test(JSON.stringify(e))) continue;
+    const hit = f && /sponsor-bg-(madebytle|nda|partners)-(billboard|barrier|gantry)-[0-9x]+\.(webp|png|jpg)$/.exec(f); // skip "-lo" copies
+    if (!f || !hit) continue;
     const rel = f.replace(/^\.?\//, '').replace(/^public\//, '');
-    if (/^assets\//.test(rel)) out.push(`${import.meta.env.BASE_URL}${rel}`);
+    if (/^assets\//.test(rel)) out[`${hit[1]}-${hit[2]}` as BgKey] = `${import.meta.env.BASE_URL}${rel}`;
   }
   return out;
 }
 
-// ── shared assets (logo image, fonts) ──
+// ── shared assets (logos, backgrounds, fonts) ──
 let ndaLogo: HTMLImageElement | null = null;
-let bgImgs: HTMLImageElement[] = [];
+let ndaLogoColor: HTMLImageElement | null = null;
+let bgs: Partial<Record<BgKey, HTMLImageElement>> = {};
 const redraws: (() => void)[] = [];
 let assetsStarted = false;
 
@@ -59,12 +66,26 @@ function startAssets() {
       new Promise((r) => setTimeout(r, 3000)),
     ]).catch(() => undefined)
     : Promise.resolve();
-  const urls = sponsorBgUrls();
-  void Promise.all([fonts, loadImg(NDA_LOGO_URL), Promise.all(urls.map(loadImg))]).then(([, logo, bgs]) => {
+  const urls = Object.entries(sponsorBgUrls()) as [BgKey, string][];
+  void Promise.all([fonts, loadImg(NDA_LOGO_URL), loadImg(NDA_LOGO_COLOR_URL), Promise.all(urls.map(([, u]) => loadImg(u)))]).then(([, logo, logoC, imgs]) => {
     ndaLogo = logo;
-    bgImgs = bgs.filter((b): b is HTMLImageElement => !!b);
+    ndaLogoColor = logoC;
+    bgs = {};
+    urls.forEach(([k], i) => { const im = imgs[i]; if (im) bgs[k] = im; });
     for (const r of redraws) r();
   });
+}
+
+/** Draw an art background with "cover" fit into a rect. */
+function cover(g: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, w: number, h: number) {
+  const k = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+  g.drawImage(img, x + (w - img.naturalWidth * k) / 2, y + (h - img.naturalHeight * k) / 2, img.naturalWidth * k, img.naturalHeight * k);
+}
+/** Dark rounded plate behind a lockup (keeps logos legible over art). */
+function plate(g: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number, fill: string) {
+  roundRect(g, cx - w / 2, cy - h / 2, w, h, Math.min(h * 0.18, 14));
+  g.fillStyle = fill;
+  g.fill();
 }
 
 // ── drawing primitives ──
@@ -125,21 +146,22 @@ function drawMbtLockup(g: CanvasRenderingContext2D, cx: number, cy: number, h: n
   return w;
 }
 
-/** NDA logo (dark version) + optional Thai name; returns width used. */
-function drawNdaLockup(g: CanvasRenderingContext2D, cx: number, cy: number, h: number, thai: boolean, thaiPx = h * 0.42) {
-  const logo = ndaLogo;
+/** NDA logo + optional Thai name; returns width used. `light` = official colour logo for light backgrounds. */
+function drawNdaLockup(g: CanvasRenderingContext2D, cx: number, cy: number, h: number, thai: boolean, thaiPx = h * 0.42, light = false, measureOnly = false) {
+  const logo = light ? ndaLogoColor ?? ndaLogo : ndaLogo;
   const lw = logo ? (h * logo.naturalWidth) / logo.naturalHeight : 0;
   g.font = `700 ${thaiPx}px ${FONT}`;
   const tw = thai || !logo ? g.measureText(NDA_TH).width : 0;
   const gap = logo && tw ? h * 0.45 : 0;
   const total = lw + gap + tw;
+  if (measureOnly) return total;
   let x = cx - total / 2;
   if (logo) {
     g.drawImage(logo, x, cy - h / 2, lw, h); // aspect kept exactly (never stretched)
     x += lw + gap;
   }
   if (tw) {
-    g.fillStyle = '#ffffff';
+    g.fillStyle = light && logo === ndaLogoColor ? '#1a0f0a' : '#ffffff';
     g.textAlign = 'left';
     g.textBaseline = 'middle';
     g.fillText(NDA_TH, x, cy);
@@ -155,26 +177,35 @@ function drawStrip(g: CanvasRenderingContext2D, id: SponsorId, ox: number, oy: n
   g.beginPath();
   g.rect(ox, oy, STRIP_W, STRIP_H);
   g.clip();
+  const bg = bgs[`${id}-barrier`];
+  const cy = oy + STRIP_H * 0.47;
   if (id === 'madebytle') {
     g.fillStyle = '#050505';
     g.fillRect(ox, oy, STRIP_W, STRIP_H);
-    // soft brand glow behind each lockup
-    for (const k of [0.25, 0.75]) {
+    if (bg) cover(g, bg, ox, oy, STRIP_W, STRIP_H);
+    else for (const k of [0.25, 0.75]) { // soft brand glow behind each lockup
       const rg = g.createRadialGradient(ox + STRIP_W * k, oy + STRIP_H / 2, 4, ox + STRIP_W * k, oy + STRIP_H / 2, 260);
       rg.addColorStop(0, 'rgba(129,140,248,0.20)');
       rg.addColorStop(1, 'rgba(5,5,5,0)');
       g.fillStyle = rg;
       g.fillRect(ox, oy, STRIP_W, STRIP_H);
     }
-    for (const k of [0.25, 0.75]) drawMbtLockup(g, ox + STRIP_W * k, oy + STRIP_H * 0.47, 66);
+    for (const k of [0.25, 0.75]) {
+      if (bg) plate(g, ox + STRIP_W * k, cy, 400, 96, 'rgba(5,5,5,0.86)');
+      drawMbtLockup(g, ox + STRIP_W * k, cy, 66);
+    }
     g.fillStyle = grad(g, ox, ox + STRIP_W);
     g.fillRect(ox, oy + STRIP_H - 9, STRIP_W, 9);
   } else {
     g.fillStyle = '#0a0807';
     g.fillRect(ox, oy, STRIP_W, STRIP_H);
+    if (bg) {
+      cover(g, bg, ox, oy, STRIP_W, STRIP_H);
+      plate(g, ox + STRIP_W / 2, cy, drawNdaLockup(g, 0, 0, 92, true, 46, false, true) + 56, 112, 'rgba(26,15,10,0.9)');
+    }
     g.fillStyle = NDA_ORANGE;
     g.fillRect(ox, oy + STRIP_H - 9, STRIP_W, 9);
-    drawNdaLockup(g, ox + STRIP_W / 2, oy + STRIP_H * 0.47, 92, true, 46);
+    drawNdaLockup(g, ox + STRIP_W / 2, cy, 92, true, 46);
   }
   g.restore();
 }
@@ -203,16 +234,45 @@ export const atlasRow = (id: SponsorId): [number, number] => (id === 'madebytle'
 // ── rooftop billboard: 512 × 205 (2.5 : 1, the 10 × 4 m board of the neon pane) ──
 const BB_W = 512, BB_H = 205;
 
-function drawBillboard(g: CanvasRenderingContext2D, id: SponsorId, variant: number) {
-  const bg = bgImgs.length ? bgImgs[variant % bgImgs.length] : null;
-  g.fillStyle = '#050505';
+type BillboardId = SponsorId | 'partners';
+
+function drawMbtBillboard(g: CanvasRenderingContext2D, cx: number, cy: number, h: number) {
+  drawMbtLockup(g, cx, cy, h);
+  g.font = `700 ${Math.round(h * 0.36)}px ${FONT}`;
+  g.fillStyle = '#c9cbe0';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillText('madebytle.com', cx, cy + h * 0.95);
+}
+
+function drawBillboard(g: CanvasRenderingContext2D, id: BillboardId) {
+  const bg = bgs[`${id}-billboard`] ?? null;
+  g.fillStyle = id === 'nda' ? '#140906' : '#050505';
   g.fillRect(0, 0, BB_W, BB_H);
   if (bg) {
-    const k = Math.max(BB_W / bg.naturalWidth, BB_H / bg.naturalHeight);
-    g.drawImage(bg, (BB_W - bg.naturalWidth * k) / 2, (BB_H - bg.naturalHeight * k) / 2, bg.naturalWidth * k, bg.naturalHeight * k);
-    g.fillStyle = 'rgba(4,3,8,0.55)'; // keep the lockup readable over any artwork
-    g.fillRect(0, 0, BB_W, BB_H);
-  } else if (id === 'madebytle') {
+    cover(g, bg, 0, 0, BB_W, BB_H);
+    if (id === 'madebytle') {
+      // calm dark zone centre-left of the art (manifest: x 0.10–0.55)
+      drawMbtBillboard(g, BB_W * 0.33, BB_H * 0.42, 44);
+    } else if (id === 'nda') {
+      // light-orange calm zone → official colour logo (black lettering), as the brief allows
+      drawNdaLockup(g, BB_W * 0.3, BB_H * 0.4, 78, false, 0, true);
+      g.font = `700 24px ${FONT}`;
+      g.fillStyle = '#1a0f0a';
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      if (ndaLogo || ndaLogoColor) g.fillText(NDA_TH, BB_W * 0.3, BB_H * 0.78, BB_W * 0.52);
+    } else {
+      // two calm zones: madebytle on the dark half, NDA (on a charcoal plate) on the orange half
+      plate(g, BB_W * 0.25, BB_H * 0.5, 232, 104, 'rgba(5,5,5,0.7)');
+      drawMbtBillboard(g, BB_W * 0.25, BB_H * 0.44, 30);
+      plate(g, BB_W * 0.75, BB_H * 0.5, 232, 104, 'rgba(26,15,10,0.88)');
+      drawNdaLockup(g, BB_W * 0.75, BB_H * 0.5, 62, false);
+    }
+    return;
+  }
+  // procedural fallback (no art yet)
+  if (id !== 'nda') {
     const lg = g.createLinearGradient(0, 0, BB_W, BB_H);
     lg.addColorStop(0, '#0b0a1f');
     lg.addColorStop(1, '#050505');
@@ -227,31 +287,15 @@ function drawBillboard(g: CanvasRenderingContext2D, id: SponsorId, variant: numb
     g.closePath();
     g.fill();
     g.restore();
+    drawMbtBillboard(g, BB_W / 2, BB_H * 0.42, 62);
+    g.fillStyle = grad(g, 0, BB_W);
+    g.fillRect(0, BB_H - 6, BB_W, 6);
   } else {
     const lg = g.createLinearGradient(0, 0, BB_W, BB_H);
     lg.addColorStop(0, '#140906');
     lg.addColorStop(1, '#050505');
     g.fillStyle = lg;
     g.fillRect(0, 0, BB_W, BB_H);
-    // the logo's pixel-grid idea as a quiet backdrop (brand orange tints, not a new mark)
-    g.globalAlpha = 0.22;
-    const tints = ['#f26b38', '#f7926a', '#f9a98a', '#fcd2c2'];
-    for (let i = 0; i < 9; i++) {
-      g.fillStyle = tints[i % tints.length];
-      g.fillRect(BB_W - 34 - (i % 3) * 30 - (i > 5 ? 30 : 0), 14 + Math.floor(i / 3) * 30, 28, 28);
-    }
-    g.globalAlpha = 1;
-  }
-  if (id === 'madebytle') {
-    drawMbtLockup(g, BB_W / 2, BB_H * 0.42, 62);
-    g.font = `700 22px ${FONT}`;
-    g.fillStyle = '#c9cbe0';
-    g.textAlign = 'center';
-    g.textBaseline = 'middle';
-    g.fillText('madebytle.com', BB_W / 2, BB_H * 0.76);
-    g.fillStyle = grad(g, 0, BB_W);
-    g.fillRect(0, BB_H - 6, BB_W, 6);
-  } else {
     drawNdaLockup(g, BB_W / 2, BB_H * 0.4, 92, false);
     g.font = `700 30px ${FONT}`;
     g.fillStyle = '#ffffff';
@@ -266,12 +310,14 @@ function drawBillboard(g: CanvasRenderingContext2D, id: SponsorId, variant: numb
 // ── public texture API (src/scene/visuals.ts reads .image of the billboard ones) ──
 const texCache = new Map<string, THREE.CanvasTexture>();
 
-/** Sponsor for slot index i: billboards alternate madebytle / NDA (3 + 2 over the 5 anchors). */
+/** Sponsor for slot index i (boards, banners): alternates madebytle / NDA. */
 export const sponsorFor = (i: number): SponsorId => SPONSORS[((i % 2) + 2) % 2];
+/** Rooftop billboards 0..4: madebytle, NDA, madebytle, NDA, both partners. */
+const billboardFor = (i: number): BillboardId => (i % 5 === 4 ? 'partners' : sponsorFor(i));
 
 export function getSponsorTexture(slot: 'billboard' | 'board' | 'gantry', i: number): THREE.Texture {
-  const id = sponsorFor(i);
-  const key = slot === 'billboard' ? `bb:${id}:${i}` : `strip:${id}`;
+  const id = sponsorFor(i), bid = billboardFor(i);
+  const key = slot === 'billboard' ? `bb:${bid}` : `strip:${id}`;
   let tex = texCache.get(key);
   if (tex) return tex;
   const c = document.createElement('canvas');
@@ -279,7 +325,7 @@ export function getSponsorTexture(slot: 'billboard' | 'board' | 'gantry', i: num
   let draw: () => void;
   if (slot === 'billboard') {
     c.width = BB_W; c.height = BB_H;
-    draw = () => drawBillboard(g, id, Math.floor(i / 2));
+    draw = () => drawBillboard(g, bid);
   } else {
     c.width = STRIP_W; c.height = STRIP_H;
     draw = () => drawStrip(g, id, 0, 0);
