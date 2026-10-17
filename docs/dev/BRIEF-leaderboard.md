@@ -32,3 +32,9 @@
 ## ตรวจก่อนส่ง
 - `pnpm typecheck && pnpm build` ผ่าน · `vercel deploy` (preview เท่านั้น) แล้ว curl ทุก endpoint บน preview ให้เห็นว่าทำงานกับ DB จริง (ใส่แต้มทดสอบ track `test` แล้วลบทิ้ง)
 - เขียน `docs/dev/REPORT-leaderboard.md`: สรุป ≤ 15 บรรทัดบนสุด · preview URL · env ที่สร้าง (ชื่ออย่างเดียว) · สิ่งที่ Tle ต้องทำ (ถ้ามี) · ช่องโหว่ที่ยังเหลือเรื่องโกงแต้ม
+
+## ส่วนที่ 4 (เพิ่ม 18:33) — URL จริงของเกม = `madebytle.com/koratrocketcar`
+madebytle.com (Next.js อีกโปรเจค) จะ proxy `/koratrocketcar/*` มาที่โปรเจค Vercel ของเกม — conductor จะให้อีก pane แก้ฝั่ง madebytle เอง **pane นี้ห้ามแตะโปรเจค madebytle**
+- Vite `base: '/koratrocketcar/'` · client เรียก API ที่ `/koratrocketcar/api/...` (อย่า hardcode โดเมน)
+- ฝั่งโปรเจคเกม: `vercel.json` rewrite `/koratrocketcar/(.*)` → `/$1` ให้ทั้ง asset, หน้าเกม และ api ทำงานได้ทั้งเมื่อเข้าผ่าน madebytle และเข้าตรงที่ `<project>.vercel.app/koratrocketcar/`
+- รายงาน: production domain ของโปรเจค Vercel (`*.vercel.app`) ที่ madebytle จะ proxy ไปหา
