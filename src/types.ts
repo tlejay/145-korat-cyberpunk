@@ -66,7 +66,7 @@ export interface CarModel {
 }
 
 export type AudioEvent =
-  | 'countdown3' | 'countdown2' | 'countdown1' | 'go' | 'finalLap' | 'newRecord' | 'finish'
+  | 'countdown3' | 'countdown2' | 'countdown1' | 'go' | 'finalLap' | 'finalStretch' | 'newRecord' | 'finish'
   | 'boost' | 'jump' | 'land' | 'crash' | 'checkpoint' | 'drift' | 'uiTap';
 
 export interface GameAudio {

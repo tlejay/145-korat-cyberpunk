@@ -3,6 +3,7 @@
 // The client sends RAW values only; the server always recomputes the score.
 import type { ErrorCode } from './codes.js';
 import { VERSION } from '../version.js';
+import { SITES } from '../checkpoint/sim.js';
 
 export interface RunResult {
   trackId: string;
@@ -21,6 +22,7 @@ export interface RunResult {
   refills: number; // air-gate refills
   cleanLaps: number;
   respawns: number;
+  checkpointClears: number; // ด่านตรวจ jumped clean — style; server keeps only clears the ghost shows (finish.ts)
   maxG: number; // display only, not scored
 }
 
@@ -36,9 +38,9 @@ export interface TrackRule {
   testOnly?: boolean; // accepted only outside production (smoke tests)
 }
 
-// Tle picked track A (2026-10-17). B/C are added when they ship.
+// Tle picked track A (2026-10-17). B/C are added when they ship. One lap per race (Tle 21:14 — two was too long).
 export const TRACK_RULES: Record<string, TrackRule> = {
-  A: { lengthM: 3311, laps: 2, parLapMs: 78_000, minLapMs: 54_400 /* PHYSICS.md §6: 64.0 s unlimited boost × 0.85 */, checkpoints: 34, cpMinMs: [], altGroup: null },
+  A: { lengthM: 3311, laps: 1, parLapMs: 78_000, minLapMs: 54_400 /* PHYSICS.md §6: 64.0 s unlimited boost × 0.85 */, checkpoints: 34, cpMinMs: [], altGroup: null },
   test: { lengthM: 300, laps: 1, parLapMs: 20_000, minLapMs: 5_000, checkpoints: 3, cpMinMs: [], altGroup: null, testOnly: true },
 };
 
@@ -62,6 +64,7 @@ export const SCORE = {
   cleanLanding: 250,
   perfectLaunch: 300,
   cleanLap: 3_000,
+  checkpointClear: 300, // ด่านตรวจ jumped clean (src/checkpoint CP.clearPoints) — inside the style cap like every bonus
   respawnPenalty: 2_000,
   styleCapRatio: 0.2,
 };
@@ -96,7 +99,8 @@ export function computeScore(r: RunResult, rule: TrackRule): ScoreBreakdown {
     r.shortcuts * SCORE.shortcut +
     r.cleanLandings * SCORE.cleanLanding +
     r.launches.perfect * SCORE.perfectLaunch +
-    r.cleanLaps * SCORE.cleanLap;
+    r.cleanLaps * SCORE.cleanLap +
+    r.checkpointClears * SCORE.checkpointClear;
   const style = Math.min(styleRaw, Math.round(time * SCORE.styleCapRatio));
   const respawn = r.respawns ? -r.respawns * SCORE.respawnPenalty : 0;
   return { time, styleRaw, style, respawn, total: Math.max(0, time + style + respawn) };
@@ -116,12 +120,14 @@ export function parseRun(v: unknown): RunResult | null {
   if (!intArray(r.lapMs, 20) || !intArray(r.splitsMs, 1000)) return null;
   if (!launches || !isInt(launches.perfect) || !isInt(launches.total)) return null;
   if (typeof r.maxG !== 'number' || !Number.isFinite(r.maxG) || r.maxG < 0 || r.maxG > 50) return null;
+  if (r.checkpointClears !== undefined && !isInt(r.checkpointClears, 100)) return null; // optional: builds before #11 omit it
   return {
     trackId: r.trackId, build: r.build, laps: r.laps as number, totalMs: r.totalMs as number,
     lapMs: r.lapMs, splitsMs: r.splitsMs, shortcuts: r.shortcuts as number, driftMs: r.driftMs as number,
     driftChains: r.driftChains as number, jumps: r.jumps as number, cleanLandings: r.cleanLandings as number,
     launches: { perfect: launches.perfect, total: launches.total }, boostMs: r.boostMs as number,
-    refills: r.refills as number, cleanLaps: r.cleanLaps as number, respawns: r.respawns as number, maxG: r.maxG,
+    refills: r.refills as number, cleanLaps: r.cleanLaps as number, respawns: r.respawns as number,
+    checkpointClears: (r.checkpointClears as number | undefined) ?? 0, maxG: r.maxG,
   };
 }
 
@@ -137,6 +143,7 @@ function gasBudgetOk(r: RunResult): boolean {
 }
 
 const sum = (a: number[]) => a.reduce((s, x) => s + x, 0);
+const CHECKPOINT_SITES = SITES.length;
 
 // Server-side plausibility (GAMEPLAY §6.2, checks 1–9). Returns an error code or null.
 export function validateRun(
@@ -159,6 +166,7 @@ export function validateRun(
   }
   if (r.splitsMs[r.splitsMs.length - 1] > r.totalMs) return 'BAD_SPLITS';
   if (r.shortcuts > rule.laps || r.cleanLaps > rule.laps || r.refills > rule.laps) return 'BAD_STYLE'; // 7
+  if (r.checkpointClears > CHECKPOINT_SITES * rule.laps || r.checkpointClears > r.jumps) return 'BAD_STYLE';
   if (r.cleanLandings > r.jumps || r.shortcuts > r.jumps || r.launches.perfect > r.launches.total || r.launches.total > 1) return 'BAD_STYLE';
   if (r.driftMs > r.totalMs * 0.7 || r.driftChains * 1000 > r.driftMs || r.boostMs > r.totalMs) return 'BAD_STYLE';
   if (!gasBudgetOk(r)) return 'BAD_TANK'; // 8

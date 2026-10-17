@@ -1,23 +1,27 @@
-// Ghost binary format v1 (GAMEPLAY §5.3), shared by client and server.
+// Ghost binary format v2 (GAMEPLAY §5.3), shared by client and server.
 // Compression (deflate-raw) and base64 live in the platform-specific callers:
 // client = src/net/ghost.ts (CompressionStream), server = api/_lib/ghost.ts (zlib).
 //
 // Layout (little endian):
-//   0  'G' '1'       magic
+//   0  'G' '2'       magic (v1 'G1' had no track version — rejected: recorded on an older layout)
 //   2  u8 hz         sample rate (10)
 //   3  u8 reserved
 //   4  u32 lapMs     the lap this ghost covers (= best lap of the run)
 //   8  u16 count
-//  10  count × { i16 x, i16 y, i16 z, i16 yaw, u8 flags } — x/y/z/yaw are deltas
+//  10  u32 track     TRACK_VERSION it was driven on (src/net/track-version.ts) — fix #11
+//  14  count × { i16 x, i16 y, i16 z, i16 yaw, u8 flags } — x/y/z/yaw are deltas
 //      from the previous sample (first sample absolute), wrapping at 16 bits.
 // Units: x/y/z = 5 cm (±1,638 m around the monument origin), yaw = 1/32768 of 180°.
 import type { ErrorCode } from './codes.js';
+import { TRACK_VERSION } from './track-version.js';
+export { TRACK_VERSION };
 
 export const GHOST_HZ = 10;
 export const GHOST_UNIT_M = 0.05;
 export const GHOST_MAX_POINTS = 1800; // 3 min lap at 10 Hz
 export const GHOST_MAX_B64 = 12_000; // compressed + base64 upload cap
-const HEADER = 10;
+export const GHOST_HEADER = 14;
+const HEADER = GHOST_HEADER;
 const STRIDE = 9;
 
 export const GHOST_FLAG = { drift: 1, boost: 2, airborne: 4 } as const;
@@ -33,6 +37,7 @@ export interface GhostSample {
 export interface Ghost {
   hz: number;
   lapMs: number;
+  trackVersion: number; // TRACK_VERSION at record time; a mismatch = never replayed
   samples: GhostSample[];
 }
 
@@ -48,10 +53,11 @@ export function packGhost(g: Ghost): Uint8Array {
   const buf = new Uint8Array(HEADER + n * STRIDE);
   const dv = new DataView(buf.buffer);
   buf[0] = 0x47;
-  buf[1] = 0x31;
+  buf[1] = 0x32;
   buf[2] = g.hz;
   dv.setUint32(4, g.lapMs, true);
   dv.setUint16(8, n, true);
+  dv.setUint32(10, g.trackVersion >>> 0, true);
   let px = 0, py = 0, pz = 0, pyaw = 0;
   for (let i = 0; i < n; i++) {
     const s = g.samples[i];
@@ -68,7 +74,7 @@ export function packGhost(g: Ghost): Uint8Array {
 }
 
 export function unpackGhost(buf: Uint8Array): Ghost | null {
-  if (buf.length < HEADER || buf[0] !== 0x47 || buf[1] !== 0x31) return null;
+  if (buf.length < HEADER || buf[0] !== 0x47 || buf[1] !== 0x32) return null;
   const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
   const n = dv.getUint16(8, true);
   if (n > GHOST_MAX_POINTS || buf.length !== HEADER + n * STRIDE) return null;
@@ -82,12 +88,12 @@ export function unpackGhost(buf: Uint8Array): Ghost | null {
     yaw = wrap16(yaw + dv.getInt16(o + 6, true));
     samples.push({ x: x * GHOST_UNIT_M, y: y * GHOST_UNIT_M, z: z * GHOST_UNIT_M, yawDeg: (yaw / 32768) * 180, flags: buf[o + 8] });
   }
-  return { hz: buf[2], lapMs: dv.getUint32(4, true), samples };
+  return { hz: buf[2], lapMs: dv.getUint32(4, true), trackVersion: dv.getUint32(10, true), samples };
 }
 
 // Server-side sanity check of a ghost against the run it came with.
 export function checkGhost(g: Ghost, bestLapMs: number, trackLengthM: number): ErrorCode | null {
-  if (g.hz !== GHOST_HZ || g.lapMs !== bestLapMs) return 'BAD_GHOST';
+  if (g.hz !== GHOST_HZ || g.lapMs !== bestLapMs || g.trackVersion !== TRACK_VERSION) return 'BAD_GHOST';
   const expected = Math.floor(bestLapMs / (1000 / GHOST_HZ));
   if (Math.abs(g.samples.length - expected) > 3) return 'BAD_GHOST';
   let path = 0;
@@ -105,4 +111,19 @@ export function checkGhost(g: Ghost, bestLapMs: number, trackLengthM: number): E
   // Shortcuts make the driven path shorter than the centerline, but not by much.
   if (path < trackLengthM * 0.6 || path > trackLengthM * 1.5) return 'BAD_GHOST';
   return null;
+}
+
+/** Ghost recorded on the current track layout (fix #11) — anything else is not replayed. */
+export const ghostMatchesTrack = (g: Ghost | null): g is Ghost => !!g && g.trackVersion === TRACK_VERSION;
+
+// Style "ข้ามด่าน" evidence (fix #11): how many checkpoint sites the ghost passes while airborne.
+// A clear needs ≥ 2 airborne samples within `radiusM` of the site (10 Hz, car is over the props ~1.3 s).
+export function ghostCheckpointClears(g: Ghost, sites: { at: { x: number; z: number } }[], radiusM = 14): number {
+  let n = 0;
+  for (const s of sites) {
+    let air = 0;
+    for (const p of g.samples) if (p.flags & GHOST_FLAG.airborne && Math.hypot(p.x - s.at.x, p.z - s.at.z) < radiusM) air++;
+    if (air >= 2) n++;
+  }
+  return n;
 }

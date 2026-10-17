@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.api.json",
-    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "build": "node scripts/track-version.mjs && tsc --noEmit -p tsconfig.json && vite build",
     "preview": "vite preview",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

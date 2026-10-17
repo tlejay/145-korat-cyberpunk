@@ -50,6 +50,12 @@ type SponsorsMod = {
   getStartLights?: () => StartLights | null;
   getSponsorTexture?: (slot: 'billboard' | 'board' | 'gantry', i: number) => THREE.Texture | null;
 };
+// 🧭 wayfinding (REPORT-wayfinding §2): roadside turn signs + chevrons. Must run after sponsors (signs dodge
+// the sponsor boards) and before the car's first step (it swaps track.barriers for one with sign colliders).
+type WayfindingMod = { buildWayfinding?: (track: Track) => THREE.Object3D };
+const wayfindingMods = import.meta.glob<WayfindingMod>('../wayfinding/index.ts', { eager: true });
+const wayfinding: WayfindingMod = Object.values(wayfindingMods)[0] ?? {};
+
 const sponsorMods = import.meta.glob<SponsorsMod>('../sponsors/index.ts', { eager: true });
 const sponsors: SponsorsMod = Object.values(sponsorMods)[0] ?? {};
 
@@ -111,6 +117,13 @@ export function createVisuals(o: { renderer: THREE.WebGLRenderer; scene: THREE.S
         sg.name ||= 'sponsors';
         scene.add(sg);
       } catch (err) { console.warn('[visuals] sponsors failed', err); }
+    }
+    if (wayfinding.buildWayfinding) {
+      try {
+        const wg = wayfinding.buildWayfinding(track);
+        wg.name ||= 'wayfinding';
+        scene.add(wg);
+      } catch (err) { console.warn('[visuals] wayfinding failed', err); }
     }
 
     if (lmh) {

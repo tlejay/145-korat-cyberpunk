@@ -1,7 +1,8 @@
 import { sql } from 'drizzle-orm';
 import { db } from '../../db/client.js';
 import { ghosts, scores } from '../../db/schema.js';
-import { checkGhost } from '../../src/net/ghost-format.js';
+import { SITES } from '../../src/checkpoint/sim.js';
+import { checkGhost, ghostCheckpointClears } from '../../src/net/ghost-format.js';
 import { computeScore, getTrackRule, parseRun, validateRun } from '../../src/net/score.js';
 import { decodeGhostB64 } from '../_lib/ghost.js';
 import { allowTestTrack, fail, handle, ipHash, isUuid, ok, readJson } from '../_lib/http.js';
@@ -34,11 +35,17 @@ export const POST = handle(async (req) => {
 
   // Ghost is optional, but if sent it must match the run (extra anti-cheat evidence).
   let ghostB64: string | null = null;
+  let provenClears = 0;
   if (body.ghost !== undefined && body.ghost !== null) {
     const g = decodeGhostB64(body.ghost);
     if (!g || checkGhost(g, bestLapMs, rule.lengthM)) return fail('BAD_GHOST');
     ghostB64 = body.ghost as string;
+    // Ghost = the whole run on a 1-lap race, so it can show every checkpoint jump.
+    if (rule.laps === 1 && tok.t !== 'test') provenClears = ghostCheckpointClears(g, SITES);
   }
+  // "ข้ามด่าน" style counts only for clears the ghost shows airborne over the site (fix #11);
+  // no ghost (old iOS cannot compress) = no checkpoint bonus. Other style still counts.
+  run.checkpointClears = Math.min(run.checkpointClears, provenClears);
 
   const ip = ipHash(req);
   const allowed = (await rateLimit(`finish:d:${device}`, 6, 60)) && (await rateLimit(`finish:ip:${ip}`, 60, 600));

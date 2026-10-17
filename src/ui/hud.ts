@@ -36,7 +36,7 @@ export function createHud(root: HTMLElement): Hud {
   el.className = 'hud';
   el.innerHTML = `
     <div class="hud-tl">
-      <div class="lapline"><span data-qa="hud-lap">รอบ 1/2</span> <span class="best" data-qa="hud-best"></span></div>
+      <div class="lapline"><span data-qa="hud-lap"></span> <span class="best" data-qa="hud-best"></span></div>
       <div class="timeline"><span data-qa="hud-time">0:00.000</span><span class="delta" data-qa="hud-delta"></span></div>
     </div>
     <div class="hud-turn" data-qa="hud-turn"><span class="arrow">${ICONS.arrowUp}</span><span class="dist"></span></div>
@@ -78,7 +78,7 @@ export function createHud(root: HTMLElement): Hud {
     onPause: () => {},
     setPath(p) { path = p; },
     update(f) {
-      set('lap', lap, `รอบ ${nf0.format(f.lap)}/${nf0.format(f.laps)}`);
+      set('lap', lap, f.laps > 1 ? `รอบ ${nf0.format(f.lap)}/${nf0.format(f.laps)}` : ''); // 1-lap race: no lap counter
       set('best', best, f.bestMs ? `ดีสุด ${formatLapMs(f.bestMs)}` : '');
       set('time', time, formatLapMs(f.lapMs));
       set('speed', speed, nf0.format(Math.round(f.speedKmh)));

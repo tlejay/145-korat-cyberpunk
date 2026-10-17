@@ -5,6 +5,14 @@
 |---|---|---|---|---|---|
 | 1 | นับถอยหลังพากย์ "Three, Three" | engine สั่ง `countdown3` ซ้ำ 2 ครั้ง (ไฟล์เสียงถูกต้องทุกไฟล์) | `src/game/engine.ts` +1 บรรทัด | `tests/qa/voice.spec.ts` | ✅ แก้แล้ว · test จับบั๊กได้ทั้ง Chromium + WebKit |
 | 2 | นับถอยหลังยืดเมื่อเฟรมตก (ถึง 2.4 วิ/คำ) | countdown นับด้วย physics step ซึ่งตัดที่ 30 step/เฟรม และ dt ตัดที่ 250 ms | `src/game/engine.ts` · `src/audio/index.ts` | `tests/qa/voice.spec.ts` FIX-02 (CPU 6×) | ✅ แก้แล้ว |
+| 3 | หัวพ่นลงพื้นมี 4 ในภาพจริง โมเดลมี 2 | — | `src/car/model.ts` (+ `nozzles()` ใน `model-preview.ts`) | `fix.spec` FIX-03 | ✅ |
+| 4 | HUD ความเร็ว/เกจอ่านยากบนควันขาว | ตัวอักษรขาวบนพื้นโปร่ง | `src/style.css` (`.hud-bottom`, `.speedrow`, `.tank`) | `fix.spec` FIX-04 | ✅ |
+| 5 | เปลี่ยนชื่อเกมเป็น "โคราชโรสเตอร์" | — | `index.html` `<title>` · `src/ui/screens.ts` หัวเมนู | `tests/qa/fix.spec.ts` FIX-05 | ✅ |
+| 6 | MOB-03 ลากนิ้วออกแล้วปุ่มค้าง | touch capture ไปติด `<path>` ของไอคอน | `src/style.css` (`.tbtn > *` pointer-events none) | `mobile.spec` MOB-03 (เปลี่ยน sleep → รอสถานะ) | ✅ input ผ่าน · ⚠️ ดูข้อ ERR-08 ด้านล่าง |
+| 7 | DEP-03 asset มี hash ไม่ cache ยาว | ไม่มี header rule | `vercel.json` | `fix.spec` FIX-07 (+ `deploy.spec` บน preview) | ✅ local · ⏳ ยืนยันบน preview |
+| 8 | กล้องหลุดเมื่อ fps ต่ำ | จำกัดระยะ 1.5 ม. "ต่อเฟรม" | `src/car/camera.ts` · `src/car/config.ts` | `physics.spec` FEEL-10b gate 60/30/20/15 fps | ✅ |
+| 9 | `qa.teleport(…, speedKmh)` ไม่ใส่ความเร็ว | รถจริงไม่มี `car.qa.setSpeed` | `src/car/index.ts` · `src/car/physics.ts` | `fix.spec` FIX-09 | ✅ |
+| FEEL-05 | เกณฑ์ใหม่ + ล้อที่วาดจมถนนตอนยุบ | ล้อติดตายกับตัวรถ ไม่ขยับตามโช้ค | `src/car/index.ts` · hook `qa.wheelClearanceM()` | `physics.spec` FEEL-05 · TEST-PLAN | ✅ |
 
 typecheck ✅ · build ✅ · ไม่ได้ commit (ตามบรีฟ)
 
@@ -86,3 +94,50 @@ countdownShown = '3'; // already announced — stepOnce() must not fire countdow
 ### ข้อจำกัด
 - HUD/ไฟสตาร์ทอัปเดตได้แค่ตอนวาดเฟรม — เครื่องที่ 2 fps จะเห็นตัวเลขช้าได้ถึง 1 เฟรม (เสียงยังตรงเสมอ) ที่ 30 fps ขึ้นไปคลาดเคลื่อน ≤ 33 ms
 - ไม่มีเสียง (ปิดเสียงระบบ iOS ไม่ปลดล็อก / module เสียงล้ม) → ใช้ frame dt ซึ่งตัดที่ 250 ms/เฟรม — ตรงเวลาจริงเมื่อ ≥ 4 fps
+
+---
+
+## #5 — ชื่อเกม "โคราชโรสเตอร์"
+- ชื่อเก่าในส่วนที่ผู้เล่นเห็นมีแค่ 2 จุด: `<title>` (index.html) และหัวเมนู `<h1>` (`src/ui/screens.ts`) → แก้แล้ว · ไม่มี OG/meta แชร์ หน้าโหลด หน้าเครดิต หรือ error ที่อ้างชื่อเกม · ไม่มีข้อความอังกฤษของชื่อเกม (ไม่ได้เพิ่ม "Korat Roadster")
+- ไม่แตะชื่อโปรเจค/repo/URL `/koratrocketcar/`/Vercel · comment ในโค้ดคำว่า "cyberpunk" (ชื่อสไตล์) คงไว้
+- ข้อสังเกต: ฝั่ง art มี `public/assets/img/og-cover-1200x630.jpg` แล้ว แต่ index.html ยังไม่มี `og:title`/`og:image` (deploy.spec บันทึกค่านี้) — ถ้าจะใส่ ให้ใช้ชื่อใหม่
+- test FIX-05: title + h1 = ชื่อใหม่ · ไม่มีชื่อเก่าในไฟล์ `src/` `public/` `index.html`
+
+## #6 — MOB-03 ปุ่มค้าง
+- สาเหตุ (ตาม QA): บนจอสัมผัส browser จับ pointer capture ไว้ที่ element ที่นิ้วโดน = `<svg>/<path>` ของไอคอน โค้ดปล่อย capture เฉพาะตัวปุ่ม → `pointerleave` ไม่เกิด
+- ลองแก้ด้วย JS (ปล่อยจาก `e.target`) ก่อน → ทำให้กดครั้งแรกไม่ติดใน Chromium · ถอยกลับ แล้วใช้ทางที่สองที่ QA เสนอ: `src/style.css` `.tbtn > *, .tbtn svg * { pointer-events: none; }` → ตัวปุ่มเป็นเป้าเสมอ โค้ดเดิมที่ปล่อย capture ทำงานได้ · `touch.ts` ไม่ได้แก้
+- test: `mobile.spec` MOB-03 เปลี่ยน `waitForTimeout` ตายตัวเป็น "รอจนสถานะ input ตรง ≤ 5 วิ" (เกณฑ์เหมือนเดิมทุกข้อ) — เพราะเฟรม SwiftShader + ภาพ M3 ช้า 0.5–1.3 วิ อ่าน 200 ms แล้วได้ค่าเก่า
+  - build ไม่มี CSS นี้: ❌ `throttle must release when the finger slides off` · build ที่แก้: ✅ ทุกข้อ input
+- ⚠️ **ERR-08 / DEP-02 ล้มใน build ปัจจุบัน (ไม่เกี่ยวกับ fix):** เกมขอไฟล์ `/koratrocketcar/[object%20Object]` → 404 ทุกครั้งที่เปิด (CDP initiator `other`, ไม่มีในไฟล์ build — เกิดตอนรัน) · มาจากงาน M3 ที่ยังค้างใน working tree (`src/scene/*` ของ 🌃 visuals กำลังแก้) — ส่ง conductor ประสาน visuals · ทุก spec ที่เรียก `expectClean` จะล้มจนกว่าจะแก้
+
+## #7 — DEP-03 cache header
+- `vercel.json` เพิ่ม rule แรก: `/(koratrocketcar/)?assets/:file([^/]+-[A-Za-z0-9_-]{8}\\.(?:js|css|woff2?))` → `public, max-age=31536000, immutable`
+- ตรวจด้วย path-to-regexp 6.3.0 (ตัวที่ Vercel ใช้จับ `source` — เพิ่มเป็น devDependency): ตรง 28/28 ไฟล์ hash ใน `dist/assets` · **ไม่** ตรง `assets/audio/*`, `assets/img/*`, `assets/sponsors/*`, `index.html` (index ยัง max-age=0 ตามเดิม)
+- รูปแบบ prefix `/(koratrocketcar/)?` เหมือน rule `data/` เดิมที่ QA ยืนยันบน preview แล้ว — ⏳ ให้ QA รัน `deploy.spec` DEP-03 บน preview ใหม่เพื่อยืนยันของจริง
+
+## #8 — กล้องหลุดเมื่อ fps ต่ำ
+- สาเหตุ: `camera.ts` จำกัดการเคลื่อนที่กล้อง `camMaxStep` 1.5 ม. **ต่อเฟรม** → 60 fps = 90 ม./วิ แต่ 20 fps = 30 ม./วิ (108 กม./ชม.) รถวิ่งเร็วกว่านั้น กล้องเลยหลุดไปเรื่อย ๆ
+- แก้: เพดาน = `max(camMaxStep × 60 × dt, 1.2 × ระยะที่รถวิ่งในเฟรมนั้น)` — ที่ 60 fps เท่าเดิมทุกประการ (FEEL-10 "≤ 2 ม./เฟรม" ไม่เปลี่ยน) · เพิ่ม `camSnapM: 40` — กล้องห่างเป้าเกิน 40 ม. (เฟรมยาวมาก/teleport) → snap
+- test FEEL-10b: เดิมเกตแค่ 60/30 fps (20 fps แค่บันทึก) → ตอนนี้เกต 60/30/20/15 fps ห่างรถ ≤ 20 ม. — ✅ ผ่าน
+
+## #9 — `qa.teleport(x, z, yaw, speedKmh)`
+- `src/car/index.ts` เพิ่ม `car.qa.setSpeed(kmh)` (hook เดิมเรียกอยู่แล้วแต่รถจริงไม่มี) · `src/car/physics.ts` เพิ่ม `setPlanarVelocity()` ตั้งความเร็ว + body-frame u/w ไปพร้อมกัน ไม่ให้เกิด g กระชาก step ถัดไป
+- test FIX-09: teleport 100 → `speedKmh` 100 ทันที · 6 step ต่อมายัง > 90 · g < 2 · และรัน PHY-04 แบบ TEST-PLAN (teleport ลงไลน์กระโดด 55° ที่ 100/110/120 กม./ชม. แล้วกระโดดที่ตลิ่ง) ได้จริง — ผลแต่ละความเร็วบันทึกใน `tests/qa/.metrics/FIX-09.*.json` ให้ QA ตัดสิน PHY-04
+- ⚠️ test เดิม `physics.spec` PHY-04/PHY-05 (สคริปต์วิ่งจาก `place(820)`) ล้มใน build ปัจจุบัน: รถไม่ไปถึงคู — น่าจะเพราะ commit `a17e0ef` ย้ายเส้นสตาร์ท ทำให้ระยะ s บน centerline เลื่อน (s=820 ไม่ใช่จุดเดิมแล้ว) · ไม่ใช่ผลจาก fix — ให้ QA ปรับเลข s
+
+## FEEL-05 — เกณฑ์ใหม่ (conductor 20:52)
+- `docs/qa/TEST-PLAN.md` แก้ข้อ FEEL-05 แล้ว · `physics.spec` FEEL-05: `pos.y ≥ −0.15` + "ล้อไม่ต่ำกว่าผิวถนน"
+- ระหว่างวัดเจอของจริง: **ล้อที่วาดติดตายกับตัวรถ** — ตัวรถยุบ 12 ซม. ตอนลงพื้น = ล้อจมถนน 12 ซม. (ฟิสิกส์ถือว่าล้อแตะถนน แต่ภาพไม่ตาม)
+- แก้ `src/car/index.ts` `sync()`: ล้อแต่ละข้างขยับขึ้นลงตามการยุบของสปริง (`comp − sag`, ยืดลงสุด 8 ซม. ตอนลอย) → ล้อแตะถนนตอนยุบ
+- hook ใหม่ `qa.wheelClearanceM()` (types + hooks + `car.qa.wheelBottoms()`) = ก้นยางที่วาดต่ำสุด − ความสูงถนน · test: ≥ −0.03 ม. (เผื่อยาง low-poly)
+- ผล: ✅ FEEL-05 ผ่านทุกข้อ
+
+## #3 — หัวพ่นลงพื้น 4 หัว
+- ภาพ `refs/car/rear-upright-and-inverted-*.jpg` (ล่าง — ตอนพ่น): **ลำไอพุ่งลงพื้น 4 ลำ อยู่ที่มุมท้าย 2 ลำต่อข้าง** — ลำนอกออกจากกระป๋องทองบนขายึดข้างล้อหลัง (ที่โมเดลมีอยู่แล้ว) อีกลำอยู่ถัดเข้ามาด้านใน ~65 px ≈ 0.19 ม. (ท้ายรถกว้าง ~670 px ≈ 2 ม.) ซ่อนอยู่ใต้ขอบตัวถัง · **ไม่มีคู่หน้า** (ภาพ flight/side ไม่เห็นหัวพ่นหน้า)
+- `src/car/model.ts`: `SIDE_NOZZLES` 4 ตัว (ซ้าย→ขวา: นอก, ใน, ใน, นอก) · หัวในที่ x ±0.51 สูง 0.24 ม. เยื้องไปหน้าเล็กน้อย + กระป๋องทองสั้นใต้ตัวถัง (รวมใน mesh เดิม draw call ไม่เพิ่ม) · ชื่อ `nozzle-side-down-{l, l-in, r-in, r}` type `side-down` → fx หยิบไปเองอัตโนมัติ (`src/fx/index.ts` หา `nozzle-*` ทุกตัว)
+- `model-preview.ts` (`?qa=1&view=car`) เพิ่ม `__carPreview.nozzles()` ให้ QA ตรวจ
+- test FIX-03: rear 4 + side-down 4 · ข้างละ 2 · ชี้ลงพื้น · อยู่ใต้ตัวรถช่วงท้าย · สมมาตร · ห่างคู่ 0.12–0.3 ม. ✅
+
+## #4 — HUD อ่านยากบนควันขาว
+- `src/style.css` เฉพาะ HUD: `.hud-bottom` เพลตแก้วเข้ม `rgba(7,6,15,0.65)` มุมมน · `.speedrow` เงาตัวอักษรหนาขึ้น · `.tank` พื้นหลังเกจจากขาวโปร่ง 12% → ดำ 50% + ขอบบาง
+- test FIX-04: กรณีแย่สุด (เพลตทับควันขาวล้วน) ความต่างสีตัวเลขความเร็ว = **5.75** (เกณฑ์ WCAG AA ≥ 4.5) · ที่ 55% ได้ 3.98 จึงปรับเป็น 65%

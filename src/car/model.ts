@@ -35,8 +35,8 @@ export interface CarModel {
   /** Proxies: rotation.order is 'YXZ' → set rotation.y for steer, rotation.x for roll (spin). */
   wheels: { fl: THREE.Object3D; fr: THREE.Object3D; rl: THREE.Object3D; rr: THREE.Object3D };
   /**
-   * All thruster tips: 4 × 'rear' (left → right, blow backward) then 2 × 'side-down'
-   * (left, right; beside the rear wheels, blow at the road — jump/launch).
+   * All thruster tips: 4 × 'rear' (left → right, blow backward) then 4 × 'side-down'
+   * (left → right: outer, inboard, inboard, outer — two per rear corner, blow at the road — jump/launch).
    * userData.kind holds the type. Local +z of each anchor = exhaust direction.
    */
   nozzles: THREE.Object3D[];
@@ -219,6 +219,15 @@ const NOZZLE_Y = 0.5;
 const SIDE_NOZZLE_X = [-0.7, 0.7];
 const SIDE_NOZZLE_Y = 0.2; // tip height
 const SIDE_NOZZLE_Z = bz(4.27);
+// Launch photo (refs/car/rear-upright-and-inverted): 4 jets hit the road — at each rear corner the gold can
+// on its bracket plus a second tip ~0.19 m inboard, tucked under the body edge (fix #3).
+const SIDE_NOZZLE_IN_DX = 0.19, SIDE_NOZZLE_IN_Y = 0.24, SIDE_NOZZLE_IN_Z = bz(4.18);
+const SIDE_NOZZLES: { x: number; y: number; z: number; name: string }[] = [
+  { x: SIDE_NOZZLE_X[0], y: SIDE_NOZZLE_Y, z: SIDE_NOZZLE_Z, name: 'l' },
+  { x: SIDE_NOZZLE_X[0] + SIDE_NOZZLE_IN_DX, y: SIDE_NOZZLE_IN_Y, z: SIDE_NOZZLE_IN_Z, name: 'l-in' },
+  { x: SIDE_NOZZLE_X[1] - SIDE_NOZZLE_IN_DX, y: SIDE_NOZZLE_IN_Y, z: SIDE_NOZZLE_IN_Z, name: 'r-in' },
+  { x: SIDE_NOZZLE_X[1], y: SIDE_NOZZLE_Y, z: SIDE_NOZZLE_Z, name: 'r' },
+];
 
 /** Single flat quad (position + colour), corners counter-clockwise seen from its front. */
 function flatQuad(a: number[], b: number[], c: number[], d: number[], color: THREE.Color): THREE.BufferGeometry {
@@ -263,6 +272,11 @@ function buildRearParts(parts: THREE.BufferGeometry[]) {
     const can = new THREE.CylinderGeometry(0.045, 0.055, 0.14, 10, 1, true);
     parts.push(part(can, C.gold, at(x, SIDE_NOZZLE_Y + 0.07, SIDE_NOZZLE_Z)));
     parts.push(part(new THREE.CircleGeometry(0.05, 10), C.black, at(x, SIDE_NOZZLE_Y + 0.01, SIDE_NOZZLE_Z, Math.PI / 2)));
+  }
+  // Inboard pair: short gold tips under the body edge (mostly hidden, as in the photo).
+  for (const n of SIDE_NOZZLES.filter((q) => q.name.endsWith('-in'))) {
+    parts.push(part(new THREE.CylinderGeometry(0.04, 0.05, 0.1, 10, 1, true), C.gold, at(n.x, n.y + 0.05, n.z)));
+    parts.push(part(new THREE.CircleGeometry(0.045, 10), C.black, at(n.x, n.y + 0.01, n.z, Math.PI / 2)));
   }
   // Wing pylons (swan neck): post from deck up, then a hook back over the wing.
   for (const x of [-0.45, 0.45]) {
@@ -471,11 +485,11 @@ export function buildCarModel(): CarModel {
     root.add(o);
     return o;
   });
-  const sideNozzles = SIDE_NOZZLE_X.map((x, i) => {
+  const sideNozzles = SIDE_NOZZLES.map((n) => {
     const o = new THREE.Object3D();
-    o.name = `nozzle-side-down-${i ? 'r' : 'l'}`;
+    o.name = `nozzle-side-down-${n.name}`;
     o.userData.kind = 'side-down';
-    o.position.set(x, SIDE_NOZZLE_Y, SIDE_NOZZLE_Z);
+    o.position.set(n.x, n.y, n.z);
     o.rotation.x = Math.PI / 2; // local +z → −y (down)
     root.add(o);
     return o;

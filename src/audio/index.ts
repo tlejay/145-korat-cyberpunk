@@ -404,6 +404,9 @@ export function createAudio(): KoratAudio {
         say('vo-final-lap');
         switchToFinal();
         break;
+      case 'finalStretch':
+        switchToFinal(); // 1-lap race: faster BGM for the last 25 %, no "Final lap!" line
+        break;
       case 'newRecord':
         say('vo-new-record');
         break;

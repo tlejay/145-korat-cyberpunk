@@ -21,6 +21,7 @@ export type RaceEvent =
   | { type: 'checkpoint'; id: number; lap: number; deltaMs: number | null }
   | { type: 'lap'; lap: number; lapMs: number; best: boolean }
   | { type: 'finalLap' }
+  | { type: 'finalStretch' } // last 25 % of the last lap → faster BGM (1-lap race, Tle 21:14)
   | { type: 'finish' }
   | { type: 'respawn'; reason: string }
   | { type: 'jump' } | { type: 'land'; clean: boolean; shortcut: boolean }
@@ -54,7 +55,8 @@ export class Race {
   fade = 0;                // 0..1 respawn fade overlay
   splits: number[] = [];   // cumulative ms at each rule checkpoint (rule.checkpoints per lap)
   lapGhost: Ghost | null = null; // best lap ghost of this run
-  stats = { driftMs: 0, driftChains: 0, jumps: 0, cleanLandings: 0, moatCrossings: 0, boostMs: 0, refills: 0, cleanLaps: 0, maxG: 0, launchPerfect: 0, launchTotal: 0 };
+  stats = { driftMs: 0, driftChains: 0, jumps: 0, cleanLandings: 0, moatCrossings: 0, boostMs: 0, refills: 0, cleanLaps: 0, maxG: 0, launchPerfect: 0, launchTotal: 0, checkpointClears: 0 };
+  private finalStretchSent = false;
   driftChainMs = 0;
   driftChainM = 0;
   lastDrift = { angle: 0, metres: 0 };
@@ -181,6 +183,10 @@ export class Race {
     if (ds < -this.path.length / 2) ds += this.path.length;
     if (ds > this.path.length / 2) ds -= this.path.length;
     if (Math.abs(ds) < 60) this.lapProgressM += ds; // ignore jumps from teleports
+    if (!this.finalStretchSent && this.lap === this.opt.laps && this.lapProgressM >= this.path.length * 0.75) {
+      this.finalStretchSent = true;
+      this.opt.onEvent({ type: 'finalStretch' });
+    }
     this.seg = pr.seg; this.progressM = pr.s; this.distFromCenter = pr.dist;
     this.offTrack = s.onSurface === 'blocked' || pr.dist > 20;
 
@@ -417,6 +423,7 @@ export class Race {
       jumps: st.jumps, cleanLandings: Math.min(st.cleanLandings, st.jumps),
       launches: { perfect: st.launchPerfect, total: st.launchTotal }, boostMs: Math.round(st.boostMs),
       refills: Math.min(st.refills, this.opt.laps), cleanLaps: st.cleanLaps, respawns: this.respawns,
+      checkpointClears: st.checkpointClears, // ด่านตรวจ jumped clean (style, server re-checks against the ghost)
       maxG: Math.round(st.maxG * 10) / 10,
     };
   }

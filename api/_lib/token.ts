@@ -11,7 +11,7 @@ export interface RunToken {
   q?: 1; // issued while ?qa=1 — results are never stored
 }
 
-// Longest race (2 laps) + 30 min slack for a retry after a network failure.
+// Longest race (1 lap, Tle 21:14; QA may run more) + 30 min slack for a retry after a network failure.
 export const TOKEN_TTL_MS = 45 * 60_000;
 
 function sign(body: string): string {

@@ -1,5 +1,5 @@
 // Browser-side ghost encode/decode (deflate-raw + base64) and API fetch.
-import { packGhost, unpackGhost, type Ghost } from './ghost-format.js';
+import { ghostMatchesTrack, packGhost, unpackGhost, type Ghost } from './ghost-format.js';
 
 async function pipe(data: Uint8Array, stream: CompressionStream | DecompressionStream): Promise<Uint8Array> {
   const out = new Blob([data as BlobPart]).stream().pipeThrough(stream);
@@ -32,7 +32,8 @@ export async function encodeGhost(g: Ghost): Promise<string | null> {
 export async function decodeGhost(b64: string): Promise<Ghost | null> {
   if (typeof DecompressionStream === 'undefined') return null;
   try {
-    return unpackGhost(await pipe(fromB64(b64), new DecompressionStream('deflate-raw')));
+    const g = unpackGhost(await pipe(fromB64(b64), new DecompressionStream('deflate-raw')));
+    return ghostMatchesTrack(g) ? g : null; // older track layout (or v1 format) → don't replay (fix #11)
   } catch {
     return null;
   }

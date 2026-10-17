@@ -1,6 +1,6 @@
 // Ghost recording (10 Hz, GAMEPLAY §5.3) + playback as a translucent wireframe car.
 import * as THREE from 'three';
-import { GHOST_FLAG, GHOST_HZ, type Ghost, type GhostSample } from '../net/ghost-format.js';
+import { GHOST_FLAG, GHOST_HZ, TRACK_VERSION, type Ghost, type GhostSample } from '../net/ghost-format.js';
 import type { CarState } from '../types.js';
 
 export class GhostRecorder {
@@ -14,7 +14,7 @@ export class GhostRecorder {
     this.samples.push({ x: s.pose.x, y: s.pose.y, z: s.pose.z, yawDeg: (s.pose.heading * 180) / Math.PI, flags });
   }
   reset() { this.samples = []; this.acc = 0; }
-  finish(lapMs: number): Ghost { return { hz: GHOST_HZ, lapMs, samples: this.samples.slice() }; }
+  finish(lapMs: number): Ghost { return { hz: GHOST_HZ, lapMs, trackVersion: TRACK_VERSION, samples: this.samples.slice() }; }
 }
 
 export class GhostCar {

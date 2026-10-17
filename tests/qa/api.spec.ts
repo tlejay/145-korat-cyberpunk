@@ -68,7 +68,7 @@ test('game with &net=1 (QA run) talks to the API and shows the Thai "QA run" not
   const calls: string[] = [];
   page.on('request', (r) => { if (r.url().includes('/api/')) calls.push(`${r.method()} ${r.url().replace(/^.*\/api\//, '')}`); });
   await seedSettings(page, { tutorialSeen: true });
-  await page.goto('./?qa=1&net=1&track=A&laps=2&skip=1&quality=low');
+  await page.goto('./?qa=1&net=1&track=A&laps=1&skip=1&quality=low'); // = TRACK_RULES.A.laps (fix #10), else no run ticket
   await page.waitForFunction(() => window.__game?.state() === 'racing', null, { timeout: 30_000 });
   await page.evaluate(async () => {
     const g = window.__game!; g.qa.fixedStep(true, 1000 / 30); g.qa.autopilot(true);

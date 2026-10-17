@@ -171,12 +171,15 @@ input, textarea { user-select: text; -webkit-user-select: text; touch-action: ma
 .countdown.show { animation: cdpop 0.8s ease-out forwards; }
 @keyframes cdpop { 0% { opacity: 0; transform: scale(1.4); } 20% { opacity: 1; transform: scale(1); } 80% { opacity: 1; } 100% { opacity: 0; } }
 .hud-bottom { position: absolute; left: 50%; bottom: var(--sb); transform: translateX(-50%); display: grid; justify-items: center; gap: 4px; }
+/* fix #4: speed + tank sit right above the white launch plume — dark glass plate + heavier shadow keep them legible. */
+.hud-bottom { padding: 4px 14px 8px; border-radius: 14px; background: rgba(7, 6, 15, 0.65); box-shadow: 0 0 18px rgba(7, 6, 15, 0.45); }
+.speedrow { text-shadow: 0 0 2px #000, 0 1px 4px rgba(0, 0, 0, 0.95), 0 0 10px rgba(7, 6, 15, 0.8); }
 .speedrow { display: flex; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
 .speed { font-size: 40px; font-weight: 700; min-width: 2.2em; text-align: right; }
 .unit { font-size: 14px; color: var(--muted); }
 .g { font-size: 14px; color: var(--neon-amber); margin-left: 8px; transition: font-size 0.15s; }
 .g.big { font-size: 28px; }
-.tank { position: relative; width: 160px; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); overflow: visible; }
+.tank { position: relative; width: 160px; height: 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.5); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25); overflow: visible; }
 .tank .fill { position: absolute; inset: 0; border-radius: 4px; background: #2dffd2; box-shadow: 0 0 8px #2dffd2; transform-origin: left; }
 .tank.low .fill { background: #ff9a3d; box-shadow: 0 0 8px #ff9a3d; }
 .tank .mark { position: absolute; top: -3px; width: 2px; height: 14px; background: rgba(255, 255, 255, 0.7); }

@@ -1,5 +1,13 @@
 # REPORT M3 — 🌃 visuals: cyberpunk pass + integrator ของ M3
 
+## รอบ 4 (wayfinding)
+
+- **ป้ายบอกโค้ง** `buildWayfinding(track)` ต่อใน `createVisuals` หลัง sponsors (ป้ายหลบแผงสปอนเซอร์) และก่อนรถ step แรก (wayfinding เปลี่ยน `track.barriers` เป็นชุดใหม่ที่มี collider ป้าย — ฟิสิกส์สร้าง grid ใหม่เอง) · โหลดแบบ eager glob เหมือน sponsors (ไม่มีไฟล์ = ข้าม, error ไม่บล็อกเกม)
+- **HUD เลี้ยว**: ตาม conductor — **ซ่อนลูกศร `.hud-turn` เดิม** (ส่ง `turn: null`) ใช้ `createTurnHud` ของ wayfinding แทน · `update(race.progressM)` ทุกเฟรมเฉพาะตอนแข่ง ซ่อนตอนนับถอยหลัง/หยุด/จบ · เสียงติ๊ก `uiTap` ตามที่ wayfinding คืนมา · ถ้าสร้าง turn HUD ไม่ได้ ระบบกลับไปใช้ลูกศรเดิมอัตโนมัติ
+- ทดสอบ (autopilot, high): เจอ 6 โค้ง · `[data-qa=hud-turn-warn]` ขึ้น "เลี้ยวขวา 200 ม. → 60 ม." · `.hud-turn` เดิม `display: none` · ไม่มี console error · ภาพ `refs/m3/wayfinding-*.jpg` (เห็นป้ายลูกศรเหลือง + toast ด่านตรวจพร้อมกันได้ ไม่ซ้อน)
+
+---
+
 ## รอบ 3 (art + checkpoint + กล้องเมนู) — conductor สั่งหลัง art-manifest มา
 
 - **art ต่อครบ** (`src/scene/art.ts` อ่าน `art-manifest.json` ตอน build):

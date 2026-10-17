@@ -13,6 +13,8 @@ export interface CarPreview {
   setView(azimuthDeg: number, elevationDeg?: number, distance?: number): void;
   setAutoRotate(on: boolean): void;
   stats(): { triangles: number; drawCalls: number; rendererCalls: number; rendererTriangles: number };
+  /** Thruster anchors in car space (+x right, +y up, −z forward) and their exhaust direction. */
+  nozzles(): { name: string; kind: string; pos: [number, number, number]; dir: [number, number, number] }[];
   dispose(): void;
 }
 
@@ -118,6 +120,10 @@ export function mountCarPreview(canvas: HTMLCanvasElement): CarPreview {
     setView(a, e = el, d = dist) { az = a; el = e; dist = d; auto = false; },
     setAutoRotate(on) { auto = on; },
     stats: () => ({ ...modelStats, rendererCalls, rendererTriangles }),
+    nozzles: () => model.nozzles.map((o) => {
+      const d = new THREE.Vector3(0, 0, 1).applyQuaternion(o.quaternion);
+      return { name: o.name, kind: String(o.userData.kind), pos: [o.position.x, o.position.y, o.position.z], dir: [d.x, d.y, d.z] };
+    }),
     dispose() { cancelAnimationFrame(raf); removeEventListener('resize', resize); renderer.dispose(); },
   };
   window.__carPreview = api;

@@ -17,6 +17,7 @@ import { showCredits, showMenu, showPause, showSettings, showTutorial } from '..
 import { buzz, saveSettings, settings } from '../ui/settings.js';
 import { VERSION } from '../version.js';
 import { applyMenuCover, createVisuals, type Visuals } from '../scene/visuals.js';
+import { createTurnHud, type TurnHud } from '../wayfinding/hud.js';
 import { autopilotInput } from './autopilot.js';
 import { GhostCar } from './ghost.js';
 import { Metrics } from './metrics.js';
@@ -50,6 +51,7 @@ export const E = {
   visuals: null as Visuals | null,   // M3 cyberpunk pass (src/scene/visuals.ts) — null = plain render
   fx: null as Fx | null,             // M3 fx pane (src/fx) when present
   checkpoint: null as Checkpoint | null, // M3 alcohol checkpoint (src/checkpoint) when present
+  turnHud: null as TurnHud | null,   // wayfinding turn warning (replaces the old HUD turn arrow)
   audio: null as AudioX | null,
   race: null as Race | null,
   hud: null as Hud | null,
@@ -178,6 +180,7 @@ async function loadWorld() {
     E.race = newRace();
     E.race.reset();
     E.hud = createHud(E.ui);
+    try { E.turnHud = createTurnHud(E.hud.el); } catch (err) { console.warn('[game] turn HUD failed', err); E.turnHud = null; }
     E.hud.setPath(E.race.path);
     E.hud.onPause = togglePause;
     E.hud.onRespawn = () => E.race?.respawn('player');
@@ -377,6 +380,9 @@ function onEvent(e: RaceEvent) {
       hud.toast('รอบสุดท้าย');
       audio?.play('finalLap');
       break;
+    case 'finalStretch':
+      audio?.play('finalStretch');
+      break;
     case 'finish':
       void finishRace();
       break;
@@ -427,7 +433,7 @@ function wireCheckpoint(cp: Checkpoint) {
     cpCue = hint ? { hint, until: performance.now() + 450 } : null;
     if (hint) E.controls?.setJumpHint(hint);
   });
-  on('clear', (d) => { if (d.text) E.hud?.combo(d.text); buzz([20, 40, 20]); });
+  on('clear', (d) => { if (d.text) E.hud?.combo(d.text); if (E.race && !E.race.finished) E.race.stats.checkpointClears++; buzz([20, 40, 20]); });
   on('smash', (d) => { if (d.text) E.hud?.combo(d.text); E.audio?.play(d.audio ?? 'crash'); buzz(50); });
   let lastHit = 0;
   on('hit', (d) => {
@@ -651,8 +657,13 @@ function chaseWithBlend(dt: number, cam: THREE.PerspectiveCamera, car: Car) {
 const HAIRPIN = 80;
 function updateHud() {
   const race = E.race!, s = E.car!.state;
-  const lead = Math.max(40, (s.speedKmh / 3.6) * GAME.turnLeadS);
+  // Turn warning: wayfinding's HUD (conductor: replaces the old arrow, never both). Old arrow = fallback only.
   let turn: { deg: number; inM: number } | null = null;
+  if (E.turnHud) {
+    if (E.phase === 'racing') { const ev = E.turnHud.update(race.progressM); if (ev) E.audio?.play(ev); }
+    else E.turnHud.hide();
+  }
+  const lead = E.turnHud ? 0 : Math.max(40, (s.speedKmh / 3.6) * GAME.turnLeadS);
   for (let d = 10; d <= lead; d += 10) {
     const deg = race.path.turnAhead(race.progressM, d, 15);
     if (Math.abs(deg) > 35) { turn = { deg: Math.abs(deg) > HAIRPIN ? Math.sign(deg) * 135 : deg, inM: d }; break; }

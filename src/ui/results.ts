@@ -28,8 +28,8 @@ export function showResults(
       <div class="res-main">
         <div class="res-label">เวลารวม</div>
         <div class="res-time" data-qa="res-total">${formatLapMs(r.totalMs)}</div>
-        <div class="res-laps">${r.lapMs.map((ms, i) => `<span class="${ms === best ? 'best' : ''}">รอบ ${formatInt(i + 1)} ${formatLapMs(ms)}</span>`).join('')}</div>
-        ${extra.bestLapRecord ? '<div class="res-record">สถิติรอบใหม่ของคุณ</div>' : ''}
+        ${r.lapMs.length < 2 ? '' : `<div class="res-laps">${r.lapMs.map((ms, i) => `<span class="${ms === best ? 'best' : ''}">รอบ ${formatInt(i + 1)} ${formatLapMs(ms)}</span>`).join('')}</div>`}
+        ${extra.bestLapRecord ? `<div class="res-record">${r.lapMs.length < 2 ? 'สถิติใหม่ของคุณ' : 'สถิติรอบใหม่ของคุณ'}</div>` : ''}
         <div class="res-score">แต้ม <b data-qa="res-score">${formatInt(local.total)}</b></div>
         <ul class="res-break">
           <li>เวลา ${formatInt(local.time)}</li>
@@ -37,7 +37,8 @@ export function showResults(
           ${local.respawn ? `<li>กลับเข้าเส้นทาง ${formatInt(local.respawn)}</li>` : ''}
           <li>ดริฟต์ ${nf1.format(r.driftMs / 1000)} วิ · ${formatInt(r.driftChains)} ครั้ง</li>
           <li>ข้ามคู ${formatInt(r.shortcuts)} · ลงพื้นสวย ${formatInt(r.cleanLandings)} · ออกตัวสมบูรณ์ ${formatInt(r.launches.perfect)}</li>
-          <li>รอบไม่ชน ${formatInt(r.cleanLaps)} · ดริฟต์ยาวสุด ${formatInt(Math.round(extra.longestDriftM))} ม. · g สูงสุด ${nf1.format(r.maxG)}</li>
+          ${r.checkpointClears ? `<li>ข้ามด่าน ${formatInt(r.checkpointClears)}</li>` : ''}
+          <li>${r.lapMs.length < 2 ? (r.cleanLaps ? 'วิ่งไม่ชนเลย · ' : '') : `รอบไม่ชน ${formatInt(r.cleanLaps)} · `}ดริฟต์ยาวสุด ${formatInt(Math.round(extra.longestDriftM))} ม. · g สูงสุด ${nf1.format(r.maxG)}</li>
         </ul>
       </div>
       <div class="res-side">
