@@ -2,11 +2,19 @@
 // one mesh per material — road surface, facades, neon — plus global water/ground.
 import * as THREE from 'three';
 import { GeoBuilder, col, type V3 } from './builder.js';
-import { WALL_MOAT, WALL_NEON, WALL_PLAZA, type Sample, type TrackData, toRing } from './data.js';
-import { WIN_CELL_H, WIN_CELL_W, WIN_CELLS, type TrackMaterials } from './materials.js';
+import { WALL_MOAT, WALL_NEON, WALL_PLAZA, WALL_PROP, decodeAnchors, decodeBuildings, type Sample, type TrackData, toRing } from './data.js';
+import type { TrackMaterials } from './materials.js';
+import { buildBuilding, buildGoldSign } from './buildings.js';
+import { buildCables, buildProps, cableSpans } from './props.js';
 import type { Vec2 } from '../types.js';
 
 export const CHUNKS = 12;
+
+// Facade anchors sit just outside their building: test 1.5 m back into the facade (and the
+// anchor itself) against the footprints landmarks-3d claims.
+export function anchorClaimed(a: { x: number; z: number; ang: number }, claimed: (x: number, z: number) => boolean) {
+  return claimed(a.x, a.z) || claimed(a.x - Math.sin(a.ang) * 1.5, a.z - Math.cos(a.ang) * 1.5);
+}
 
 const Y_ROAD = 0.02, Y_WALK = 0.1, Y_MEDIAN = 0.15, Y_MARK = 0.03;
 const C = {
@@ -16,7 +24,6 @@ const C = {
   fenceLow: col(0x7c7a72), fenceHigh: col(0x2d4a3c), bank: col(0x3b3a36),
   neonCyan: col(0x22e6ff), neonPink: col(0xff2fa8), neonDim: col(0x1a5f73), amber: col(0xffb030), cone: col(0xff5a1f),
 };
-const PALETTE = [0x8a8578, 0x9c8f7a, 0x7d8a8c, 0xa08a8a, 0x8c9a86, 0x948c9e, 0xb0a48c, 0x7a7a80].map((h) => col(h).multiplyScalar(0.85));
 
 function pip(x: number, z: number, ring: Vec2[]) {
   let inside = false;
@@ -35,11 +42,13 @@ function triangulate(ring: Vec2[]): number[][] {
 
 export interface BuiltTrack {
   root: THREE.Group;
-  chunks: { group: THREE.Group; center: THREE.Vector3; radius: number }[];
+  chunks: { group: THREE.Group; center: THREE.Vector3; radius: number; detail: THREE.Mesh | null }[];
+  globals: { cables: THREE.LineSegments; pools: THREE.Mesh; plates: THREE.Mesh };
+  cableSpans: ReturnType<typeof cableSpans>;
   stats: { meshes: number; triangles: number };
 }
 
-export function buildTrackMeshes(d: TrackData, mats: TrackMaterials): BuiltTrack {
+export function buildTrackMeshes(d: TrackData, mats: TrackMaterials, claimed: (x: number, z: number) => boolean = () => false): BuiltTrack {
   const S = d.samples, N = S.length, L = d.lengthM, ds = L / N;
   const raw = d.raw;
   const pads = raw.pads.map((p) => ({ ...p, r: toRing(p.ring) }));
@@ -49,6 +58,7 @@ export function buildTrackMeshes(d: TrackData, mats: TrackMaterials): BuiltTrack
   const surf = Array.from({ length: CHUNKS }, () => new GeoBuilder());
   const fac = Array.from({ length: CHUNKS }, () => new GeoBuilder());
   const neon = Array.from({ length: CHUNKS }, () => new GeoBuilder());
+  const detail = Array.from({ length: CHUNKS }, () => new GeoBuilder()); // small props, hidden on low / far
   const chunkOfS = (s: number) => Math.min(CHUNKS - 1, Math.max(0, Math.floor((((s % L) + L) % L / L) * CHUNKS)));
   const chunkAt = (x: number, z: number) => {
     let best = Infinity, bi = 0;
@@ -126,6 +136,7 @@ export function buildTrackMeshes(d: TrackData, mats: TrackMaterials): BuiltTrack
   const win = raw.water.window; // takeoff line x range
   const winX0 = Math.min(win[0], win[2]) * 0.1, winX1 = Math.max(win[0], win[2]) * 0.1;
   for (const wl of d.walls) {
+    if (wl.kind === WALL_PROP) continue; // pole / trunk colliders — drawn by props.ts
     const dx = wl.b.x - wl.a.x, dz = wl.b.z - wl.a.z, l = Math.hypot(dx, dz) || 1;
     // left normal of a→b is (dz, −dx); track lies on side*left → outward = −side*left
     const ox = (-wl.side * dz) / l, oz = (wl.side * dx) / l;
@@ -181,34 +192,19 @@ export function buildTrackMeshes(d: TrackData, mats: TrackMaterials): BuiltTrack
     g.wallBox(ax, az, bx, bz, 0.08, 0.9, 1.7, C.fenceHigh);
   }
 
-  // ── buildings: extruded footprints with window atlas UVs, merged per chunk ──
-  const uS = 1 / (WIN_CELL_W * WIN_CELLS), vS = 1 / (WIN_CELL_H * WIN_CELLS);
-  for (const b of raw.buildings) {
-    const h = b[0] * 0.1, colr = PALETTE[Math.abs(b[1]) % PALETTE.length];
-    const ring = toRing(b.slice(2));
-    if (ring.length < 3) continue;
-    const cx = ring.reduce((a, p) => a + p.x, 0) / ring.length, cz = ring.reduce((a, p) => a + p.z, 0) / ring.length;
-    const g = fac[chunkAt(cx, cz)];
-    const windows = h > 4.5;
-    const sgn = ringArea(ring) >= 0 ? 1 : -1; // + → interior on the math-left, outward normal (dz, −dx)
-    let u = (b[1] * 7) % 8 * WIN_CELL_W; // stagger the atlas per building
-    for (let k = 0; k < ring.length; k++) {
-      const p = ring[k], q = ring[(k + 1) % ring.length];
-      const ex = q.x - p.x, ez = q.z - p.z, el = Math.hypot(ex, ez);
-      if (el < 0.05) continue;
-      const want: V3 = [(sgn * ez) / el, 0, (-sgn * ex) / el];
-      const uv = windows
-        ? ([[u * uS, 0], [(u + el) * uS, 0], [(u + el) * uS, h * vS], [u * uS, h * vS]] as [number, number][])
-        : ([[0.001, 0.001], [0.001, 0.001], [0.001, 0.001], [0.001, 0.001]] as [number, number][]);
-      g.quadN([p.x, 0, p.z], [q.x, 0, q.z], [q.x, h, q.z], [p.x, h, p.z], colr, want, uv);
-      u += el;
-    }
-    const roof = colr.clone().multiplyScalar(0.55);
-    for (const t of triangulate(ring)) {
-      const [A, B, Cc] = t.map((k) => ring[k]);
-      g.triUp([A.x, h, A.z], [B.x, h, B.z], [Cc.x, h, Cc.z], roof);
-    }
-  }
+  // ── buildings: shophouse kit (buildings.ts), merged per chunk ──
+  const blds = decodeBuildings(raw);
+  blds.forEach((b, bi) => {
+    const cx = b.ring.reduce((a, p) => a + p.x, 0) / b.ring.length, cz = b.ring.reduce((a, p) => a + p.z, 0) / b.ring.length;
+    if (claimed(cx, cz)) return; // modelled by landmarks-3d
+    const ch = chunkAt(cx, cz);
+    buildBuilding(b, bi, { fac: fac[ch], detail: detail[ch] });
+  });
+  decodeAnchors(raw.anchors.gold).forEach((a, k) => { if (!anchorClaimed(a, claimed)) buildGoldSign(fac[chunkAt(a.x, a.z)], a, k % 4); });
+
+  // ── street furniture (props.ts) ──
+  const props = buildProps(raw.streetscape, S, L, (x, z) => { const c = chunkAt(x, z); return { surf: surf[c], neon: neon[c], detail: detail[c] }; },
+    (x, z) => inPad(x, z), claimed);
 
   // ── assemble chunks ──
   const root = new THREE.Group();
@@ -219,19 +215,21 @@ export function buildTrackMeshes(d: TrackData, mats: TrackMaterials): BuiltTrack
     const group = new THREE.Group();
     group.name = `chunk-${c}`;
     const box = new THREE.Box3();
-    for (const [gb, mat, name] of [[surf[c], mats.surface, 'surface'], [fac[c], mats.facade, 'facade'], [neon[c], mats.neon, 'neon']] as const) {
+    let detailMesh: THREE.Mesh | null = null;
+    for (const [gb, mat, name] of [[surf[c], mats.surface, 'surface'], [fac[c], mats.facade, 'facade'], [neon[c], mats.neon, 'neon'], [detail[c], mats.surface, 'detail']] as const) {
       if (gb.empty) continue;
       const geo = gb.build();
       const m = new THREE.Mesh(geo, mat);
       m.name = `${name}-${c}`;
       m.matrixAutoUpdate = false;
       group.add(m);
+      if (name === 'detail') detailMesh = m;
       box.union(geo.boundingBox!);
       meshes++;
       triangles += geo.getAttribute('position').count / 3;
     }
     const sphere = box.getBoundingSphere(new THREE.Sphere());
-    chunks.push({ group, center: sphere.center, radius: sphere.radius });
+    chunks.push({ group, center: sphere.center, radius: sphere.radius, detail: detailMesh });
     root.add(group);
   }
 
@@ -273,5 +271,20 @@ export function buildTrackMeshes(d: TrackData, mats: TrackMaterials): BuiltTrack
     const g = m.geometry;
     triangles += (g.index ? g.index.count : g.getAttribute('position').count) / 3;
   }
-  return { root, chunks, stats: { meshes, triangles } };
+  // ── global meshes: static cables, light pools, street-name plates ──
+  const spans = cableSpans(raw.streetscape);
+  const cables = buildCables(spans, mats.cable);
+  const pools = new THREE.Mesh(props.pools.build(), mats.pool);
+  pools.name = 'light-pools';
+  pools.renderOrder = 1;
+  const plates = new THREE.Mesh(props.plates.build(), mats.plate);
+  plates.name = 'street-signs';
+  for (const m of [cables, pools, plates]) {
+    m.matrixAutoUpdate = false;
+    root.add(m);
+    meshes++;
+    const pa = m.geometry.getAttribute('position');
+    triangles += m === cables ? 0 : pa.count / 3;
+  }
+  return { root, chunks, globals: { cables, pools, plates }, cableSpans: spans, stats: { meshes, triangles } };
 }

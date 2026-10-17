@@ -13,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import zlib from 'node:zlib';
+import { buildStreetscape, SIGN_NAMES, SIGN_GREEN } from './streetscape.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rd = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
@@ -491,7 +492,7 @@ for (const a of anchors) {
     const info = a.seg[side];
     if (!info) continue;
     const realSide = (side === 'left' ? -1 : 1) * (a.flip ? -1 : 1);
-    svSides.push({ s: a.s, side: realSide, floors: info.floors, setback: info.setback_m, frontage: info.frontage_m, type: info.type, seg: a.seg.segment ?? a.seg.road_key });
+    svSides.push({ s: a.s, side: realSide, floors: info.floors, setback: info.setback_m, frontage: info.frontage_m, type: info.type, color: info.color, seg: a.seg.segment ?? a.seg.road_key });
   }
 }
 function svFloorsAt(s, side) {
@@ -533,7 +534,7 @@ for (const f of buildingsGeo) {
       else { floors = 2 + Math.floor(hash(keptOSM + 17) * 3); src = 'default'; }
     }
     const h = lm ? lm.size_m.h : floors * 3.4 + 0.8;
-    buildings.push({ ring, h, color: Math.floor(hash(keptOSM * 7 + 3) * PALETTE), src, s: pr.s, osm: f.properties.osm_id });
+    buildings.push({ ring, h, color: Math.floor(hash(keptOSM * 7 + 3) * PALETTE), src, s: pr.s, osm: f.properties.osm_id, tags: f.properties, area: Math.abs(signedArea(ring)) });
     keptOSM++;
     fillPoly(ring, (idx) => { if (grid[idx] === 2) grid[idx] = 0; }); // kerb under a building = wall
   }
@@ -562,7 +563,7 @@ for (const v of svSides) {
   let onOpen = false;
   fillPoly(ring, (idx) => { if (grid[idx] === 1 || grid[idx] === 3) onOpen = true; });
   if (onOpen) continue;
-  buildings.push({ ring: signedArea(ring) < 0 ? ring.reverse() : ring, h: v.floors * 3.4 + 0.8, color: Math.floor(hash(synth * 13 + 5) * PALETTE), src: 'synthetic', s: v.s, sv: v.seg });
+  buildings.push({ ring: signedArea(ring) < 0 ? ring.reverse() : ring, h: v.floors * 3.4 + 0.8, color: Math.floor(hash(synth * 13 + 5) * PALETTE), src: 'synthetic', s: v.s, sv: v.seg, tags: {}, area: v.frontage * depth });
   synth++;
 }
 
@@ -732,6 +733,13 @@ for (let m = 0; m <= osmCum.at(-1); m += 50) {
   researchMap.push([m, +project(p).s.toFixed(0)]);
 }
 
+// ───────────────────────── 8b. M2 streetscape (scripts/streetscape.mjs) ─────────────────────────
+const sc = buildStreetscape({
+  C, T, N, ds, L, W, MED, W2, WL, extR, rightOf, project, cellCls, pads, buildings, svSides, mouths, corners,
+  nameSpans, carRoads, inZone, pointInRing, hash, researchMap, segsAll, P,
+});
+walls.push(...sc.propWalls);
+
 // ───────────────────────── 10. encode + write ─────────────────────────
 const dm = (v) => Math.round(v * 10);
 const flat = (pts) => pts.flatMap((p) => [dm(p[0]), dm(p[1])]);
@@ -764,7 +772,28 @@ const out = {
   cones: flat(cones),
   fences: fences.flatMap((f) => [dm(f.a[0]), dm(f.a[1]), dm(f.b[0]), dm(f.b[1])]),
   water: { level: CFG.waterY, rings: moatsNear.map((m) => flat(m.ring)), window: [...flat([winA, winB]), ...flat([landA, landB])] },
-  buildings: buildings.map((b) => [dm(b.h), b.color, ...flat(b.ring)]),
+  // per building: h (dm), style (streetscape ST), paint tint (0xRRGGBB), n street-facing edges, edge indices…, ring
+  buildings: buildings.map((b, i) => { const m = sc.buildingMeta[i]; return [dm(b.h), m.st, m.tint, m.front.length, ...m.front, ...flat(b.ring)]; }),
+  // M2 street furniture — angles ×1000 = three.js rotation.y (local +z faces (sin, cos))
+  streetscape: (() => {
+    const ss = sc.streetscape, A = (a) => Math.round(a * 1000);
+    return {
+      lamps: ss.lamps.flatMap((l) => [dm(l.p[0]), dm(l.p[1]), A(l.ang), l.type]),
+      poles: ss.poles.flatMap((l) => [dm(l.p[0]), dm(l.p[1]), A(l.ang), l.flags]),
+      signals: ss.signals.flatMap((l) => [dm(l.p[0]), dm(l.p[1]), A(l.ang), dm(l.arm), l.kind]),
+      xwalks: ss.xwalks.flatMap((v) => [dm(v.s), v.stop]),
+      signs: ss.signs.flatMap((l) => [dm(l.p[0]), dm(l.p[1]), A(l.ang), l.slot]),
+      signNames: SIGN_NAMES, signGreen: SIGN_NAMES.map((n) => (SIGN_GREEN.has(n) ? 1 : 0)),
+      trees: ss.trees.flatMap((t) => [dm(t.p[0]), dm(t.p[1]), t.type, Math.round(t.scale * 100)]),
+      bridges: ss.bridges.flatMap((b) => [dm(b.a[0]), dm(b.a[1]), dm(b.b[0]), dm(b.b[1]), b.roof]),
+      stubs: ss.stubs.map((t) => ({ w: dm(t.w), pts: flat(t.pts) })),
+      parked: ss.parked.flatMap((c) => [dm(c.p[0]), dm(c.p[1]), A(c.ang), c.color, c.type]),
+      // cable spans for physics-cables (CableSpan): ax ay az bx by bz (dm), sag (cm)
+      cables: ss.cables.flatMap((c) => [dm(c[0]), dm(c[1]), dm(c[2]), dm(c[3]), dm(c[4]), dm(c[5]), Math.round(c[6] * 100)]),
+    };
+  })(),
+  // M3 anchors (neon pass): x y z (dm), angle ×1000 (facing), w h (dm). gold = already rendered as red/gold fascia.
+  anchors: Object.fromEntries(Object.entries(sc.anchors).map(([k, v]) => [k, v.flatMap((a) => [dm(a[0]), dm(a[1]), dm(a[2]), Math.round(a[3] * 1000), dm(a[4]), dm(a[5])])])),
   checkpoints: cps.map((c) => [dm(c.a[0]), dm(c.a[1]), dm(c.b[0]), dm(c.b[1]), +c.s.toFixed(1)]),
   altGroup,
   startGrid: { x: +C[gi][0].toFixed(2), y: 0, z: +C[gi][1].toFixed(2), heading: +H[gi].toFixed(4), s: +S(gi).toFixed(1) },
@@ -799,11 +828,13 @@ const debug = {
 fs.writeFileSync(path.join(ROOT, 'public/data/track-A.debug.json'), JSON.stringify(debug));
 
 const size = fs.statSync(outPath).size;
-const counts = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
+const counts = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 for (const w of walls) counts[w[2]]++;
 console.log(JSON.stringify({
   lengthM: +L.toFixed(1), osmLengthM: trackGeo.features[0].properties.length_m, samples: N, researchOffsetM: +researchOffsetM.toFixed(1),
-  startGrid: out.startGrid, grid: `${GW}×${GH} @${RES} m`, walls: walls.length, wallKinds: { rail: counts[0], neon: counts[1], moatRail: counts[2], building: counts[3], plaza: counts[4] },
+  startGrid: out.startGrid, grid: `${GW}×${GH} @${RES} m`, walls: walls.length, wallKinds: { rail: counts[0], neon: counts[1], moatRail: counts[2], building: counts[3], plaza: counts[4], prop: counts[5] },
+  streetscape: Object.fromEntries(Object.entries(sc.streetscape).map(([k, v]) => [k, v.length])), anchors: Object.fromEntries(Object.entries(sc.anchors).map(([k, v]) => [k, v.length])),
+  styles: sc.buildingMeta.reduce((a, m) => ((a[m.st] = (a[m.st] ?? 0) + 1), a), {}), junctions: sc.junctions.map((j) => `${j.s.toFixed(0)} ${j.names.join('/')}${j.signal ? ' 🚦' : ''}`),
   mouths: mouths.length, buildings: buildings.length, keptOSM, synthetic: synth, droppedOnRoad: dropped, fences: fences.length,
   heightSrc: buildings.reduce((a, b) => ((a[b.src] = (a[b.src] ?? 0) + 1), a), {}),
   innerClamped: clamped, roadOverWaterCells: roadOverWater, anchors: anchors.length, moatWidthM: +moatWidth.toFixed(1), altGroup,

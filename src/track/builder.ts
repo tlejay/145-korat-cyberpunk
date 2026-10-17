@@ -75,6 +75,31 @@ export class GeoBuilder {
     this.wallBox(ax, az, bx, bz, sz, cy - sy / 2, cy + sy / 2, color, top);
   }
 
+  // Tapered n-gon prism (poles, trunks, tanks) from y0 to y1, radius r0 at the bottom, r1 at the top.
+  prism(cx: number, cz: number, y0: number, y1: number, r0: number, r1: number, sides: number, color: THREE.Color, caps = false) {
+    for (let k = 0; k < sides; k++) {
+      const a0 = (k / sides) * Math.PI * 2, a1 = ((k + 1) / sides) * Math.PI * 2;
+      const c0 = Math.cos(a0), s0 = Math.sin(a0), c1 = Math.cos(a1), s1 = Math.sin(a1);
+      this.quadN([cx + c0 * r0, y0, cz + s0 * r0], [cx + c1 * r0, y0, cz + s1 * r0], [cx + c1 * r1, y1, cz + s1 * r1], [cx + c0 * r1, y1, cz + s0 * r1],
+        color, [Math.cos((a0 + a1) / 2), 0, Math.sin((a0 + a1) / 2)]);
+      if (caps) this.triUp([cx, y1, cz], [cx + c0 * r1, y1, cz + s0 * r1], [cx + c1 * r1, y1, cz + s1 * r1], color);
+    }
+  }
+
+  // Low-poly octahedron-ish blob (tree canopies, bushes, coils): 8 faces, scaled per axis.
+  blob(cx: number, cy: number, cz: number, sx: number, sy: number, sz: number, color: THREE.Color, rot = 0) {
+    const c = Math.cos(rot), s = Math.sin(rot);
+    const pt = (x: number, y: number, z: number): V3 => [cx + (x * c + z * s) * sx, cy + y * sy, cz + (-x * s + z * c) * sz];
+    const top = pt(0, 1, 0), bot = pt(0, -1, 0);
+    const ring = [pt(1, 0.15, 0), pt(0.7, -0.1, 0.7), pt(0, 0.2, 1), pt(-0.7, -0.05, 0.7), pt(-1, 0.1, 0), pt(-0.7, 0.15, -0.7), pt(0, -0.1, -1), pt(0.7, 0.05, -0.7)];
+    const dark = color.clone().multiplyScalar(0.7);
+    for (let k = 0; k < ring.length; k++) {
+      const a = ring[k], b = ring[(k + 1) % ring.length];
+      this.tri(a, top, b, color);
+      this.tri(a, b, bot, dark);
+    }
+  }
+
   build(): THREE.BufferGeometry {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));

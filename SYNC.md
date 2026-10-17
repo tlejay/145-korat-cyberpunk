@@ -25,7 +25,7 @@
 
 - [x] **M1 เสร็จ** v0.2.0-build002 · preview https://korat-cyberpunk-8nliiddxu-dosx.vercel.app/koratrocketcar/ · QA กำลังตรวจ
 - [x] M2 landmarks-3d
-- [ ] M2 streetscape
+- [x] M2 streetscape · **M2 เสร็จ** 20:08
 - [ ] M3 backlog: รูปหล่อย่าโมยังผอมคล้ายหุ่น — เพิ่มรายละเอียดชุดไทย/ทรงผม (ห้ามล้อเลียน) · Terminal 21 ทรงกลาง ๆ (ไม่มีภาพนอก)
 
 **แผนถัดไป (milestone)**

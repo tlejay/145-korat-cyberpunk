@@ -9,7 +9,10 @@ export interface RawTrack {
   grid: { x0: number; z0: number; res: number; w: number; h: number; rle: string };
   walls: number[]; fences: number[]; cones: number[];
   water: { level: number; rings: number[][]; window: number[] };
+  // per building: h, style, tint, nFront, front edge indices…, ring (dm) — scripts/streetscape.mjs
   buildings: number[][];
+  streetscape: RawStreetscape;
+  anchors: Record<'blade' | 'gold' | 'lantern' | 'neon' | 'billboard', number[]>;
   checkpoints: number[][];
   altGroup: [number, number] | null;
   startGrid: { x: number; y: number; z: number; heading: number; s: number };
@@ -29,7 +32,36 @@ export interface RawTrack {
   researchMap: [number, number][];
 }
 
-export const WALL_RAIL = 0, WALL_NEON = 1, WALL_MOAT = 2, WALL_BUILDING = 3, WALL_PLAZA = 4;
+// Street furniture (M2). Flat int arrays; positions in dm, angles ×1000 (three.js rotation.y).
+export interface RawStreetscape {
+  lamps: number[];    // x z ang type(1 single arm, 2 double arm median, 3 cast-iron causeway)
+  poles: number[];    // x z ang flags(1 transformer, 2 cable coil)
+  signals: number[];  // x z ang arm(dm) kind(1 mast arm, 2 far-side post)
+  xwalks: number[];   // s(dm) stopLine(0|1)
+  signs: number[];    // x z ang slot
+  signNames: string[]; signGreen: number[];
+  trees: number[];    // x z type(0 rain tree, 1 palm, 2 hedge) scale×100
+  bridges: number[];  // ax az bx bz roof
+  stubs: { w: number; pts: number[] }[];
+  parked: number[];   // x z ang color type(0 sedan, 1 pickup)
+  cables: number[];   // ax ay az bx by bz (dm) sag(cm)
+}
+
+export interface Building { h: number; st: number; tint: number; front: Set<number>; ring: Vec2[] }
+export function decodeBuildings(raw: RawTrack): Building[] {
+  return raw.buildings.map((b) => {
+    const nf = b[3];
+    return { h: b[0] * M, st: b[1], tint: b[2], front: new Set(b.slice(4, 4 + nf)), ring: toRing(b.slice(4 + nf)) };
+  });
+}
+// Generic decoder for the flat anchor lists: [x, y, z, ang, w, h] in metres / radians.
+export function decodeAnchors(arr: number[]) {
+  const out: { x: number; y: number; z: number; ang: number; w: number; h: number }[] = [];
+  for (let i = 0; i + 5 < arr.length; i += 6) out.push({ x: arr[i] * M, y: arr[i + 1] * M, z: arr[i + 2] * M, ang: arr[i + 3] / 1000, w: arr[i + 4] * M, h: arr[i + 5] * M });
+  return out;
+}
+
+export const WALL_RAIL = 0, WALL_NEON = 1, WALL_MOAT = 2, WALL_BUILDING = 3, WALL_PLAZA = 4, WALL_PROP = 5;
 // h = collider height in metres (Infinity = can never be jumped; 1.0 = moat rail, PHYSICS §1.6)
 export interface Wall { a: Vec2; b: Vec2; h: number; kind: number; /* +1 = track on the left of a→b */ side: 1 | -1 }
 
