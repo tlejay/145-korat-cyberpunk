@@ -31,6 +31,8 @@ export interface KoratAudio extends GameAudio {
    * (index 3 = GO). Drive the on-screen digits from now() so picture and voice land together.
    */
   countdown(stepSec?: number): number[];
+  /** Stop beats still scheduled by countdown() (restart / back to menu mid-countdown). */
+  cancelCountdown(): void;
   now(): number;
   /** Pause/resume all sound (game pause menu). Tab hide/show is handled automatically. */
   pause(): void;
@@ -449,7 +451,17 @@ export function createAudio(): KoratAudio {
     }
   }
 
+  let countdownVoices: Voice[] = [];
+  function cancelCountdown() {
+    for (const v of countdownVoices) {
+      try { v.src.stop(); } catch { /* not started / already stopped */ }
+      if (currentVoice?.src === v.src) currentVoice = null;
+    }
+    countdownVoices = [];
+  }
+
   function countdown(stepSec = 0.8): number[] {
+    cancelCountdown();
     if (!unlocked) return [];
     const t0 = ctx.currentTime + 0.05;
     const times = [0, 1, 2, 3].map((k) => t0 + k * stepSec);
@@ -459,8 +471,9 @@ export function createAudio(): KoratAudio {
     const words: VoiceId[] = ['vo-three', 'vo-two', 'vo-one', 'vo-go'];
     times.forEach((at, k) => {
       const v = oneShot(words[k], { when: at, dest: voiceVol });
-      if (v) { currentVoice = { ...v, prio: 5 }; duck(v.endsAt); }
-      oneShot(k === 3 ? 'beep-go' : 'beep', { when: at, gain: k === 3 ? 0.4 : 0.25 });
+      if (v) { currentVoice = { ...v, prio: 5 }; duck(v.endsAt); countdownVoices.push(v); }
+      const b = oneShot(k === 3 ? 'beep-go' : 'beep', { when: at, gain: k === 3 ? 0.4 : 0.25 });
+      if (b) countdownVoices.push(b);
     });
     releaseDuck(times[3] + 0.5);
     return times;
@@ -520,6 +533,7 @@ export function createAudio(): KoratAudio {
     get volumes() { return { ...volumes }; },
     music: setMusic,
     countdown,
+    cancelCountdown,
     now: () => ctx.currentTime,
     pause() {
       paused = true;
@@ -559,6 +573,7 @@ function silentAudio(): KoratAudio {
     volumes: vol,
     music() {},
     countdown: () => [],
+    cancelCountdown() {},
     now: () => performance.now() / 1000,
     pause() {},
     resume() {},

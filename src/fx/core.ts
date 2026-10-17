@@ -5,7 +5,7 @@
 //   cut short by the road; radius at the end = d_eq/2 + 0.21·x (12° spread).
 import * as THREE from 'three';
 
-export const CORE_D = 8;
+export const CORE_D = 5;
 
 const VERT = /* glsl */ `
 attribute vec2 iJet; // alpha, shock-cell count along the core
@@ -39,11 +39,11 @@ varying float vFacing;
 varying float vFogDepth;
 void main() {
   // translucent at the nozzle (dry gas), densest in the middle, frays into the cloud at the end
-  float along = smoothstep(0.0, 0.18, vZ) * (1.0 - smoothstep(0.6, 1.0, vZ));
+  float along = smoothstep(0.0, 0.15, vZ) * (1.0 - smoothstep(0.35, 1.0, vZ));
   // under-expanded jet: faint shock cells near the nozzle, flicker from turbulence
   float cells = 1.0 - 0.25 * (1.0 - smoothstep(0.0, 0.5, vZ)) * (0.5 + 0.5 * cos(vZ * vCells * 6.2831));
   float flick = 0.88 + 0.12 * sin(uTime * 53.0 + vZ * 21.0);
-  float a = vA * along * cells * flick * pow(vFacing, 1.4);
+  float a = vA * along * cells * flick * pow(vFacing, 2.2);
   a *= smoothstep(1.0, 4.5, vFogDepth);
   float fog = smoothstep(fogNear, fogFar, vFogDepth);
   gl_FragColor = vec4(mix(uColor, fogColor, fog), a * (1.0 - fog));

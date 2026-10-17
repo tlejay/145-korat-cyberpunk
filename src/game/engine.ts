@@ -34,7 +34,9 @@ export const QA = params.get('qa') === '1';
 const NET = !QA || params.get('net') === '1'; // QA runs stay offline unless asked (no 404 noise on vite dev)
 
 // Optional extras of the audio pane's KoratAudio (src/audio/index.ts) — used when present.
-type AudioX = GameAudio & Partial<{ music(n: 'menu' | 'race' | 'off'): void; setMuted(m: boolean): void; pause(): void; resume(): void; debug(): unknown }>;
+type AudioX = GameAudio & Partial<{ music(n: 'menu' | 'race' | 'off'): void; setMuted(m: boolean): void; pause(): void; resume(): void; debug(): unknown;
+  countdown(stepSec?: number): number[]; cancelCountdown(): void; now(): number }>;
+type StartLights = { countdown(remainingS: number, stepS?: number): void; go(): void; off(): void; readonly state: { lit: number; green: boolean } };
 
 type Phase = 'loading' | 'menu' | 'intro' | 'countdown' | 'racing' | 'paused' | 'finished' | 'error';
 
@@ -57,6 +59,11 @@ export const E = {
   pausedFrom: null as Phase | null,
   laps: TRACK_RULES[TRACK_ID].laps,
   countdownS: 0,
+  // Countdown runs on a clock, not on physics steps (fix #2): the audio clock when audio.countdown()
+  // scheduled the beats (voice is sample-exact), else summed frame dt (no audio / QA fixed step).
+  cdBeats: null as number[] | null,
+  cdFrameS: 0,
+  cdLights: null as StartLights | null,
   introS: 0,
   acc: 0,
   autopilot: false,
@@ -150,6 +157,7 @@ async function loadWorld() {
     try {
       E.visuals?.dispose();
       E.visuals = createVisuals({ renderer: E.renderer, scene: E.scene, camera: E.camera, track, car });
+      applyFlicker();
     } catch (err) {
       console.warn('[game] visuals failed, plain render', err);
       E.visuals = null;
@@ -176,6 +184,8 @@ async function loadWorld() {
     E.hud.el.classList.add('hidden');
     E.controls = createTouchControls(E.ui);
     E.controls.el.classList.add('off');
+    // Compile every material now — also ones the menu camera culls — so the countdown's first frames don't stall.
+    try { await E.renderer.compileAsync(E.scene, E.camera); } catch (err) { console.warn('[game] shader warm-up skipped', err); }
     menuView?.ready();
     setPhase('menu');
     resolveReady();
@@ -264,8 +274,14 @@ function beginCountdown() {
   E.countdownS = GAME.countdownStepS * 4;
   setPhase('countdown');
   E.hud!.countdown('3');
-  E.audio?.play('countdown3');
-  countdownShown = '3'; // already announced — stepOnce() must not fire countdown3 again ("Three, Three")
+  E.audio?.resume?.(); // restart from the pause menu would otherwise leave the audio context suspended
+  const beats = E.fixedMode ? [] : E.audio?.countdown?.(GAME.countdownStepS) ?? [];
+  E.cdBeats = beats.length === 4 ? beats : null;
+  E.cdFrameS = 0;
+  E.cdLights = (E.scene.getObjectByName('sponsor-start-lights')?.parent?.userData.startLights as StartLights | undefined) ?? null;
+  E.cdLights?.countdown(E.countdownS, GAME.countdownStepS);
+  if (!E.cdBeats) E.audio?.play('countdown3');
+  countdownShown = '3'; // already announced — tickCountdown() must not fire countdown3 again ("Three, Three")
   if (!settings.tutorialSeen || (E.race?.lapTimes.length === 0 && !localStorageGet('launchHintSeen'))) {
     E.hud!.toast('กดค้างสายฟ้า แล้วปล่อยตอน "ไป!" เพื่อออกตัวเร็ว');
     localStorageSet('launchHintSeen', '1');
@@ -311,6 +327,8 @@ export function toMenu() {
   clearScreens();
   E.pausedFrom = null;
   E.race?.reset();
+  E.audio?.cancelCountdown?.();
+  E.cdLights?.off();
   E.audio?.resume?.();
   E.audio?.music?.('menu');
   setPhase('menu');
@@ -319,6 +337,11 @@ export function toMenu() {
 function toggleMute() {
   saveSettings({ muted: !settings.muted });
   applyVolumes();
+}
+
+function applyFlicker() {
+  // VIS-04: settings toggle or the OS "reduce motion" preference
+  E.visuals?.neon?.setReduceFlicker(settings.reduceFlicker || matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 
 function applyShake() {
@@ -332,7 +355,7 @@ function applyVolumes() {
 }
 
 function openSettings() {
-  showSettings(E.ui, { onChange: () => { applyVolumes(); applyShake(); }, onTutorial: () => showTutorial(E.ui, () => {}) });
+  showSettings(E.ui, { onChange: () => { applyVolumes(); applyShake(); applyFlicker(); }, onTutorial: () => showTutorial(E.ui, () => {}) });
 }
 
 // ---------- events ----------
@@ -447,6 +470,10 @@ export function advance(dt: number) {
     if (E.introS <= 0) beginCountdown();
     return;
   }
+  if (E.phase === 'countdown') {
+    const over = tickCountdown(dt);
+    if (over >= 0) { E.acc = 0; dt = Math.min(over, 0.25); } // GO landed `over` s ago on the clock → race that long now
+  }
   if (E.phase !== 'countdown' && E.phase !== 'racing') return;
   E.acc += dt;
   let n = 0;
@@ -463,24 +490,8 @@ function stepOnce() {
   const ap = E.autopilot ? autopilotInput(race.path, s, race.progressM) : null;
   let inp: InputState = sample(STEP, s.speedKmh / TOP_KMH, ap);
   if (E.phase === 'countdown') {
-    E.countdownS -= STEP;
-    const step = Math.ceil(E.countdownS / GAME.countdownStepS);
-    const shown = step >= 4 ? '3' : step === 3 ? '2' : step === 2 ? '1' : null;
-    if (shown && shown !== countdownShown) {
-      countdownShown = shown;
-      E.hud!.countdown(shown);
-      E.audio?.play(shown === '3' ? 'countdown3' : shown === '2' ? 'countdown2' : 'countdown1');
-    }
     const held = race.countdownInput(inp, Math.max(0, E.countdownS - GAME.countdownStepS));
     car.step(STEP, held, E.track!);
-    if (E.countdownS <= GAME.countdownStepS) {
-      countdownShown = '';
-      E.hud!.countdown('ไป!');
-      E.audio?.play('go');
-      race.go();
-      E.audio?.music?.('race');
-      setPhase('racing');
-    }
     return;
   }
   inp = assist(race.racingInput(applyAutoThrottle(inp)));
@@ -490,6 +501,35 @@ function stepOnce() {
   forwardPhysicsEvents();
 }
 let countdownShown = '';
+
+// Once per frame during the countdown: digits, voice (fallback only), start lights and GO all read the
+// same clock, so slow frames can't stretch a beat. Returns seconds since GO, or -1 before it.
+function tickCountdown(dt: number): number {
+  const stepS = GAME.countdownStepS;
+  E.cdFrameS += dt;
+  let el = E.cdFrameS;
+  const now = E.audio?.now;
+  // Audio clock leads; frame time (≤ 250 ms/frame, so it can only lag) takes over if the context stalls.
+  if (E.cdBeats && now) el = Math.max(now() - E.cdBeats[0], E.cdFrameS - 0.3);
+  E.countdownS = stepS * 4 - el;
+  E.cdLights?.countdown(Math.max(0, E.countdownS), stepS);
+  const step = Math.ceil(E.countdownS / stepS);
+  const shown = step >= 4 ? '3' : step === 3 ? '2' : step === 2 ? '1' : null;
+  if (shown && shown !== countdownShown) {
+    countdownShown = shown;
+    E.hud!.countdown(shown);
+    if (!E.cdBeats) E.audio?.play(shown === '3' ? 'countdown3' : shown === '2' ? 'countdown2' : 'countdown1');
+  }
+  if (E.countdownS > stepS) return -1;
+  countdownShown = '';
+  E.hud!.countdown('ไป!');
+  if (!E.cdBeats) E.audio?.play('go');
+  if (E.cdLights && !E.cdLights.state.green) E.cdLights.go();
+  E.race!.go();
+  E.audio?.music?.('race');
+  setPhase('racing');
+  return el - stepS * 3;
+}
 
 // car-physics telemetry.events are counters — fire on() events when they change (PHYSICS §8).
 const PHYS_EVENTS = ['splash', 'hardLanding', 'driftStart', 'driftEnd'] as const;
@@ -567,6 +607,7 @@ function render(dt: number) {
     E.camStats.totalFrames++;
     E.fx?.update(dt, cam);
     if (E.phase === 'racing' || E.phase === 'countdown') E.checkpoint?.update(dt);
+    E.visuals?.startLights(E.phase, E.countdownS, GAME.countdownStepS); // sponsors gantry: 5 reds → green
   }
   if (E.visuals) E.visuals.render(dt);
   else E.renderer.render(E.scene, cam);
@@ -597,11 +638,12 @@ function updateHud() {
 }
 
 // Menu / first-session intro: sweep around the plaza, monument framed from the west (GAMEPLAY §4).
+// Radius 34 m keeps the camera over Ratchadamnoen — at 70 m it ended up inside the shophouses (M3 visuals §6).
 function introCamera(t: number) {
-  const a = Math.PI + (t - 0.5) * 1.2; // centred on west
+  const a = Math.PI + (t - 0.5) * 0.9; // centred on west (the statue faces west)
   const cam = E.camera;
-  cam.position.set(Math.cos(a) * 70, 22 - t * 8, Math.sin(a) * 70);
-  cam.lookAt(0, 6, 0);
+  cam.position.set(Math.cos(a) * 34, 8 - t * 2.5, Math.sin(a) * 34);
+  cam.lookAt(0, 5, 0);
   if (cam.fov !== 55) { cam.fov = 55; cam.updateProjectionMatrix(); }
 }
 

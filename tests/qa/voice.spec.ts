@@ -1,15 +1,30 @@
 // FIX-01 (docs/dev/fix/REPORT-fix.md): announcer said "Three, Three" — beginCountdown() and the
 // first stepOnce() both fired countdown3. Records every voice buffer the game starts (tagged by URL
 // at fetch → decode time) and asserts the countdown is exactly three, two, one, go — once each, on beat.
-import { expect, test } from '@playwright/test';
+// FIX-02: the countdown runs on the audio clock, not physics steps — beats stay 0.8 s under CPU throttle.
+import { expect, test, type Page } from '@playwright/test';
 import { expectClean, openGame, readJson, record, watch } from './helpers';
 
-declare global { interface Window { __voiceLog?: { id: string; when: number; now: number }[] } }
+declare global {
+  interface Window {
+    __voiceLog?: { id: string; when: number; now: number }[];
+    __hudLog?: { text: string; t: number }[];
+  }
+}
 
 const STEP_S = 0.8; // GAME.countdownStepS
+const TOL_S = 0.1;
 
-test('FIX-01 countdown voice: three, two, one, go — no repeats, 0.8 s apart', async ({ page }) => {
-  const w = watch(page);
+async function instrument(page: Page) {
+  await page.addInitScript(() => {
+    // HUD digit changes, wall clock (s).
+    const hud: { text: string; t: number }[] = (window.__hudLog = []);
+    new MutationObserver(() => {
+      const el = document.querySelector('[data-qa=hud-countdown]');
+      const text = el?.textContent?.trim() ?? '';
+      if (text && hud[hud.length - 1]?.text !== text) hud.push({ text, t: performance.now() / 1000 });
+    }).observe(document, { subtree: true, childList: true, characterData: true });
+  });
   await page.addInitScript(() => {
     const byBytes = new WeakMap<ArrayBuffer, string>();
     const byBuffer = new WeakMap<AudioBuffer, string>();
@@ -37,24 +52,51 @@ test('FIX-01 countdown voice: three, two, one, go — no repeats, 0.8 s apart', 
       return start.call(this, when, ...rest);
     };
   });
+}
+
+/** Menu → tap "เริ่มแข่ง" (unlocks audio) → wait until racing; returns the voice + HUD logs. */
+async function runCountdown(page: Page) {
   await openGame(page);
   await page.waitForFunction(() => !document.querySelector<HTMLButtonElement>('[data-qa=btn-start]')?.disabled, null, { timeout: 60_000 });
   await page.locator('[data-qa=btn-start]').click(); // real tap → audio unlock
   await page.waitForFunction(() => window.__game!.state() === 'racing', null, { timeout: 30_000 });
   await page.waitForTimeout(1500); // let a queued duplicate (if any) start
   const log = await page.evaluate(() => window.__voiceLog!);
+  const hud = await page.evaluate(() => window.__hudLog!);
   const audio = await page.evaluate(() => window.__game!.audio());
-  record(test.info(), 'FIX-01-voice', { audio, log });
+  const countdown = log.filter((e) => ['vo-three', 'vo-two', 'vo-one', 'vo-go'].includes(e.id));
+  return { log, hud, audio, countdown };
+}
+
+const gaps = (ts: number[]) => ts.slice(1).map((t, i) => +(t - ts[i]).toFixed(3));
+
+test('FIX-01 countdown voice: three, two, one, go — no repeats, 0.8 s apart', async ({ page }) => {
+  const w = watch(page);
+  await instrument(page);
+  const { log, hud, audio, countdown } = await runCountdown(page);
+  record(test.info(), 'FIX-01-voice', { audio, log, hud });
 
   expect(audio.unlocked, 'audio must unlock in the test browser for this check to mean anything').toBe(true);
-  const countdown = log.filter((e) => ['vo-three', 'vo-two', 'vo-one', 'vo-go'].includes(e.id));
   expect(countdown.map((e) => e.id)).toEqual(['vo-three', 'vo-two', 'vo-one', 'vo-go']);
-  // On the beat: each word starts no sooner than one step after the previous one. No upper bound —
-  // the countdown runs on physics steps, which fall behind wall-clock when frames are slow
-  // (SwiftShader: up to +1.6 s; WebKit/real GPUs land at 0.80 ± 0.02 s).
-  for (let i = 1; i < countdown.length; i++) {
-    expect(countdown[i].when - countdown[i - 1].when).toBeGreaterThan(STEP_S - 0.12);
-  }
+  for (const g of gaps(countdown.map((e) => e.when))) expect(Math.abs(g - STEP_S), `voice gap ${g}`).toBeLessThan(TOL_S);
+  expectClean(w);
+});
+
+test('FIX-02 countdown on the clock under 6× CPU throttle: voice + HUD 0.8 ± 0.1 s', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', 'CPU throttling needs CDP');
+  const w = watch(page);
+  await instrument(page);
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 6 });
+  const { log, hud, audio, countdown } = await runCountdown(page);
+  const fps = await page.evaluate(() => window.__game!.stats().fps);
+  const beats = hud.filter((h) => ['3', '2', '1', 'ไป!'].includes(h.text));
+  record(test.info(), 'FIX-02-clock', { audio, fps, voiceGaps: gaps(countdown.map((e) => e.when)), hudGaps: gaps(beats.map((h) => h.t)), log, hud });
+
+  expect(countdown.map((e) => e.id)).toEqual(['vo-three', 'vo-two', 'vo-one', 'vo-go']);
+  for (const g of gaps(countdown.map((e) => e.when))) expect(Math.abs(g - STEP_S), `voice gap ${g}`).toBeLessThan(TOL_S);
+  expect(beats.map((h) => h.text)).toEqual(['3', '2', '1', 'ไป!']);
+  for (const g of gaps(beats.map((h) => h.t))) expect(Math.abs(g - STEP_S), `HUD gap ${g}`).toBeLessThan(TOL_S);
   expectClean(w);
 });
 

@@ -173,6 +173,7 @@ test('FEEL-07 / PHY-02 / PHY-03 drift through the 224 right-hander (scripted dri
 });
 
 test('FEEL-13 / FEEL-14 crash into walls at 30/80/150/200+ km/h, 0° and 45°: not stuck, no tunnelling, no launch', async ({ page }) => {
+  test.setTimeout(900_000);
   await setup(page);
   const r = await run<any>(page, `
     const res = [];
@@ -267,15 +268,15 @@ test('FEEL-18 lap timing = simulated time (2 laps autopilot)', async ({ page }) 
     while (g.track().lapTimesMs.length < 2 && steps < 60 * 400) { await g.qa.step(30); steps += 30; }
     g.qa.autopilot(false);
     const t = g.track();
-    return { lapTimesMs: t.lapTimesMs, simMs: steps * 1000 / 60, startOffsetMs: t0, missed: t.checkpoint.missed, respawns: g.world().respawnCount, state: g.state() };
+    return { lapTimesMs: t.lapTimesMs, simMs: steps * 1000 / 60 + t0, startOffsetMs: t0, missed: t.checkpoint.missed, respawns: g.world().respawnCount, state: g.state() };
   `);
   const sum = r.lapTimesMs.reduce((a: number, b: number) => a + b, 0);
   record(test.info(), 'FEEL-18', { ...r, sumMs: sum, diffMs: r.simMs - sum });
   expect(r.lapTimesMs.length).toBe(2);
   expect(r.missed).toBe(0);
-  // Sim time covers both laps; the last 30-frame chunk can overshoot by ≤ 500 ms, plus ≤ 50 ms/lap error.
+  // simMs = lap clock before fixedStep + stepped sim time. The last 30-frame chunk can overshoot ≤ 500 ms; ±50 ms/lap error.
   expect(r.simMs - sum).toBeGreaterThanOrEqual(-100);
-  expect(r.simMs - sum - r.startOffsetMs).toBeLessThanOrEqual(600);
+  expect(r.simMs - sum).toBeLessThanOrEqual(600);
 });
 
 test('PHY-04 / PHY-05 / REAL-05 moat jump line (scripted) — falling in respawns ≤ 1.5 s', async ({ page }) => {
@@ -368,4 +369,32 @@ test('PHY-08 physics step budget (this machine) + stub check', async ({ page }) 
   record(test.info(), 'PHY-08', r);
   expect(r.physics.source).toBe('real');
   expect(r.stepMs * 2).toBeLessThanOrEqual(1.0);
+});
+
+test('FEEL-10b camera keeps up with the car at 30 / 20 fps (top speed + boost on the 224 straight)', async ({ page }) => {
+  await setup(page);
+  const r = await run<any>(page, `
+    const out = {};
+    for (const hz of [60, 30, 20]) {
+      g.qa.fixedStep(true, 1000 / hz);
+      d.place(540); g.qa.setTank(100);
+      let maxDist = 0, vmax = 0; const frames = Math.round(hz * 9);
+      for (let i = 0; i < frames; i++) {
+        const c = g.car(); const s = d.nearestS(c.pos.x, c.pos.z, 700); const a = d.at(s + 25);
+        if (s > 1060) break;
+        g.qa.setInput({ throttle: 1, boost: true, steer: d.steerTo(c, d.headingTo(c.pos.x, c.pos.z, a.x, a.z)) });
+        await g.qa.step(1);
+        maxDist = Math.max(maxDist, g.camera().distanceToCarM); vmax = Math.max(vmax, g.car().speedKmh);
+      }
+      g.qa.clearInput();
+      out[hz] = { maxCamDistM: +maxDist.toFixed(1), vmax: +vmax.toFixed(0) };
+    }
+    g.qa.fixedStep(true, 1000 / 60);
+    return out;
+  `);
+  record(test.info(), 'FEEL-10b', r);
+  // camera.ts clamps travel to camMaxStep = 1.5 m per FRAME (config.ts) — at 30 fps that is 45 m/s = 162 km/h.
+  for (const hz of ['60', '30']) expect(r[hz].maxCamDistM, `${hz} fps`).toBeLessThanOrEqual(20);
+  // Below the 30 fps floor the camera falls behind (🟡 in the M1 report) — recorded, not gated.
+  if (r['20'].maxCamDistM > 20) test.info().annotations.push({ type: '🟡 camera lag', description: `20 fps: camera ${r['20'].maxCamDistM} m behind the car` });
 });

@@ -38,9 +38,9 @@ test('API: start → finish (track test) → name → leaderboard, then error co
     shortcuts: 0, driftMs: 0, driftChains: 0, jumps: 0, cleanLandings: 0, launches: { perfect: 0, total: 0 },
     boostMs: 0, refills: 0, cleanLaps: 1, respawns: 0, maxG: 1,
   };
-  const fin = await request.post(api('run/finish'), { data: { token: start.token, deviceId: device, run } });
+  const fin = await request.post(api('run/finish'), { data: { token: start.token, deviceId: device, result: run } });
   const finBody = await fin.json();
-  const again = await (await request.post(api('run/finish'), { data: { token: start.token, deviceId: device, run } })).json();
+  const again = await (await request.post(api('run/finish'), { data: { token: start.token, deviceId: device, result: run } })).json();
   const name = await (await request.post(api('score/name'), { data: { deviceId: device, name: 'ทดสอบQA' } })).json();
   const board = await (await request.get(api('leaderboard?track=test'))).json();
   // Error paths
@@ -48,7 +48,7 @@ test('API: start → finish (track test) → name → leaderboard, then error co
   const junk = await request.post(api('run/finish'), { data: 'not json', headers: { 'content-type': 'application/json' } });
   const tooFast = await (async () => {
     const s = await (await request.post(api('run/start'), { data: { track: 'test', deviceId: device } })).json();
-    return (await request.post(api('run/finish'), { data: { token: s.token, deviceId: device, run: { ...run, totalMs: 1000, lapMs: [1000], splitsMs: [300, 600, 900] } } })).json();
+    return (await request.post(api('run/finish'), { data: { token: s.token, deviceId: device, result: { ...run, totalMs: 1000, lapMs: [1000], splitsMs: [300, 600, 900] } } })).json();
   })();
   const r = { status: fin.status(), finBody, again, name, boardHasUs: JSON.stringify(board).includes('ทดสอบQA'), badTrack: [badTrack.status(), await badTrack.json()], junk: [junk.status(), await junk.text()], tooFast };
   record(info, 'API', r);

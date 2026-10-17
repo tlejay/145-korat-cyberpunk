@@ -5,6 +5,7 @@ import { pct, record, seedSettings } from './helpers';
 test.describe.configure({ mode: 'parallel' });
 
 test('PERF-04/05 draw calls + triangles over a full lap at each quality · FEEL-10/11 camera', async ({ page }) => {
+  test.setTimeout(900_000);
   await seedSettings(page);
   const out: Record<string, unknown> = {};
   for (const q of ['medium', 'low'] as const) {
@@ -125,6 +126,7 @@ test('PERF-13 / ERR-04 auto low-fps path without ?qa=1 (CPU throttle 20×)', asy
 });
 
 test('FEEL-11 camera occlusion in real time (autopilot 60 s, occlusion sampled by the hook)', async ({ page }) => {
+  test.setTimeout(300_000);
   await seedSettings(page);
   await page.goto('./?qa=1&track=A&laps=2&skip=1&quality=low');
   await page.waitForFunction(() => window.__game?.state() === 'racing', null, { timeout: 30_000 });

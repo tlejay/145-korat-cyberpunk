@@ -4,6 +4,7 @@ export interface Settings {
   autoThrottle: boolean;
   haptics: boolean;
   reduceShake: boolean;
+  reduceFlicker: boolean; // VIS-04: neon signs stop dimming/flickering
   music: number; // 0..1
   sfx: number;
   muted: boolean;
@@ -11,7 +12,7 @@ export interface Settings {
 }
 
 const KEY = 'settings.v1';
-const DEFAULTS: Settings = { assist: 'normal', autoThrottle: false, haptics: true, reduceShake: false, music: 0.7, sfx: 0.9, muted: false, tutorialSeen: false };
+const DEFAULTS: Settings = { assist: 'normal', autoThrottle: false, haptics: true, reduceShake: false, reduceFlicker: false, music: 0.7, sfx: 0.9, muted: false, tutorialSeen: false };
 
 function load(): Settings {
   try {

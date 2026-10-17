@@ -101,6 +101,7 @@ export function showSettings(root: HTMLElement, h: { onChange(): void; onTutoria
       <label class="set-row"><span>เร่งอัตโนมัติ</span><input type="checkbox" name="autoThrottle" ${settings.autoThrottle ? 'checked' : ''}/></label>
       <label class="set-row"><span>สั่นเครื่อง (Android)</span><input type="checkbox" name="haptics" ${settings.haptics ? 'checked' : ''}/></label>
       <label class="set-row"><span>ลดการสั่นกล้อง</span><input type="checkbox" name="reduceShake" ${settings.reduceShake ? 'checked' : ''}/></label>
+      <label class="set-row"><span>ลดแสงกะพริบ</span><input type="checkbox" name="reduceFlicker" data-qa="set-reduce-flicker" ${settings.reduceFlicker ? 'checked' : ''}/></label>
       <label class="set-row"><span>เสียงเพลง</span><input type="range" name="music" min="0" max="1" step="0.05" value="${settings.music}"/></label>
       <label class="set-row"><span>เสียงเอฟเฟกต์</span><input type="range" name="sfx" min="0" max="1" step="0.05" value="${settings.sfx}"/></label>
       <button class="btn" type="button" data-qa="btn-tutorial">ดูวิธีเล่นอีกครั้ง</button>

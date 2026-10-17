@@ -31,6 +31,8 @@ export interface Visuals {
   render(dt: number): void;
   setSize(): void;
   setRain(on: boolean): void;
+  /** Drives the sponsors' start-gantry lights from the engine phase (no-op until sponsors exist). */
+  startLights(phase: string, countdownS: number, stepS: number): void;
   /** QA / screenshots: pin the camera (overrides the chase cam until set back to null). */
   debugCamera: { pos: [number, number, number]; look: [number, number, number] } | null;
   stats(): VisualsStats;
@@ -42,8 +44,10 @@ export const getVisuals = () => current;
 
 // 🏁 sponsors pane (BRIEF-sponsors): the 5 rooftop billboards show sponsors; perimeter boards / start
 // gantry come from buildSponsors(track). Optional until src/sponsors/index.ts exists.
+type StartLights = { set(lit: number): void; go(): void; off(): void; countdown(remainingS: number, stepS?: number): void; readonly state: { lit: number; green: boolean } };
 type SponsorsMod = {
   buildSponsors?: (track: Track) => THREE.Object3D;
+  getStartLights?: () => StartLights | null;
   getSponsorTexture?: (slot: 'billboard' | 'board' | 'gantry', i: number) => THREE.Texture | null;
 };
 const sponsorMods = import.meta.glob<SponsorsMod>('../sponsors/index.ts', { eager: true });
@@ -200,6 +204,14 @@ export function createVisuals(o: { renderer: THREE.WebGLRenderer; scene: THREE.S
     },
     setSize,
     setRain(on) { rainOn = on; wetU.uWet.value = on ? 1 : 0.25; },
+    startLights(phase, countdownS, stepS) {
+      const l = sponsors.getStartLights?.();
+      if (!l) return;
+      if (phase === 'countdown') l.countdown(countdownS, stepS);
+      // the countdown phase ends on the same step as GO → fire green once racing starts
+      else if (phase === 'racing') { if (l.state.lit > 0 && !l.state.green) l.go(); }
+      else if (phase !== 'paused' && (l.state.lit > 0 || l.state.green)) l.off();
+    },
     stats: () => ({
       quality: tier, post: post.enabled, hdr: post.hdr, rainDrops: rainOn ? MAX_DROPS[tier] : 0, wetLights: wetU.uLN.value,
       puddles: puddles?.list.length ?? 0, neon: neon?.stats ?? null, reflection: tier === 'high' && post.enabled && !!reflect,

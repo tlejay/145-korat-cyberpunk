@@ -110,6 +110,7 @@ Tle สั่ง 2026-10-17: **Claude ใน tab ซ้ายสุด (`🏁 ma
 - 2026-10-17 conductor: อย่า `git add -A` ระหว่างที่ pane อื่นยังเขียนไฟล์ — จะ commit งานครึ่ง ๆ กลาง ๆ ของ pane นั้น · add เฉพาะ path ของ pane ที่ตรวจผ่านแล้ว
 - 2026-10-17 backend: `vercel deploy` ครั้งแรกของโปรเจคใหม่ขึ้น **production** เองโดยอัตโนมัติ — ใช้ `vercel deploy --target=preview` เสมอจนกว่าจะผ่าน QA gate
 - preview กับ production ใช้ Neon DB ตัวเดียวกัน → ทดสอบบน preview ใช้ track `test` แล้วลบทิ้งทุกครั้ง · preview มี Vercel deployment protection (curl ได้ 302)
+- 2026-10-17 conductor: pane ที่ปิดไปทิ้ง dev server ค้าง (car-model preview จอง localhost:5199) → Tle เปิดเกมแล้วเจอแต่โมเดลรถ · **พอร์ต 5199 สงวนให้ conductor เปิดให้ Tle เล่น** · pane ต้องปิด dev/preview server ของตัวเองก่อนจบ turn และห้ามใช้พอร์ต 5199
 - ภาพ Wikimedia ส่วนใหญ่ CC BY-SA → texture ที่ทำจากภาพเหล่านี้ต้องปล่อยเป็น CC BY-SA และเครดิตผู้ถ่าย
 
 ## "สร้างรูป" = `/kiki-gpt` เสมอ — ไม่ใช่การเขียน HTML

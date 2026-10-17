@@ -1,5 +1,16 @@
 # REPORT M3 — 🌃 visuals: cyberpunk pass + integrator ของ M3
 
+## รอบ 2 (integrator, conductor สั่งหลังตรวจภาพผ่าน)
+
+- **กล้องหน้าเมนู** (`introCamera` ใน engine.ts): รัศมี 70 → 34 ม. สูง 8 → 5.5 ม. กวาด ±26° รอบด้านตะวันตก มองย่าโม — ไม่มุดตึกแล้ว ย่าโมอยู่กลางภาพตลอด (`refs/m3/menu-cam-{0,1}.jpg`)
+- **สวิตช์ "ลดแสงกะพริบ"** ในหน้าตั้งค่า (`settings.reduceFlicker`, `data-qa=set-reduce-flicker`) → `applyFlicker()` ใน engine (เปิดเองด้วยถ้าเครื่องตั้ง "ลดการเคลื่อนไหว") · แก้ `src/ui/settings.ts` + `src/ui/screens.ts` 1 แถว
+- **QA hook ฝน**: `physics().weather` อ่านค่าจริงจาก `tuning.rain` → ตอนนี้ได้ `{ rain: 1, muMul: 0.85 }` (แก้ `src/qa/hooks.ts` 1 บรรทัด)
+- **sponsors ต่อแล้ว**: `buildSponsors(track)` เข้าฉาก (ซุ้มสตาร์ท MADEBYTLE + ป้ายเลียบแบริเออร์ 3 draw calls) · บิลบอร์ดบนหลังคาแสดงสปอนเซอร์จาก `getSponsorTexture('billboard', i)` · **ไฟสตาร์ท 5 ดวง** ขับจาก engine ผ่าน `visuals.startLights(phase, countdownS, stepS)` (แดงทีละดวงตอนนับ → เขียวตอน "ไป!" → ดับ · ออกเมนู = ดับ) — ภาพ `refs/m3/sponsors-*.jpg`
+- **engine.ts** แก้เป็นจุดเล็ก ๆ ไม่แตะโค้ดนับถอยหลังของ pane fix: `applyFlicker()`, `introCamera()`, 1 บรรทัด `startLights` ใน `render()`
+- **art**: ยังไม่มี `docs/dev/m3/art-manifest.json` ตอนส่ง → ต่อไว้อัตโนมัติแล้ว (rebuild ก็ขึ้น) · **checkpoint**: ยังไม่มี `src/checkpoint/index.ts` → ต่อไว้อัตโนมัติแล้วตามสัญญา §3
+
+---
+
 1. **ครบ 6 ข้อตามบรีฟ** · `pnpm typecheck && pnpm build` ผ่าน · ไม่ได้ commit / deploy · ไม่ได้เพิ่ม dependency
 2. **Bloom + tone mapping + vignette** เขียนเอง (ไม่ใช้ EffectComposer เพราะเบากว่า): high = bloom จาก ½ จอ 8 pass · mid = จาก ¼ จอ 6 pass · **low = ไม่มี post เลย** (ACES ใน material แทน หน้าตาใกล้กัน)
 3. **ฝน** = เส้นฝน GPU 1 draw call (high 9,000 · mid 4,500 · low 2,200) เอียงตามลม และยืดตามความเร็วกล้อง · **ฟิสิกส์ตั้ง `rain = 1` ตลอดเกม** (ยาง ×0.85 ทุก quality — ฟิสิกส์ไม่ขึ้นกับกราฟิก)

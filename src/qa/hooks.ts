@@ -100,6 +100,8 @@ export function installQaHooks(ui: HTMLElement) {
       return {
         ...physDefault,
         ...(E.car?.physicsDebug?.() ?? {}),
+        // M3 turns rain on in the physics (visuals.ts → setRain(1)) — report the live value, not the default
+        ...(typeof pc?.tuning?.rain === 'number' ? { weather: { ...physDefault.weather, rain: pc.tuning.rain, muMul: 1 - pc.tuning.rain * (1 - (pc.tuning.wetMul ?? 1)) } } : {}),
         stepMsP95: pc?.telemetry?.stepMs ?? 0,
         tuning: pc?.tuning ?? {},
         source: sources.physics,
