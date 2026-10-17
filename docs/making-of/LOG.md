@@ -36,6 +36,8 @@
 | 18:38 | Tle ถามเรื่องฟิสิกส์ → conductor เสนอ 4 จุดโชว์จากข้อมูลจริง · Tle เลือกครบ 4 → เปิด 🧮 physics (คำนวณจากสเปกรถ + ขนาดคูเมือง พร้อมสคริปต์จำลองพิสูจน์ตัวเลข) | Tle + conductor |
 | 18:41 | Tle ย้ำ: content จะโพสต์ Facebook → เปิด ✍️ content ร่างโพสต์ long form ตั้งแต่ตอนนี้ (อัปเดตทุก milestone) | Tle + conductor |
 | 18:39 | ⚙️ backend ส่งงาน (9 นาที): Vite + three.js scaffold · API leaderboard 4 ตัว · base path /koratrocketcar · typecheck/build ผ่าน → **ติด: Tle ต้องกดยอมรับเงื่อนไข Neon บน Vercel** (pane หยุดเองตามบรีฟ ไม่กดแทน) | backend |
+| 18:41 | 🎮 gameplay เสร็จ (10 นาที): ปุ่มซ้าย/ขวา + ตัวช่วยเลี้ยว · กล้อง 5.5 ม. FOV ตามค่า g · 2 แตะเริ่มเล่น · แต้ม = เวลา + โบนัสสไตล์ ≤ 20% · แบ่งงานกับ physics → ตรวจผ่าน · ปิด tab | gameplay |
+| 18:42 | ✍️ content ร่างแรกเสร็จ (~1,600 คำ) → conductor จับได้ว่าแต่งข้อมูลส่วนตัว Tle ('เขยโคราช') ที่ไม่มีในแหล่งใด → สั่งตัด · ตรวจผ่าน · ปิด tab (เปิดใหม่ตอนอัปเดต) | content |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -49,7 +51,7 @@
 | 5 | 🔎 audio | BGM + SFX | 18:21 | | | |
 | 6 | 🧪 qa | test plan + release gate | 18:23 | 18:27 | 7 นาที | `docs/qa/` |
 | 7 | ⚙️ backend | scaffold + Vercel + Neon + leaderboard API | 18:31 | | | |
-| 8 | 🎮 gameplay | ออกแบบการควบคุม กล้อง ฟิสิกส์ สูตรแต้ม | 18:31 | | | |
+| 8 | 🎮 gameplay | ออกแบบการควบคุม กล้อง ฟิสิกส์ สูตรแต้ม | 18:31 | 18:41 | 10 นาที | `docs/dev/GAMEPLAY.md` |
 | 9 | 🔎 streetview-A | สำรวจสนาม A ทั้งวง + ไขข้อขัดแย้ง | 18:35 | | | |
 | 10 | 🧮 physics | โมเดลฟิสิกส์ + 4 จุดโชว์ + sim | 18:38 | | | |
-| 11 | ✍️ content | โพสต์ Facebook long form (ร่างแรก) | 18:41 | | | |
+| 11 | ✍️ content | โพสต์ Facebook long form (ร่างแรก) | 18:41 | 18:42 | ~2 นาที + แก้ 1 รอบ | `docs/content/` |
