@@ -58,6 +58,8 @@
 | 19:15 | 🚗 car-model รอบ 2 (4 นาที): แก้ครบ 6 ข้อ ไฟท้ายแดงเต็มแถบ แผงท้ายดำ ปีกโลหะปลายเชิด หัวพ่นข้างล้อ 2 หัว · 2,759 สามเหลี่ยม 7 draw call → conductor เทียบภาพข่าวแล้วผ่าน (ผิวโลหะ/สะท้อนเก็บไว้ M3) · ปิด tab | car-model |
 | 19:25 | 🧮 car-physics เสร็จ (14 นาที): ฟิสิกส์รถในเกม + เทสต์ headless 40/40 · launch 4.63 g 0–100 ใน 0.63 วิ · เจอรถหมุนเองตอนสลับเลี้ยว 120 กม./ชม. → เพิ่ม stability control · ~2 µs/step → ตรวจผ่าน (รันเทสต์ซ้ำเอง) · ปิด tab | car-physics |
 | 19:29 | 🛣️ world เสร็จ (27 นาที): สนาม A 3,307 ม. จาก OSM+Street View เบี่ยงจากแผนที่จริงสูงสุด 3.07 ม. · แยก 224 เลี้ยวขวา 93° + กรวยนีออน · 33 checkpoint · ขอบลานย่าโมชนนุ่ม · ทั้งสนาม 47 draw calls / 51,617 สามเหลี่ยม (งบ 150/500k) · ข้อมูลแผนที่ 31 KB → ตรวจผ่าน · ปิด tab | world |
+| 19:38 | 🎮 game-ui เสร็จ (36 นาที): เกมครบวงจร เมนู→นับถอยหลัง→2 รอบ→สรุป→leaderboard→เล่นใหม่ · ghost ตัวเอง + อันดับ 1 · autopilot ขับครบ 2 รอบใน Playwright · ปุ่ม+HUD 19% ของจอ · error ไทยครบ → ตรวจผ่าน · ปิด tab | game-ui |
+| 19:40 | **M1 รวมเสร็จ** v0.2.0-build002 → conductor deploy preview · เปิด 🧪 qa-m1 ตรวจ + เริ่ม M2 คู่ขนาน: 🏛️ landmarks-3d · 🏘️ streetscape | conductor |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -78,6 +80,9 @@
 | 12 | 🎙️ announcer | เสียงพากย์อังกฤษ CC0 | 18:47 | 18:52 | 5 นาที | `research/audio/REPORT.md` §8 |
 | 13 | 🛣️ world | M1 สนาม A จาก OSM+Street View | 19:02 | 19:29 | 27 นาที | `src/track/` `src/scene/` `public/data/` |
 | 14 | 🚗 car-model | M1 โมเดลรถ low-poly (ส่งกลับแก้ 1 รอบ) | 19:02 | 19:15 | 13 นาที | `src/car/model*.ts` |
-| 15 | 🎮 game-ui | M1 game loop + ปุ่ม + HUD + integrator | 19:02 | | | |
+| 15 | 🎮 game-ui | M1 game loop + ปุ่ม + HUD + integrator | 19:02 | 19:38 | 36 นาที | `src/game/` `src/input/` `src/ui/` |
 | 16 | 🔊 audio-dev | M1 ระบบเสียง | 19:02 | 19:11 | 9 นาที | `src/audio/` `public/assets/audio/` |
 | 17 | 🧮 car-physics | M1 โค้ดฟิสิกส์รถในเกม (pane เดิมของ physics) | 19:11 | 19:25 | 14 นาที | `src/car/physics*.ts` |
+| 18 | 🧪 qa-m1 | QA ตรวจ M1 บน preview | 19:41 | | | |
+| 19 | 🏛️ landmarks-3d | M2 ลานย่าโม ประตูชุมพล คูเมือง | 19:41 | | | |
+| 20 | 🏘️ streetscape | M2 ตึกแถว ของข้างถนน ป้ายชื่อถนน | 19:41 | | | |
