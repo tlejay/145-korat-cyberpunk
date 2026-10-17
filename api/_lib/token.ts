@@ -8,16 +8,18 @@ export interface RunToken {
   d: string; // device id
   s: number; // server start time (ms)
   n: string; // nonce (becomes scores.run_id)
+  q?: 1; // issued while ?qa=1 — results are never stored
 }
 
-export const TOKEN_TTL_MS = 30 * 60_000;
+// Longest race (2 laps) + 30 min slack for a retry after a network failure.
+export const TOKEN_TTL_MS = 45 * 60_000;
 
 function sign(body: string): string {
   return createHmac('sha256', secret()).update(body).digest('base64url');
 }
 
-export function issueToken(track: string, device: string): { token: string; payload: RunToken } {
-  const payload: RunToken = { v: 1, t: track, d: device, s: Date.now(), n: randomUUID() };
+export function issueToken(track: string, device: string, qa: boolean): { token: string; payload: RunToken } {
+  const payload: RunToken = { v: 1, t: track, d: device, s: Date.now(), n: randomUUID(), ...(qa ? { q: 1 as const } : {}) };
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   return { token: `${body}.${sign(body)}`, payload };
 }

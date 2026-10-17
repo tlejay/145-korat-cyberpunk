@@ -42,6 +42,9 @@
 | 18:44 | Tle ตัดสิน gameplay: 2 รอบ · กดเร่งเอง · แต้มเวลา+สไตล์ · ghost อันดับ 1 ออนไลน์ตั้งแต่ M1 → ส่งงาน ghost ให้ backend | Tle |
 | 18:46 | Tle อนุญาตเสียงพากย์ภาษาอังกฤษ (นับถอยหลัง/รอบสุดท้าย) ให้ตื่นเต้น — ข้อความบนจอยังไทย | Tle |
 | 18:48 | Tle เสนอให้ Mint (ผู้ช่วย AI อีกเครื่อง) พากย์ → ping-mint เปิด issue tlejay/mint#475 ขอเสียงพากย์ 10 คำ · pane announcer หา CC0 ไว้สำรอง | Tle + conductor |
+| 18:50 | Mint ส่งเสียงพากย์ 2 ชุด (Charlie/Liam, ElevenLabs) กลับมาทาง pane → Tle ฟังแล้วเลือก Charlie | Mint + Tle |
+| 18:52 | ⚙️ backend เสร็จรอบ 2: Neon (สิงคโปร์) · migrate · ghost อันดับ 1 (~2.8 KB) · ทดสอบโกงแต้ม 9 แบบถูกปัดตกครบ · พลาด 1 จุด: deploy แรกขึ้น production เอง (ยังไม่มีลิงก์สาธารณะชี้ไป) | backend |
+| 18:52 | 🎙️ announcer เสร็จ (5 นาที): ชุดสำรอง Kenney CC0 · แผนซิงก์เสียงพากย์กับนับถอยหลัง + ลดเพลงตอนพากย์ | announcer |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -54,9 +57,9 @@
 | 4 | 🔎 car | Tesla Roadster ข่าว/สเปก/รูปทรง | 18:17 | 18:25 | 8 นาที | `research/car/` |
 | 5 | 🔎 audio | BGM + SFX | 18:21 | 18:43 | 22 นาที | `research/audio/` |
 | 6 | 🧪 qa | test plan + release gate | 18:23 | 18:27 | 7 นาที | `docs/qa/` |
-| 7 | ⚙️ backend | scaffold + Vercel + Neon + leaderboard API | 18:31 | | | |
+| 7 | ⚙️ backend | scaffold + Vercel + Neon + leaderboard API + ghost | 18:31 | 18:52 | 21 นาที (รอ Tle กดยอมรับ Neon คั่นกลาง) | `api/` `db/` `src/net/` |
 | 8 | 🎮 gameplay | ออกแบบการควบคุม กล้อง ฟิสิกส์ สูตรแต้ม | 18:31 | 18:41 | 10 นาที | `docs/dev/GAMEPLAY.md` |
 | 9 | 🔎 streetview-A | สำรวจสนาม A ทั้งวง + ไขข้อขัดแย้ง | 18:35 | | | |
 | 10 | 🧮 physics | โมเดลฟิสิกส์ + 4 จุดโชว์ + sim | 18:38 | | | |
 | 11 | ✍️ content | โพสต์ Facebook long form (ร่างแรก) | 18:41 | 18:42 | ~2 นาที + แก้ 1 รอบ | `docs/content/` |
-| 12 | 🎙️ announcer | เสียงพากย์อังกฤษ CC0 | 18:47 | | | |
+| 12 | 🎙️ announcer | เสียงพากย์อังกฤษ CC0 | 18:47 | 18:52 | 5 นาที | `research/audio/REPORT.md` §8 |

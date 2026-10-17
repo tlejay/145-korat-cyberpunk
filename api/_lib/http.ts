@@ -13,6 +13,8 @@ const STATUS: Partial<Record<ErrorCode, number>> = {
   TOKEN_EXPIRED: 401,
   TOKEN_MISMATCH: 401,
   RUN_USED: 409,
+  QA_RUN: 403,
+  OLD_BUILD: 426,
   NO_SCORE: 404,
   SERVER_ERROR: 500,
 };
@@ -24,12 +26,15 @@ export function fail(code: ErrorCode, headers: Record<string, string> = {}): Res
   });
 }
 
+// Run result + compressed ghost (≤ 12 KB base64) fit comfortably.
+const MAX_BODY = 24_000;
+
 export async function readJson(req: Request): Promise<Record<string, unknown> | null> {
   const len = Number(req.headers.get('content-length') ?? 0);
-  if (len > 4096) return null;
+  if (len > MAX_BODY) return null;
   try {
     const text = await req.text();
-    if (text.length > 4096) return null;
+    if (text.length > MAX_BODY) return null;
     const v: unknown = JSON.parse(text);
     return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
   } catch {

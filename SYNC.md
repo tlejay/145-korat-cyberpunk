@@ -11,7 +11,7 @@
 - [x] OSM: ถนน/ตึก/คูเมือง + เสนอสนาม 3 แบบ → `research/osm/`
 - [x] Landmarks: อนุสาวรีย์ ประตูชุมพล ฯลฯ + ภาพ CC → `research/landmarks/`
 - [x] Car: Tesla Roadster รุ่นใหม่ — ข่าว สเปก ฟีเจอร์กระโดด/ออกตัว รูปทรงด้านท้าย → `research/car/`
-- [ ] Backend: scaffold + Vercel + Neon + leaderboard API → `docs/dev/REPORT-leaderboard.md`
+- [x] Backend: scaffold + Vercel + Neon + leaderboard API → `docs/dev/REPORT-leaderboard.md`
 - [ ] Physics: โมเดล + 4 จุดโชว์ (ข้ามคูเมือง, ออกตัว 4.6g, ดริฟต์ 148°, ฝน+สายไฟ) → `docs/dev/PHYSICS.md`
 - [x] Content (ร่าง 1): ร่างโพสต์ Facebook long form → `docs/content/facebook-post.md`
 - [x] Gameplay: การควบคุม กล้อง ฟิสิกส์ สูตรแต้ม → `docs/dev/GAMEPLAY.md`
@@ -21,7 +21,7 @@
 
 - [x] QA: TEST-PLAN + TEST-HOOKS + RELEASE-GATE → `docs/qa/` (QA เป็นด่านก่อน production ทุกครั้ง)
 
-- [ ] เสียงพากย์อังกฤษ: Mint พากย์ (tlejay/mint#475) · สำรอง CC0 โดย 🎙️ announcer
+- [x] เสียงพากย์: Charlie (Mint/ElevenLabs ไม่เชิงพาณิชย์) · สำรอง Kenney CC0
 
 **แผนถัดไป (milestone)**
 1. M0 รวมผลสำรวจ → Tle เลือกสนาม (A/B/C)

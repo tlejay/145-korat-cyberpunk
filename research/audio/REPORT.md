@@ -10,7 +10,7 @@
 > 7. **งบขนาด (วัดจริงด้วย ffmpeg):** โหลดแรก 25 ไฟล์ (SFX ทั้งหมด + ฝน/เมือง + เพลงเมนู + แคน) = **1.2 MB** (Opus) / 1.3 MB (AAC) · BGM แข่ง 2 เพลงสตรีมทีหลัง +2.3 MB → **รวม ~3.5 MB ต่ำกว่าเป้า 5 MB**
 > 8. ฟอร์แมตแนะนำ: **Ogg Opus หลัก + AAC (.m4a) สำรองให้ Safari** · SFX mono 48 kbps · ambience 64 kbps · BGM stereo 96 kbps
 > 9. ⚠️ **ผมฟังเสียงไม่ได้** — คัดจากคำอธิบาย/แท็ก/ยอดดาวน์โหลด + วัดค่าทางเทคนิค (ความยาว ระดับเสียงต้น-ท้ายลูป) → **ต้องมีคนฟังจริงก่อนเลือกขั้นสุดท้าย** (ไฟล์อยู่ใน `candidates/` กดฟังได้เลย)
-> 10. **ต้องตัดสินใจ:** (ก) จะ commit `candidates/` 42 MB ลง git ไหม (แนะนำ: commit แค่ตัวที่เลือกแล้วหลังแปลงเป็น Opus ไปไว้ใน `public/assets/audio/`) · (ข) นับถอยหลังใช้ **เสียงบี๊บ** (แนะนำ) เพราะเสียงพากย์ CC0 ที่มีเป็นภาษาอังกฤษ ขัดกับกติกา "UI ไทยอย่างเดียว" — ถ้าอยากได้เสียงพากย์ไทย "สาม สอง หนึ่ง ไป!" ต้องอัดเอง
+> 10. **ต้องตัดสินใจ:** (ก) จะ commit `candidates/` 42 MB ลง git ไหม (แนะนำ: commit แค่ตัวที่เลือกแล้วหลังแปลงเป็น Opus ไปไว้ใน `public/assets/audio/`) · (ข) นับถอยหลังใช้ **เสียงบี๊บ** (แนะนำ) เพราะเสียงพากย์ CC0 ที่มีเป็นภาษาอังกฤษ ขัดกับกติกา "UI ไทยอย่างเดียว" — ถ้าอยากได้เสียงพากย์ไทย "สาม สอง หนึ่ง ไป!" ต้องอัดเอง · **อัปเดต 18:46:** Tle อนุญาตเสียงพากย์อังกฤษแล้ว → ดูหัวข้อ 8
 
 ---
 
@@ -162,6 +162,7 @@ research/audio/
     car/       31 ไฟล์
     ambience/  12 ไฟล์  (ไฟล์ยาวเกิน 2 นาทีถูกตัดเหลือ 60 วิ เป็น .opus เพื่อลดขนาด)
     ui/        18 ไฟล์
+    voice/    ~190 ไฟล์ + build/ (เสียงพากย์อังกฤษ — หัวข้อ 8)
 ```
 ขนาดรวม `candidates/` ≈ 42 MB (ยังเป็นไฟล์ต้นฉบับคุณภาพสูง) — ไฟล์ที่จะใส่เกมจริงควรแปลงใหม่ตามหัวข้อ 4.1 ลง `public/assets/audio/`
 
@@ -169,3 +170,71 @@ research/audio/
 - **ฟังจริงทุกตัวเลือกแรก** (ผมฟังไม่ได้) — โดยเฉพาะ: คีย์ของแคนเข้ากับเพลงหลักไหม, เสียงลมอัดตอนกระโดดฟังแล้วใช่ไหม
 - เขียน `scripts/build-audio` (ffmpeg → Opus + AAC + manifest loopStart/loopEnd) — งานของ dev pane
 - ถ้าอยากได้เสียงพากย์ไทย "สาม · สอง · หนึ่ง · ไป!" / "รอบสุดท้าย!" → ต้องอัดเสียงเอง (ไม่มี CC0 ภาษาไทย) หรือใช้ TTS ที่ license อนุญาต
+
+---
+
+## 8. เสียงพากย์ (อังกฤษ)
+
+> **สรุป**
+> 1. **ชุดหลักของเกม = เสียงที่ Mint อัด** (conductor สั่งแล้ว — tlejay/mint#475) · ได้ไฟล์ Mint เมื่อไรใช้ของ Mint · ชุด CC0 ข้างล่างเป็น **ตัวสำรอง / ใช้ทดสอบระหว่างรอ** · ⚠️ ไฟล์ Mint ทำด้วย ElevenLabs **แพลนฟรี = ไม่เชิงพาณิชย์ + ต้องให้เครดิต** (ดู `research/CREDITS.md`) → ถ้าเกมจะใช้เชิงพาณิชย์ (โฆษณา/สปอนเซอร์) ให้สลับมาใช้ชุด CC0 นี้ หรืออัดใหม่บนแพลนเสียเงิน
+> 2. ตัวสำรองที่แนะนำ: **Kenney Voiceover Pack — เสียงผู้ชาย (Jeffrey M. Smith) CC0** — เสียงเดียวกันทั้งชุด ครอบคลุม 3-2-1-Go, "Final round", "New highscore", "Congratulations", "You win", "Power up", "Time over", "Hurry up"
+> 3. **ไม่มีในชุด CC0 ที่หาเจอ:** "Final **lap**" (มีแค่ "Final round"), "Finish!", "New lap record", "Nice drift!", "Great jump!" → ใช้คำใกล้เคียง หรือรอไฟล์ Mint (ดู 8.3)
+> 4. ขนาดชุดแนะนำ 11 ไฟล์ หลังแปลง: **53 KB (Opus 40 kbps) / 93 KB (AAC 64 kbps)** — เล็กมาก โหลดพร้อม SFX ได้เลย
+> 5. ⚠️ **ผมฟังเสียงไม่ได้** — เลือกจาก (ก) license ในแพ็ก (ข) ข้อความที่พูด (ชื่อไฟล์/คำอธิบาย) (ค) **เสียงเดียวกันทั้งชุด** (ผู้พากย์คนเดียวตาม `Credits.txt`) (ง) ค่าทางเทคนิค: ระดับพีคใกล้ 0 dB, mono 44.1 kHz, ความยาว 0.6–1.5 วิ (สั้นพอซิงก์นับถอยหลังทุก 1 วิ) — ต้องมีคนฟังก่อนใช้จริง
+
+### 8.1 ตาราง คำ → ไฟล์ → license
+
+ไฟล์ต้นฉบับ `candidates/voice/<โฟลเดอร์>/` · ไฟล์แปลงแล้ว `candidates/voice/build/` (`.ogg` Opus mono 40 kbps + `.m4a` AAC mono 64 kbps + `.wav` ต้นแบบ) — ผ่าน ffmpeg: ตัดความเงียบหัว-ท้าย + `loudnorm I=-16 LUFS, TP -1.5 dB` ให้ทุกคำดังเท่ากัน · license ทุกแถว **CC0 1.0**
+
+| คำที่บรีฟขอ | ⭐ ไฟล์ (build) | ต้นฉบับ | ความยาว | ตัวสำรอง | หมายเหตุ |
+|---|---|---|---|---|---|
+| "Three" | `vo-3` | `kenney-voiceover-male/3.ogg` | 0.75 วิ | `oga-turtle-countdown/3.wav` (หุ่นยนต์) · `kenney-voiceover-female/3.ogg` | |
+| "Two" | `vo-2` | `kenney-voiceover-male/2.ogg` | 0.61 วิ | เหมือนบน | |
+| "One" | `vo-1` | `kenney-voiceover-male/1.ogg` | 0.64 วิ | เหมือนบน | |
+| "Go!" | `vo-go` | `kenney-voiceover-male/go.ogg` | 0.62 วิ | `oga-turtle-countdown/GO.wav` · `kenney-fighter/fight.ogg` | |
+| "Final lap!" | `vo-final-lap` | `kenney-voiceover-male/final_round.ogg` → **พูดว่า "Final round"** | 1.07 วิ | `alt-final-lap-fs386803` = "Final lap" ตรงคำ แต่**คนละเสียง** (RichieMcMullen, Freesound) · `kenney-fighter/final_round.ogg` (เสียงประกาศมวย) | ไม่มี CC0 ที่เป็นเสียงเดียวกันและพูด "lap" |
+| "New record!" / "New lap record!" | `vo-new-record` | `kenney-voiceover-male/new_highscore.ogg` → **"New highscore"** | 1.20 วิ | — | ความหมายตรงกับ "ทำสถิติใหม่" |
+| "Finish!" | `vo-finish` | `kenney-voiceover-male/congratulations.ogg` → **"Congratulations"** | 1.52 วิ | `mission_completed.ogg` (ฟังเป็นเกมยิงมากกว่า) | ไม่มีคำว่า "Finish" ใน CC0 |
+| "You win!" | `vo-you-win` | `kenney-voiceover-male/you_win.ogg` | 1.00 วิ | `kenney-fighter/winner.ogg` | ใช้ตอนชนะ ghost อันดับ 1 / ขึ้นอันดับ 1 |
+| "Boost!" | `vo-boost` | `kenney-voiceover-male/power_up.ogg` → **"Power up"** | 0.79 วิ | `oga-timrockk-game-voice/g-nitro.wav`, `g-turbo.wav` (คนละเสียง, ระดับเบากว่า −8 dB) | ดูกติกาความถี่ 8.2 |
+| "Checkpoint" | — (แนะนำใช้ SFX เดิม) | — | — | `alt-checkpoint-fs338223` = "Check Point" เสียงผู้หญิง ตัดจากไฟล์รวม 66 วิ ช่วง 5.0–6.4 วิ (**ตัดด้วยการหาช่วงเงียบ ยังไม่ได้ฟังยืนยัน**) | ผ่านบ่อย พากย์ทุกครั้งจะน่ารำคาญ |
+| "Nice drift!" | ❌ ไม่มี | — | — | Mint / TTS (8.3) | |
+| "Great jump!" | ❌ ไม่มี | — | — | Mint / TTS (8.3) | |
+| (แถม) "Time over" | `vo-time-over` | `kenney-voiceover-male/time_over.ogg` | 0.95 วิ | — | ถ้ามีจำกัดเวลา |
+| (แถม) "Hurry up!" | `vo-hurry-up` | `kenney-voiceover-male/hurry_up.ogg` | 0.65 วิ | — | ตอน ghost นำห่างเกิน ~2 วิ ในรอบสุดท้าย (เล่นครั้งเดียว) |
+
+**ขนาดวัดจริง** (ชุด `vo-*` 11 ไฟล์): Opus **53,840 B** · AAC **93,074 B** · แต่ละไฟล์ 3–8 KB (Opus) — ใช้รูปแบบเดียวกับ SFX ในหัวข้อ 4.1 (Opus หลัก + AAC สำรองให้ Safari)
+
+แหล่งที่ดูแล้วไม่ได้ใช้: Freesound ค้น CC0 คำว่า "nice drift", "lap record", "boost voice", "new record voice" → ไม่เจอเสียงพากย์ · OpenGameArt "voiceover-pack-40-lines" / "voiceover-pack-fighter-40-taunts" = แพ็ก Kenney ตัวเดียวกัน · Pixabay ยังไม่ได้ใช้ (เหตุผลเดิมหัวข้อ 2)
+
+### 8.2 จังหวะที่เกมควรเล่น
+
+| เหตุการณ์ | เล่นอะไร | จังหวะ |
+|---|---|---|
+| นับถอยหลัง | `vo-3` → `vo-2` → `vo-1` → `vo-go` **แทน** บี๊บ `kenney-countdown-tone1` (หรือซ้อนบี๊บเบา ๆ −12 dB) | ตั้งเวลาด้วย `AudioContext.currentTime` ไม่ใช่ `setTimeout`: เลข 3 ที่ t₀, 2 ที่ t₀+1.0, 1 ที่ t₀+2.0, Go ที่ t₀+3.0 — **ตัวเลขบนจอเปลี่ยนในเฟรมเดียวกับเวลาเสียง** (อ่าน `ctx.currentTime` ใน game loop) · ไฟล์ตัดหัวแล้ว เสียงพูดเริ่มทันที ไม่ต้องเลื่อน · ปลดล็อกคันเร่งพร้อม "Go" |
+| เข้ารอบที่ 2 (รอบสุดท้าย) | `vo-final-lap` | ทันทีที่ข้ามเส้นเริ่มรอบ 2 · **พร้อมกับ** สลับ BGM เป็นเวอร์ชัน Climax (หัวข้อ 1) — เริ่มพากย์ก่อน แล้ว crossfade BGM ใต้เสียงพากย์ |
+| จบรอบ 1 ได้ best lap ใหม่ | `vo-new-record` | หลัง `vo-final-lap` 1.3 วิ (ห้ามซ้อนกัน — ใช้คิวเสียงพากย์ทีละคำ) |
+| เข้าเส้นชัย | `vo-finish` แล้ว jingle `kenney-finish-jingle-sax-07` | พากย์ทันที · jingle ตามหลัง 0.2 วิ |
+| เข้าเส้นชัย + ทำสถิติ/ชนะ ghost | `vo-new-record` หรือ `vo-you-win` **แทน** `vo-finish` | เลือกคำเดียว อย่าพูดต่อกัน 3 คำ |
+| Boost | `vo-boost` | **เฉพาะ boost ครั้งแรกของเกม** (สอนผู้เล่นว่าปุ่มนี้คืออะไร) หรือเมื่อเกจเต็มกลับมาพร้อมใช้ — ห้ามพากย์ทุกครั้ง |
+| ดริฟต์/กระโดดสวย (ถ้ามีไฟล์จาก Mint) | "Nice drift!" / "Great jump!" | ตอนได้โบนัสสไตล์ · cooldown ≥ 8 วิ ต่อคำ |
+
+**กติกาคิวเสียงพากย์:** มีได้ทีละ 1 เสียง · คำใหม่ที่สำคัญกว่าตัดคำเก่า (Go > Final lap > Finish > New record > Boost) · คำสำคัญต่ำทิ้งได้ถ้าคิวไม่ว่าเกิน 0.5 วิ
+
+### 8.3 Ducking BGM ตอนพากย์
+
+- ต่อ graph: `voiceGain → master` แยกจาก `musicGain → master` · ตอนพากย์: `musicGain.gain.setTargetAtTime(0.4, t, 0.03)` (ลด ~−8 dB เร็ว ~80 ms) แล้วคืนค่า `setTargetAtTime(1.0, t + duration + 0.15, 0.15)` (ปล่อยช้า ~0.4 วิ ฟังไม่วูบ)
+- ลด ambience (ฝน) ด้วย −4 dB เท่านั้น · **ไม่ลด** เสียงมอเตอร์/ยาง (ผู้เล่นต้องได้ยินรถตลอด)
+- ระดับเสียงพากย์ตั้งต้น 0 dB (ไฟล์ normalize −16 LUFS แล้ว) และมีสไลเดอร์ "เสียงพากย์" แยกในตั้งค่า (เปิด/ปิดได้)
+- นับถอยหลังตอนรถยังไม่วิ่ง → duck BGM ค้างไว้ตลอด 3 วิ แล้วค่อยปล่อยพร้อม "Go"
+
+### 8.4 ถ้าคำไหนไม่มี — ทางเลือก
+
+1. **เสียง Mint (ชุดหลัก)** — อัดครบทุกคำในเสียงเดียว → แก้ปัญหาทุกคำที่ขาด · ส่งเป็น WAV แล้วผ่าน pipeline เดียวกัน (ตัดเงียบ + loudnorm −16 LUFS + Opus/AAC)
+2. **ใช้คำใกล้เคียงจากชุด Kenney** (ตาราง 8.1) — "Final round", "New highscore", "Congratulations", "Power up"
+3. **ตัดต่อจากชุดเดียวกัน** — ทำได้จำกัด: ชุด Kenney ไม่มีพยางค์ "lap" / "drift" / "jump" ให้ตัด
+4. **TTS ที่ license อนุญาตใช้ในเกม** — เช่น **Kokoro-82M** (โมเดล Apache-2.0 รันในเครื่อง ผลลัพธ์ใช้เชิงพาณิชย์ได้) **[ยังไม่ได้ตรวจเงื่อนไขล่าสุด — เช็คก่อนใช้]** · ข้อเสีย: เสียงไม่เหมือน Kenney → ถ้าใช้ TTS ควรทำ**ทั้งชุด**ด้วยเสียง TTS เดียว · ❌ ห้ามใช้เสียง `say` ของ macOS (license Apple อนุญาตแค่ใช้ส่วนตัวไม่ใช่เชิงพาณิชย์) · ❌ ElevenLabs แพ็กฟรีห้ามใช้เชิงพาณิชย์
+
+### 8.5 สิ่งที่ยังไม่ได้ทำ
+- ฟังจริงทุกไฟล์ในตาราง 8.1 (โดยเฉพาะ `alt-checkpoint-fs338223` ที่ตัดโดยไม่ได้ฟัง)
+- รอไฟล์ Mint → แปลงด้วยสูตรเดียวกัน แล้วย้ายชุดที่เลือกไป `public/assets/audio/voice/` (งาน dev pane)

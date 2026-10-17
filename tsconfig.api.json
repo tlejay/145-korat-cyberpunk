@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["api", "db", "src/net/score.ts", "src/net/codes.ts", "src/net/name.ts", "src/net/bad-words.ts", "src/net/tracks.ts", "drizzle.config.ts"]
+  "include": ["api", "db", "src/net/score.ts", "src/net/codes.ts", "src/net/name.ts", "src/net/bad-words.ts", "src/net/ghost-format.ts", "src/version.ts", "drizzle.config.ts"]
 }

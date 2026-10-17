@@ -1,63 +1,54 @@
-# REPORT — Scaffold + Leaderboard backend (2026-10-17)
+# REPORT — Scaffold + Leaderboard + Ghost อันดับ 1 (2026-10-17 · รอบ 2)
 
 ## สรุป
-1. **🟡 ติดที่ฐานข้อมูล — ต้องให้ Tle กดยอมรับเงื่อนไข Neon บน Vercel Marketplace** (ทำตามบรีฟ: หยุด ไม่กดยอมรับแทน) → ยังไม่ได้ provision DB / migrate / deploy preview / curl ทดสอบ
-2. ✅ Scaffold: Vite 8 + TypeScript 7 + three.js 0.186 · pnpm · `src/{scene,car,track,ui,input,net,qa}` · `v0.1.0-build001` + `CHANGELOG.md`
-3. ✅ หน้าแรกชั่วคราว: ฉาก three.js (กริดนีออน) + "กำลังสร้างสนาม…" + Noto Sans Thai (subset ตาม unicode-range) + ปุ่ม "ตารางอันดับ" + rotate-hint + error box ไทย
-4. ✅ `window.__game` โครงเปล่าครบ interface ของ TEST-HOOKS (chunk แยก โหลดเฉพาะ `?qa=1`) · `qa.forceError()` ใช้งานได้จริงแล้ว ที่เหลือคืนค่า placeholder
-5. ✅ base path `/koratrocketcar/` (ส่วนที่ 4): Vite `base` + `vercel.json` rewrite `/koratrocketcar/:path*` → `/:path*` + redirect ไม่มี `/` ท้าย · client เรียก API ผ่าน `import.meta.env.BASE_URL` (ไม่ hardcode โดเมน) · ทดสอบ `vite preview` ที่ `/koratrocketcar/` ได้ 200
-6. ✅ Leaderboard API 4 ตัวใน `api/` (Node, web-standard `Request/Response`) + Drizzle schema + migration SQL (`db/migrations/0000_*.sql`) — **เขียนเสร็จ typecheck ผ่าน แต่ยังไม่ได้รันกับ DB จริง**
-7. ✅ สนาม: เปิดเฉพาะ `A` (Tle เลือก) + `test` (ใช้ได้เฉพาะนอก production) · B/C ปิดไว้ใน `src/net/tracks.ts`
-8. ✅ `pnpm typecheck && pnpm build` ผ่าน · ไม่มี `alert/confirm/prompt` ใน `src/`
-9. ⚠️ `vercel link` ผูก GitHub repo ให้อัตโนมัติ — **ถอดออกแล้ว** (`vercel git disconnect`) ตาม CLAUDE.md "ไม่ผูก Git"
+1. ✅ **ครบทุกส่วน 1–5** · Neon provision 1 ครั้ง (`korat-cyberpunk-db`, region `sin1`) → env pull → migrate 3 ไฟล์ → preview → ทดสอบทุก endpoint กับ DB จริงผ่าน · ลบข้อมูลทดสอบแล้ว (scores/ghosts/rate_events = 0 แถว)
+2. ⚠️ **deploy ครั้งแรก (`vercel deploy` ไม่มี `--prod`) ขึ้นเป็น Production เอง** (โปรเจคใหม่ที่ยังไม่เคยมี production → Vercel ตั้ง target = production) → `korat-cyberpunk.vercel.app` ตอนนี้เสิร์ฟ **build เก่าของรอบแรก** (หน้าชั่วคราว + API schema เก่า → `run/finish` บน prod จะได้ `SERVER_ERROR` เพราะ migrate ไปแล้ว · `leaderboard` ยังตอบได้) · ไม่ได้ลบ/rollback เอง — conductor ตัดสิน: ปล่อยไว้จนผ่าน QA gate หรือสั่ง `vercel remove korat-cyberpunk-hek8o2yi9-dosx.vercel.app` · ครั้งต่อไปใช้ `vercel deploy --target=preview` เสมอ
+3. ✅ preview ล่าสุด: **https://korat-cyberpunk-qhdelz5t3-dosx.vercel.app/koratrocketcar/** (มี Deployment Protection — ใช้ `vercel curl --deployment <url>` หรือเปิดในเบราว์เซอร์ที่ล็อกอิน Vercel)
+4. ✅ สูตรแต้มจริงตาม GAMEPLAY §6 (Tle: เวลา + สไตล์ ≤ 20%) แทนตัวชั่วคราว · ตัวอย่างใน §6.2 คำนวณได้ 145,181 (เอกสารเขียน 145,182 — ปัดเศษในเอกสารคลาด 1)
+5. ✅ ghost อันดับ 1 ออนไลน์ (ส่วนที่ 5) · ghost 1 รอบสนาม A ≈ **2.8 KB** (base64) · server ตรวจ ghost กับผลรอบ · `GET /api/ghost/top`
+6. ✅ base path `/koratrocketcar/` ทำงานบน preview ทั้งหน้าเกม asset และ API · แก้บั๊ก rewrite หน้าแรก (`/koratrocketcar/` เคย 404)
+7. ✅ สนาม `A` (2 รอบ) + `test` (ใช้ได้เฉพาะ preview/dev — ยืนยันแล้วว่า prod ตอบ `BAD_TRACK`)
+8. ⚠️ **preview กับ production ใช้ฐานข้อมูลเดียวกัน** (Neon ตัวเดียว ผูกทุก environment) → ทดสอบบน preview ต้องใช้ track `test` แล้วลบทิ้งเสมอ
+9. ✅ `pnpm typecheck && pnpm build` ผ่าน · ไม่ได้ commit / ไม่ได้ `deploy --prod`
+10. รอค่าจาก physics pane: `minLapMs` (ตอนนี้ 45 วิ placeholder), `cpMinMs`, `altGroup`, ต้นทุนถังลม (`GAS`) ใน `src/net/score.ts` — ตอนนี้ split ตรวจแค่ "เรียงลำดับ ไม่ย้อน"
 
 ## Vercel
-- โปรเจค: `korat-cyberpunk` ใน scope **`dosx`** (ค่าเริ่มต้นของ CLI ตอนนี้ — ถ้าตั้งใจให้อยู่ scope อื่น ต้องย้าย/สร้างใหม่ก่อนติดตั้ง Neon)
-- **Production domain ที่ madebytle จะ proxy ไปหา: `https://korat-cyberpunk.vercel.app`** (ผูกกับโปรเจคแล้ว แต่ตอนนี้ยัง 404 เพราะยังไม่เคย deploy prod — ห้าม deploy prod จนผ่าน QA gate) → URL ปลายทางของ proxy = `https://korat-cyberpunk.vercel.app/koratrocketcar/:path*`
-- Preview URL: **ยังไม่มี** (รอ DB ก่อนตามบรีฟ)
-- Env ที่สร้างแล้ว (ชื่อเท่านั้น): `RUN_TOKEN_SECRET` — Production / Preview / Development (ค่าสุ่มแยกกันทุก environment) · Preview ตั้งผ่าน Vercel API เพราะ CLI 51.8 วนถาม git branch ไม่จบ
-- Env ที่จะมาเมื่อ Neon ติดตั้ง: `DATABASE_URL`, `DATABASE_URL_UNPOOLED` (+ ตัวแปร `PG*`/`POSTGRES_*` ของ integration)
+- โปรเจค `korat-cyberpunk` · scope `dosx` · **ไม่ผูก Git** (CLI ผูกให้เอง ถอดออกแล้ว)
+- **Production domain สำหรับ madebytle proxy: `https://korat-cyberpunk.vercel.app`** → ปลายทาง `https://korat-cyberpunk.vercel.app/koratrocketcar/:path*` (ทดสอบแล้ว: `/koratrocketcar` → 307 ไป `/koratrocketcar/`, API ผ่าน prefix ได้ 200)
+- Env (ชื่อเท่านั้น): `RUN_TOKEN_SECRET` (Prod/Preview/Dev ค่าแยกกัน) · จาก Neon: `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `PGHOST`, `PGHOST_UNPOOLED`, `PGUSER`, `PGDATABASE`, `PGPASSWORD`, `POSTGRES_URL`, `POSTGRES_URL_NON_POOLING`, `POSTGRES_URL_NO_SSL`, `POSTGRES_PRISMA_URL`, `POSTGRES_USER`, `POSTGRES_HOST`, `POSTGRES_PASSWORD`, `POSTGRES_DATABASE`, `NEON_PROJECT_ID`, `NEON_AUTH_BASE_URL`, `VITE_NEON_AUTH_URL`
+- `.env.local` (gitignored ตามกฎ `.env.*`) · Vercel CLI เติม `.env.local`/`.vercel` ใน `.gitignore` ให้เอง → ย้อนออกแล้วเพราะกฎเดิมครอบคลุม
 
-## สิ่งที่ Tle ต้องทำ (1 ครั้ง)
-1. เปิด https://vercel.com/dosx/~/integrations/accept-terms/neon?source=cli แล้วกดยอมรับเงื่อนไข Neon (อ่าน: [Marketplace addendum](https://vercel.com/legal/integration-marketplace-end-users-addendum) · [Neon ToS](https://neon.tech/terms-of-service) · [Neon privacy](https://neon.tech/privacy-policy))
-2. บอก conductor → เปิด pane ต่องานด้านล่าง (ยังไม่มีการ provision อะไร รันได้ปลอดภัย ไม่เกิด DB ซ้ำ)
+## สิ่งที่ Tle / conductor ต้องทำ
+- ตัดสินเรื่อง production ที่ขึ้นไปเอง (ข้อ 2)
+- ไม่มีอย่างอื่น
 
-## งานที่เหลือหลัง Tle ยอมรับเงื่อนไข (ให้ pane ถัดไปทำ ตามลำดับ)
-```bash
-vercel integration add neon --name korat-cyberpunk-db -m region=sin1 --non-interactive   # ⚠️ รันครั้งเดียว — ถ้าขั้นอื่นพังห้ามรันซ้ำ (เช็ค `vercel integration list` ก่อน)
-vercel env pull --yes                      # → .env.local (gitignored)
-pnpm db:migrate                            # ใช้ DATABASE_URL_UNPOOLED
-vercel deploy                              # preview เท่านั้น
-# curl ทุก endpoint บน preview ด้วย track=test (preview มี Deployment Protection → ใช้ `vercel curl` หรือ bypass token)
-# ลบแถวทดสอบ: delete from scores where track_id = 'test'; delete from rate_events;
-```
-ถ้า `region=sin1` ไม่ผ่าน ให้ดู `vercel integration add neon --help` หา region สิงคโปร์ (`aws-ap-southeast-1`)
-
-## API (base `/koratrocketcar/api` — ใช้ได้ทั้ง `/api` ตรง)
-| Endpoint | Body / Query | คืน |
+## API (base `/koratrocketcar/api` — `/api` ตรงก็ได้)
+| Endpoint | ส่ง | คืน |
 |---|---|---|
-| `POST run/start` | `{ track, deviceId }` | `{ token, startedAt }` — token = HMAC-SHA256 ของ `{track, device, startMs, nonce}` อายุ 30 นาที |
-| `POST run/finish` | `{ token, track, deviceId, build, stats:{lapMs, driftMs, jumps, collisions} }` | `{ score, rank, qualifies, personalBest, named }` — `qualifies` = ติด top 100 |
-| `POST score/name` | `{ deviceId, name }` | `{ name }` — ใช้กับทุกแต้มของเครื่องนั้น · รอบใหม่สืบทอดชื่อเดิม |
-| `GET leaderboard` | `?track=A&limit=50` (1–100) | `{ track, entries:[{rank, name, score, lapMs, at}] }` · 1 แถว/เครื่อง (แต้มดีสุด) · `s-maxage=10, swr=30` · ไม่คืน device id |
+| `POST run/start` | `{ track, deviceId, qa? }` | `{ token, startedAt }` — token HMAC-SHA256 อายุ 45 นาที · `qa:true` → token ที่ finish ไม่รับ (`QA_RUN`) |
+| `POST run/finish` | `{ token, deviceId, result: RunResult, ghost?: base64 }` | `{ score, breakdown{time,styleRaw,style,respawn,total}, rank, qualifies, personalBest, named, ghostSaved }` |
+| `POST score/name` | `{ deviceId, name }` | `{ name }` |
+| `GET leaderboard` | `?track=A&limit=50` | `{ track, entries:[{rank, name, score, totalMs, lapMs, at}] }` · 1 แถว/เครื่อง · `s-maxage=10` |
+| `GET ghost/top` | `?track=A` | `{ track, ghost: null \| {name, score, lapMs, build, data} }` · `s-maxage=30` |
 
-Error ทุกตัว = `{ ok:false, code }` เท่านั้น (รายการใน `src/net/codes.ts`) → ข้อความไทยใน `src/net/messages.ts`
+`RunResult` = ตาม GAMEPLAY §6.1 ทุกฟิลด์ (`src/net/score.ts` → `parseRun`) · client ใช้ `startRun()`, `finishRun(token, result, ghost?)`, `getTopGhost()` ใน `src/net/leaderboard.ts`
 
-## ไฟล์หลัก
-- `src/net/score.ts` — `validateRun()` + `computeScore()` ใช้ร่วม client/server (**สูตรเป็น placeholder** ให้ gameplay pane แทนตาม GAMEPLAY.md โดยคง signature) · server คำนวณแต้มเอง ไม่รับแต้มจาก client
-- `src/net/tracks.ts` — ความยาว/เวลาขั้นต่ำต่อสนาม (ขั้นต่ำ = วิ่งเฉลี่ย 220 กม./ชม. → สนาม A ≥ 55.0 วิ) · ตัวเลขนี้ต้องปรับตามท็อปสปีดจริงของ gameplay
-- `src/net/name.ts` + `src/net/bad-words.ts` — ชื่อ 2–16 grapheme (นับแบบ Intl.Segmenter ภาษาไทยสระ/วรรณยุกต์ไม่นับแยก) · ไทย/อังกฤษ/ตัวเลข/เว้นวรรค · กรองคำหยาบแบบถอดวรรณยุกต์ + leetspeak + ตัวซ้ำ (ทดสอบ: "f u c k", "Fuuuck", "ไอ้ควาย" โดนกรอง · "Jason", "classic", "สุดสวย" ผ่าน)
-- `src/net/leaderboard.ts` (client) · `src/net/device.ts` (uuid ใน localStorage) · `src/ui/leaderboard.ts` (ตารางอันดับ + `showRunResult()` ฟอร์มตั้งชื่อ error ใต้ช่อง `role=alert`)
-- `api/_lib/{http,token,rate}.ts` · `db/{schema,client}.ts` · `drizzle.config.ts` (อ่าน `.env.local`)
-- ตารางเพิ่มจากบรีฟ: คอลัมน์ `run_id` (unique — token ใช้ได้ครั้งเดียว), `ip_hash` (HMAC ของ IP ไม่เก็บ IP ดิบ), `drift_ms/jumps/collisions` · ตาราง `rate_events` (rate limit แบบ sliding window ใน Postgres)
+## ผลทดสอบบน preview (DB จริง)
+ผ่าน: `BAD_TRACK` · `BAD_DEVICE` · `TOKEN_INVALID` · `TOKEN_MISMATCH` · `NO_SCORE` · `BAD_CLOCK` · `TOO_FAST` · `BAD_SPLITS` · `OLD_BUILD` · `BAD_STYLE` · `BAD_GHOST` · `QA_RUN` · `RUN_USED` (token ซ้ำ) · ชื่อ: สั้น/ยาว/คำหยาบไทย-อังกฤษ/HTML · ตั้งชื่อไทยสำเร็จ (ช่องว่างซ้อนถูกยุบ) · `RATE_LIMITED` (ครั้งที่ 11 ของ name) · บันทึกแต้ม + ghost → `leaderboard` และ `ghost/top` คืนข้อมูลถูก · รอบไม่มี ghost บันทึกได้ (`ghostSaved:false`) · `BAD_TANK` ทดสอบแบบ unit ในเครื่อง
 
-## Rate limit ที่ตั้งไว้
-start: 30/10 นาที/เครื่อง, 150/10 นาที/IP · finish: 6/นาที/เครื่อง, 60/10 นาที/IP · name: 10/ชั่วโมง/เครื่อง
+## Ghost (ส่วนที่ 5)
+- รูปแบบ v1 (`src/net/ghost-format.ts`): 10 Hz · x/y/z int16 หน่วย 5 ซม. + yaw int16 + flag 1 byte (ดริฟต์/BOOST/ลอย) · เก็บเป็นผลต่างจากจุดก่อน → deflate-raw → base64 · รอบ 67 วิ: ดิบ 6.0 KB → ส่งจริง 2.8 KB
+- เก็บ **1 ghost/เครื่อง/สนาม** (รอบที่แต้มดีสุด) ตาราง `ghosts` · แทนที่เมื่อแต้มใหม่สูงกว่าเท่านั้น
+- server ตรวจ: lapMs ตรงกับรอบดีสุดของผล · จำนวนจุดตรงกับเวลา (±3) · ไม่กระโดดเกิน 15 ม./จุด (540 กม./ชม.) · อยู่ในกรอบแผนที่ · จุดแรก-สุดท้ายห่าง ≤ 60 ม. (เป็นวง) · ระยะทางรวม 60–150% ของความยาวสนาม — ghost ไม่ผ่าน = **ไม่รับทั้งรอบ** (`BAD_GHOST`)
+- ghost เป็น optional (iOS เก่าไม่มี CompressionStream) → `ghost/top` คืนคนที่แต้มสูงสุด **ที่มี ghost**
+- ยังไม่ได้ตรวจ ghost กับตำแหน่ง checkpoint จริง (server ยังไม่มีข้อมูลเส้นทาง) — ทำได้เมื่อ track data นิ่ง
+
+## DB (Drizzle · `db/schema.ts` · migrations `db/migrations/0000–0002`)
+`scores` (id, track_id, device_id, name, score, score_time, score_style, total_ms, lap_ms=รอบดีสุด, build, result jsonb ค่าดิบทั้งหมด, run_id unique, ip_hash, created_at) · `ghosts` (pk track_id+device_id) · `rate_events`
 
 ## ช่องโหว่โกงแต้มที่ยังเหลือ
-1. **ผลรอบมาจาก client ทั้งหมด** — คนแก้ JS ส่ง `lapMs` ต่ำสุดที่ยังผ่านเกณฑ์ (55 วิ) ได้เสมอ ถ้ารอเวลาจริงครบ · แก้จริงต้องส่ง replay/input log ให้ server จำลองซ้ำ (หนัก) หรืออย่างน้อยส่ง checkpoint timestamps แล้วตรวจความเร็วระหว่าง checkpoint
-2. เกณฑ์เวลาขั้นต่ำ 220 กม./ชม. เฉลี่ยยังหลวม — ควรตั้งจาก top speed จริงของ gameplay (+ ช่วง boost) ให้แน่นขึ้น
-3. device id ปลอมใหม่ได้ไม่จำกัด → เลี่ยง rate limit รายเครื่องได้ เหลือแค่ limit ราย IP (ซึ่งเปลี่ยนได้ด้วย VPN/มือถือ)
-4. ใครรู้ device id ของคนอื่น (ไม่ได้เปิดเผยผ่าน API แต่ถ้าแอบดู localStorage ในเครื่องคนอื่น) เปลี่ยนชื่อแทนได้
-5. driftMs/jumps เชื่อ client ภายในเพดาน (ดริฟต์ ≤ เวลารอบ, กระโดด ≤ 1 ครั้ง/2 วิ, โบนัสรวม ≤ 40% ของแต้มเวลา)
-6. ไม่มีปุ่มลบ/ซ่อนแต้มสำหรับแอดมิน — ตอนนี้ต้องลบใน DB ตรง
+1. ผลรอบ + ghost มาจาก client — คนแก้ JS แต่งค่าดิบ + ghost ให้ "เป็นไปได้" ได้ · ด่านที่มีแค่บอกว่าไม่เกินฟิสิกส์ · กันจริง = replay input log บน server (GAMEPLAY §6.3)
+2. ด่าน split / เวลาขั้นต่ำ / ถังลม ยังหลวมจนกว่า physics pane ส่ง `minLapMs`, `cpMinMs`, ต้นทุนแก๊ส
+3. ด่าน `qa:true` เป็นแค่กันคนซื่อ — client ที่แก้แล้วไม่ส่ง flag ก็ได้
+4. device id สร้างใหม่ได้ไม่จำกัด → เหลือ limit ราย IP · ใครรู้ device id คนอื่นเปลี่ยนชื่อแทนได้
+5. ไม่มีหน้าแอดมินลบ/ซ่อนแต้ม — ต้องลบใน DB ตรง

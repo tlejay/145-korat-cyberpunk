@@ -3,7 +3,7 @@
 import { getLeaderboard, setName, type FinishResult } from '../net/leaderboard.js';
 import { messageFor } from '../net/messages.js';
 import { NAME_MAX, validateName } from '../net/name.js';
-import { DEFAULT_TRACK } from '../net/tracks.js';
+import { DEFAULT_TRACK } from '../net/score.js';
 import { escapeHtml, formatInt, formatLap } from './format.js';
 import { ICONS } from './icons.js';
 
@@ -52,13 +52,13 @@ function renderTable(body: HTMLElement, track: string, onRetry: () => void) {
           <td>${formatInt(e.rank)}</td>
           <td>${e.name ? escapeHtml(e.name) : '<span class="anon">ไม่ระบุชื่อ</span>'}</td>
           <td class="num">${formatInt(e.score)}</td>
-          <td class="num">${formatLap(e.lapMs)}</td>
+          <td class="num">${formatLap(e.totalMs)}</td>
         </tr>`,
       )
       .join('');
     body.innerHTML = `
       <table class="lb" data-qa="leaderboard">
-        <thead><tr><th>อันดับ</th><th>ชื่อ</th><th class="num">แต้ม</th><th class="num">เวลา</th></tr></thead>
+        <thead><tr><th>อันดับ</th><th>ชื่อ</th><th class="num">แต้ม</th><th class="num">เวลารวม</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>`;
   });
@@ -80,6 +80,9 @@ export function showRunResult(root: HTMLElement, track: string, result: FinishRe
     <div class="result">
       <div class="rank">${escapeHtml(rankLine)}</div>
       <div>แต้ม ${formatInt(result.score)}${result.personalBest ? ' · สถิติใหม่ของคุณ' : ''}</div>
+      <div class="hint">เวลา ${formatInt(result.breakdown.time)} · สไตล์ ${formatInt(result.breakdown.style)}${
+        result.breakdown.respawn ? ` · กลับเข้าเส้นทาง ${formatInt(result.breakdown.respawn)}` : ''
+      }</div>
       ${
         result.qualifies
           ? `<form class="field" novalidate>
