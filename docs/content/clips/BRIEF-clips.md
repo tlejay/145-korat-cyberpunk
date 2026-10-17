@@ -56,3 +56,9 @@ video-story ต้องเล่าเรื่องเดียวกับ�
 5. **โหมดเดโม่ผ่าน URL** (Mint อยากได้มาก): `?demo=1&hud=0|1&cam=chase|fly&shot=<ชื่อโมเมนต์>&seed=` ที่รันเส้นทาง/ช็อตเดิมทุกครั้ง (deterministic) — ทำใน `src/capture/**` + ต่อ main.ts แบบเงื่อนไขบรรทัดเดียว · ใช้โหมดนี้อัดเองด้วย แล้วเขียนวิธีใช้ใน `SHOTLIST.md` ให้ Mint อัดซ้ำเองได้บน production
 - ส่งที่ `/Users/tlej/Works (Local)/Vibe Docs/~Inbox/to-mint/korat-roadster-teaser/promo-footage/` (clips/hud, clips/clean, flythrough, full-lap, audio, stills, logo, FACTS.md, SHOTLIST.md, CREDITS.md)
 - ping: **comment ใน tlejay/mint#476** (ไม่ต้องเปิดใบใหม่) บอก path + สรุปของที่ส่ง + ลิงก์โหมดเดโม่บน production (ถ้า deploy แล้ว)
+
+## 🔁 เปลี่ยนวิธีส่ง (Mint 21:48) — Mint อ่านโฟลเดอร์บน MBP ไม่ได้
+1. **หลักคือโหมดเดโม่บน production** — Mint อัดเองด้วย Playwright → ต้อง deterministic + ครบทุก `shot=` (13 โมเมนต์ + `fly` + `full-lap`) · ทดสอบอัดเองทุก shot ให้แน่ใจว่าใช้ได้ (ไม่ต้องส่งวิดีโอ) · `SHOTLIST.md` ระบุ URL เต็มของทุก shot + ความยาว + viewport ที่แนะนำ (1080×1920 dpr 1) + วิธีอัด 60 fps (เช่น ใช้ `?demo=1&fixedDt=1` + frame stepping ผ่าน hook ถ้ามี)
+2. **ไฟล์ให้ commit ลง repo ใต้ `promo/`** (conductor commit ให้ — pane นี้ยังห้าม commit): `promo/audio/` (เพลงแยก + license, SFX หลัก, เสียงพากย์ Charlie), `promo/logo/` (PNG พื้นใส), `promo/stills/` (1080×1920 ไม่มี UI 5–8 ใบ webp/png ≤ 1 MB ต่อใบ), `promo/FACTS.md`, `promo/CREDITS.md`, `promo/SHOTLIST.md` · รวม ≤ 25 MB · **ไม่ต้องทำไฟล์วิดีโอ**
+3. ไม่ต้องใช้ `~Inbox/to-mint/` แล้ว · ไม่ต้องใช้ Google Drive
+4. comment ใน #476: ลิงก์ `promo/` บน GitHub + รายชื่อ shot= ทั้งหมด (ทำหลัง conductor commit + deploy production แล้ว — ให้เขียนข้อความ comment ไว้ใน `promo/MINT-COMMENT.md` แล้ว conductor จะโพสต์เอง)
