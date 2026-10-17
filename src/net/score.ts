@@ -38,7 +38,7 @@ export interface TrackRule {
 
 // Tle picked track A (2026-10-17). B/C are added when they ship.
 export const TRACK_RULES: Record<string, TrackRule> = {
-  A: { lengthM: 3361, laps: 2, parLapMs: 78_000, minLapMs: 45_000 /* placeholder */, checkpoints: 34, cpMinMs: [], altGroup: null },
+  A: { lengthM: 3311, laps: 2, parLapMs: 78_000, minLapMs: 54_400 /* PHYSICS.md §6: 64.0 s unlimited boost × 0.85 */, checkpoints: 34, cpMinMs: [], altGroup: null },
   test: { lengthM: 300, laps: 1, parLapMs: 20_000, minLapMs: 5_000, checkpoints: 3, cpMinMs: [], altGroup: null, testOnly: true },
 };
 
@@ -66,7 +66,7 @@ export const SCORE = {
   styleCapRatio: 0.2,
 };
 
-// Air-tank economy (GAMEPLAY §2.4). TODO(physics): costs are placeholders until PHYSICS.md.
+// Air-tank economy (GAMEPLAY §2.4) with costs from PHYSICS.md §2.4/§3 (boost 20/s, jump 35, moat 50).
 export const GAS = {
   capacity: 100,
   regenPerSec: 3,
@@ -74,8 +74,8 @@ export const GAS = {
   cleanLanding: 5,
   refill: 35,
   boostPerSec: 20, // full tank ≈ 5 s of BOOST
-  jump: 33, // ≈ 1/3 tank
-  shortcut: 50, // ≥ 1/2 tank
+  jump: 35, // PHYSICS.md §2.4: ~29 real, game charges 35
+  shortcut: 50, // moat crossing at Manat Rd (PHYSICS.md §2.3) — a style move, not a shortcut
   tolerance: 1.1,
 };
 

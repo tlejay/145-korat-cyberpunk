@@ -14,3 +14,11 @@ export function formatLap(ms: number): string {
 export function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
+
+// 62345 -> "1:02.345" (HUD lap timer, UI-02: minutes:seconds.millis)
+export function formatLapMs(ms: number): string {
+  const t = Math.max(0, Math.round(ms));
+  const m = Math.floor(t / 60000);
+  const s = Math.floor((t % 60000) / 1000);
+  return `${m}:${String(s).padStart(2, '0')}.${String(t % 1000).padStart(3, '0')}`;
+}

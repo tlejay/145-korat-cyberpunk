@@ -1,4 +1,5 @@
-// QA hook contract — copied from docs/qa/TEST-HOOKS.md §2 (v1). Keep in sync.
+// QA hook contract — copied from docs/qa/TEST-HOOKS.md §2 (v1) + PHYSICS.md §8 extras. Keep in sync.
+import type { PhysicsCarDebug, PhysicsDebug } from '../types.js';
 export interface Vec3 { x: number; y: number; z: number }
 
 export interface GameQA {
@@ -29,7 +30,10 @@ export interface GameQA {
     jump:  { active: boolean; heightM: number; airtimeMs: number; cooldownMs: number };
     lastCollision: null | { atMs: number; impulse: number; objectId: string; objectKind: 'building' | 'wall' | 'monument' | 'prop' | 'barrier' };
     stuckMs: number;                  // เวลาที่ throttle > 0.5 แต่ speed < 3 กม./ชม. ต่อเนื่อง
-  };
+  } & Omit<PhysicsCarDebug, 'wheelsOnGround' | 'boost' | 'jump'>;   // PHYSICS.md §8
+
+  physics(): PhysicsDebug & { source: 'real' | 'stub' };              // PHYSICS.md §8
+  modules(): { track: 'real' | 'stub'; model: 'real' | 'stub'; physics: 'real' | 'stub'; audio: 'real' | 'stub' };
 
   camera(): {
     pos: Vec3; lookAt: Vec3; fovDeg: number;
@@ -72,7 +76,7 @@ export interface GameQA {
     playing: string[];                   // id เสียงที่กำลังเล่น
   };
 
-  on(event: 'lap' | 'checkpoint' | 'collision' | 'respawn' | 'jump' | 'land' | 'boost' | 'error' | 'state', cb: (e: unknown) => void): () => void;
+  on(event: 'lap' | 'checkpoint' | 'collision' | 'respawn' | 'jump' | 'land' | 'boost' | 'error' | 'state' | 'launch' | 'splash' | 'hardLanding' | 'hydroplane' | 'driftStart' | 'driftEnd', cb: (e: unknown) => void): () => void;
 
   qa: {
     start(trackId: string, opts?: { laps?: number; seed?: number; skipCountdown?: boolean }): Promise<void>;
@@ -88,6 +92,9 @@ export interface GameQA {
     forceError(code: 'webgl' | 'webgl_lost' | 'mapload' | 'asset' | 'lowfps'): void;  // ให้ QA เห็นหน้าจอ error จริง
     autopilot(enabled: boolean): void;                 // ขับตาม centerline เอง (ใช้เทสต์ memory leak 10 รอบ / soak)
     dump(): void;                                      // console.log สถานะทั้งหมดเป็น JSON
+    setWeather(w: { rain?: number; wind?: number; puddles?: boolean }): void;   // PHYSICS.md §8
+    setTank(units: number): void;
+    armLaunch(): void;
   };
 }
 declare global {
