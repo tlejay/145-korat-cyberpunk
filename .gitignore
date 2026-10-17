@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.vercel/
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+credentials*.json
+.DS_Store
+# Google Street View captures — internal reference only, never commit (Google ToS)
+refs/
