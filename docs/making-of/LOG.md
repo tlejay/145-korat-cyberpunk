@@ -27,6 +27,9 @@
 | 18:25 | 🔎 car เสร็จ (8 นาที): Roadster เปิดตัว 15 ต.ค. 2026 ที่ฐาน SpaceX · 3 รุ่น (Performance/Thrust/Rocket) · cold-gas thruster กระโดด ~7 ม. · blueprint สัดส่วน → ตรวจผ่าน · ปิด tab | car |
 | 18:27 | Tle เลือก: รถฐานรุ่น Rocket · ไม่ใช้โลโก้ Tesla ตั้งชื่อเอง | Tle |
 | 18:27 | 🧪 qa เสร็จ (7 นาที): test case 122 ข้อ 10 หมวด (🔴 77) · TEST-HOOKS (`window.__game`) · RELEASE-GATE · ชี้ความเสี่ยง 15 ข้อ เช่น ยังไม่มีคนดู game feel → ตรวจผ่าน · ปิด tab | qa |
+| 18:29 | 🔎 landmarks เสร็จ (12 นาที): 17 แลนด์มาร์ก · ย่าโมหันหน้าตะวันตก สูง 1.85 ม. บนลาน 26×26 ม. · ประตูชุมพล 43×11 ม. · ภาพ CC 30 ภาพ → ตรวจผ่าน · ปิด tab | landmarks |
+| 18:30 | Tle ตัดสิน: แบริเออร์นีออน · ตามวันเวย์ · ห้ามเข้าลาน · มีทั้ง iPhone/Android | Tle |
+| 18:31 | Tle สั่งเพิ่ม leaderboard ไม่ต้องสมัคร ตั้งชื่อขิงได้ → เปิด ⚙️ backend (Vite scaffold + Vercel + Neon + API) และ 🎮 gameplay (ออกแบบการควบคุม/กล้อง/สูตรแต้ม ตามที่ QA เตือน) | Tle + conductor |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -34,8 +37,10 @@
 | # | pane | งาน | เปิด | ปิด | ใช้เวลา | ผลลัพธ์ |
 |---|---|---|---|---|---|---|
 | 1 | 🔎 osm | ถนน/ตึก/คูเมืองจาก OSM + สนาม 3 แบบ | 18:17 | 18:24 | 7 นาที | `research/osm/` |
-| 2 | 🔎 landmarks | แลนด์มาร์ก + ภาพ CC | 18:17 | | | |
+| 2 | 🔎 landmarks | แลนด์มาร์ก + ภาพ CC | 18:17 | 18:29 | 12 นาที | `research/landmarks/` |
 | 3 | 🔎 streetview | เดินสำรวจ Street View | 18:17 | | | |
 | 4 | 🔎 car | Tesla Roadster ข่าว/สเปก/รูปทรง | 18:17 | 18:25 | 8 นาที | `research/car/` |
 | 5 | 🔎 audio | BGM + SFX | 18:21 | | | |
 | 6 | 🧪 qa | test plan + release gate | 18:23 | 18:27 | 7 นาที | `docs/qa/` |
+| 7 | ⚙️ backend | scaffold + Vercel + Neon + leaderboard API | 18:31 | | | |
+| 8 | 🎮 gameplay | ออกแบบการควบคุม กล้อง ฟิสิกส์ สูตรแต้ม | 18:31 | | | |
