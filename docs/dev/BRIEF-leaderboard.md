@@ -38,3 +38,8 @@ madebytle.com (Next.js อีกโปรเจค) จะ proxy `/koratrocketca
 - Vite `base: '/koratrocketcar/'` · client เรียก API ที่ `/koratrocketcar/api/...` (อย่า hardcode โดเมน)
 - ฝั่งโปรเจคเกม: `vercel.json` rewrite `/koratrocketcar/(.*)` → `/$1` ให้ทั้ง asset, หน้าเกม และ api ทำงานได้ทั้งเมื่อเข้าผ่าน madebytle และเข้าตรงที่ `<project>.vercel.app/koratrocketcar/`
 - รายงาน: production domain ของโปรเจค Vercel (`*.vercel.app`) ที่ madebytle จะ proxy ไปหา
+
+## ส่วนที่ 5 (เพิ่ม 18:44) — ghost อันดับ 1 ออนไลน์ (Tle สั่งใส่ใน M1)
+- เก็บ ghost (ตำแหน่ง/ทิศรถแบบ sample ตามที่ `docs/dev/GAMEPLAY.md` กำหนด, บีบอัด ≤ ~6 KB) คู่กับแต้มของ device · เก็บเฉพาะ ghost ของรอบที่ดีที่สุดต่อ device
+- `GET /api/ghost/top?track=A` คืน ghost ของอันดับ 1 (cache สั้น ๆ) · upload ghost ไปพร้อม `run/finish`
+- server ตรวจ ghost ให้สอดคล้องกับเวลา/checkpoint ที่ส่งมา (ใช้เป็นหลักฐานกันโกงเพิ่มได้)
