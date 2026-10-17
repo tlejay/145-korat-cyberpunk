@@ -1,4 +1,4 @@
-อัปเดตล่าสุด: 2026-10-17 · `tlejay/145-korat-cyberpunk` · 🟡 ระยะสำรวจ (ยังไม่มีโค้ดเกม)
+อัปเดตล่าสุด: 2026-10-18 00:25 · 🟢 ขึ้น production แล้ว https://korat-cyberpunk.vercel.app/koratrocketcar/ · (เดิม 2026-10-17 · `tlejay/145-korat-cyberpunk` · 🟡 ระยะสำรวจ (ยังไม่มีโค้ดเกม)
 
 ## 0. รอบล่าสุด — 2026-10-17 ตั้งโปรเจค + ส่ง research pane
 

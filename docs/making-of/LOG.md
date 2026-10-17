@@ -99,6 +99,7 @@
 | 23:05 | 🔍 car-ref เสร็จ (44 นาที): เปิด tesla.com/roadster ด้วย Chrome ได้ภาพทางการ 13 ภาพ (หน้าจอง #payment ระบบบล็อกเพราะเป็นหน้าชำระเงิน) · พบต้องแก้: ปีกสูงไป 25 ซม. · ฝาท้ายต้องมีกระจกคางหมู · แผงใต้ไฟท้ายเป็นขาว (แก้คำสั่ง conductor รอบก่อนที่ดูภาพข่าวมืด) · รถเตี้ยกว่า 9% · ปีก Hidden Aero กางเมื่อใช้งาน → คิวแก้หลัง production · ปิด tab | car-ref |
 | 00:20 | 🧪 qa-m3 เสร็จ (2 ชม. 38 นาที): preview จริง 100 ผ่าน · ของใหม่ M3 ผ่านหมด (กะพริบ ≤ 3/วิ, ไม่มีป้ายในเขตลาน/วัด, ด่านตรวจ 4/4, ป้ายเลี้ยวขึ้นก่อนทุกโค้ง, autopilot ครบรอบทุก tier) · ตก 2: เครดิตโลโก้ไม่ครบ + รถดีด 5.9 ม. เมื่อชนแบริเออร์โค้งสรรพสิทธิ์ → NO-GO ตามกติกา | qa-m3 |
 | 00:22 | conductor ตัดสิน **GO แบบมีเงื่อนไข** (เครดิตไม่อยู่ใน build · รถดีดเล่นต่อได้) แก้ทั้งคู่ใน polish แล้ว deploy ซ้ำ | conductor |
+| 00:24 | 🚀 **ขึ้น production** `korat-cyberpunk.vercel.app/koratrocketcar/` (หน้าเกม, ข้อมูลสนาม, leaderboard API = 200) → เปิดคู่ขนาน 🌐 madebytle (proxy /koratrocketcar) + 🔧 polish (รถดีด, เครดิต, ป้ายหน้าวัด, ทรงรถตามรูปทางการ + ปีก Hidden Aero, v0.3.0) | conductor |
 | 18:26 | Tle สั่งให้ทำ content making-of → เริ่ม LOG นี้ | Tle |
 
 ## Pane ทั้งหมด
@@ -134,3 +135,5 @@
 | 27 | 🔰 wayfinding | ป้ายเตือนทางเลี้ยว + ลูกศร HUD | 21:15 | 21:33 | 18 นาที | `src/wayfinding/` |
 | 28 | 🧪 qa-m3 | QA ด่านก่อน production (GO/NO-GO) | 21:42 | 00:20 | 2 ชม. 38 นาที | `docs/qa/reports/2026-10-17-v0.2.0-build002.md` |
 | 29 | 🔍 car-ref | เทียบโมเดลรถกับรูปทางการ tesla.com | 22:21 | 23:05 | 44 นาที | `docs/research/REPORT-car-ref.md` |
+| 30 | 🌐 madebytle | ต่อ madebytle.com/koratrocketcar | 00:25 | | | |
+| 31 | 🔧 polish | แก้หลัง production → v0.3.0 | 00:25 | | | |
