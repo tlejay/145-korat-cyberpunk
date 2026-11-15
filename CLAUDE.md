@@ -119,3 +119,12 @@ Tle สั่ง 2026-10-17: **Claude ใน tab ซ้ายสุด (`🏁 ma
 - ภาพ Wikimedia ส่วนใหญ่ CC BY-SA → texture ที่ทำจากภาพเหล่านี้ต้องปล่อยเป็น CC BY-SA และเครดิตผู้ถ่าย
 
 ## "สร้างรูป" = `/kiki-gpt` เสมอ — ไม่ใช่การเขียน HTML
+
+<!-- ping-mint-inbox-vendor -->
+## รายงานกลับ Mint (ตั้งแต่ 15 พ.ย. 2569 — ชนะทุกบรรทัดเรื่อง ping-mint/issue ข้างบน)
+
+- ช่องหลัก vendor → Mint = **Discord #inbox-vendor** ผ่าน skill `/ping-mint` (ถึงมิ้นทันที): ตอบกลับ, รายงานงานเสร็จ, คำถาม
+  `python3 ~/.claude/skills/ping-mint/scripts/ping-mint.py "145 main" "<ข้อความ>" --ref <#issue | T3 thread id ของเรา>`
+- GitHub issue `tlejay/mint` = **บันทึกเท่านั้น** (script คอมเมนต์ให้เองเมื่อ `--ref` เป็นเลข issue) · พิมพ์ `/ping-mint` ใน comment ไม่ได้ปลุกมิ้นแล้ว
+- Mint → เรา = ส่งเข้า T3 thread ตรง ๆ · ห้ามตั้งตัวเฝ้า/timer รอคำตอบ
+- ห้ามใส่ secret / token / connection string / เบอร์โทร ในข้อความ
